@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1a14">
+<title>Hold'em EV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --felt: #0d2a1f; --felt-2: #11352a; --felt-deep: #081b14;
+    --ink: #eef3ee; --dim: #9db3a7; --faint: #5f7a6d; --line: #24473a;
+    --gold: #e6c06a; --gold-dim: #a8873f;
+    --good: #57d68d; --bad: #ff7a6e; --warn: #f2c35b;
+    --card: #fbfaf6; --card-line: #d6d2c6;
+    --s: #1d1d1f; --h: #d8343b; --d: #2563c9; --c: #1f8a4c;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--felt-deep); }
+  body {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif; color: var(--ink); font-size: 15px; line-height: 1.45; min-height: 100vh;
+    background: radial-gradient(ellipse 90% 60% at 50% -10%, #17463a 0%, transparent 70%), linear-gradient(180deg, var(--felt) 0%, var(--felt-deep) 100%);
+  }
+  html { min-height: 100%; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 28px 18px 80px; }
+  header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 800; font-size: 34px; letter-spacing: -0.01em; line-height: 1; }
+  h1 span { color: var(--gold); }
+  .sub { color: var(--dim); font-size: 14px; margin-top: 6px; }
+  .seg { display: inline-flex; background: var(--felt-deep); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
+  .seg button { background: none; border: 0; color: var(--dim); font: 600 14px 'IBM Plex Sans'; padding: 7px 14px; border-radius: 7px; cursor: pointer; }
+  .seg button.on { background: var(--gold); color: #1c1606; }
+  .seg button:not(.on):hover { color: var(--ink); }
+
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: 18px; align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: rgba(8, 27, 20, 0.72); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .panel + .panel { margin-top: 18px; }
+  .ptitle { font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px; margin-bottom: 12px; display: flex; align-items: baseline; gap: 10px; }
+  .ptitle small { font-family: 'IBM Plex Sans'; font-size: 13px; color: var(--faint); font-weight: 400; }
+
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .opt label { display: block; font-size: 12px; color: var(--dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+  select { width: 100%; background: var(--felt-deep); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; font: 500 14px 'IBM Plex Sans'; }
+  .chk { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--dim); margin-right: 12px; cursor: pointer; }
+  .chk input { accent-color: var(--gold); }
+
+  /* Slots */
+  .slots { display: grid; gap: 12px; }
+  .slotgroup { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; cursor: pointer; transition: border-color .15s, background .15s; }
+  .slotgroup:hover { border-color: #3a6b58; }
+  .slotgroup.active { border-color: var(--gold); background: rgba(230, 192, 106, 0.06); }
+  .slothead { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+  .slothead b { font-weight: 600; font-size: 14px; }
+  .slothead span { font-size: 12px; color: var(--faint); }
+  .slotcards { display: flex; flex-wrap: wrap; gap: 6px; min-height: 58px; align-items: center; }
+  .clear { background: none; border: 0; color: var(--faint); font: 500 12px 'IBM Plex Sans'; cursor: pointer; }
+  .clear:hover { color: var(--bad); }
+
+  .pc { width: 40px; height: 56px; border-radius: 6px; background: var(--card); border: 1px solid var(--card-line); display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font: 600 18px var(--mono); line-height: 1; box-shadow: 0 2px 0 rgba(0,0,0,.25); position: relative; cursor: pointer; }
+  .pc i { font-style: normal; font-size: 16px; margin-top: 2px; }
+  .pc.s { color: var(--s); } .pc.h { color: var(--h); } .pc.d { color: var(--d); } .pc.c { color: var(--c); }
+  .pc.empty { background: transparent; border: 1.5px dashed #3a6b58; box-shadow: none; color: var(--faint); font-size: 18px; }
+  .pc .x { position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; border-radius: 50%; background: #2a1414; color: #ffb3ab; font-size: 10px; display: none; align-items: center; justify-content: center; }
+  .pc:hover .x { display: flex; }
+
+  /* Picker */
+  .picker { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 4px; margin-top: 14px; }
+  .pk { aspect-ratio: 5 / 7; border-radius: 5px; background: var(--card); border: 1px solid var(--card-line); font: 600 14px var(--mono); display: flex; flex-direction: column;
+        align-items: center; justify-content: center; line-height: 1; cursor: pointer; user-select: none; transition: transform .08s; }
+  .pk i { font-style: normal; font-size: 12px; }
+  .pk:hover { transform: translateY(-2px); }
+  .pk.s { color: var(--s); } .pk.h { color: var(--h); } .pk.d { color: var(--d); } .pk.c { color: var(--c); }
+  .pk.used { opacity: 0.16; cursor: default; transform: none; }
+  .pickhint { font-size: 13px; color: var(--dim); margin-top: 10px; }
+  .pickhint b { color: var(--gold); font-weight: 600; }
+
+  /* Results */
+  .verdict { border-radius: 12px; padding: 16px; background: linear-gradient(135deg, rgba(230,192,106,0.14), rgba(230,192,106,0.03)); border: 1px solid rgba(230,192,106,0.45); }
+  .verdict .act { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 800; line-height: 1.05; }
+  .verdict .act.bet { color: var(--good); } .verdict .act.check { color: var(--warn); } .verdict .act.fold { color: var(--bad); }
+  .verdict .why { margin-top: 6px; color: var(--dim); font-size: 14px; }
+  .verdict .why b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
+  .base { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(230,192,106,0.3); font-size: 14px; color: var(--dim); }
+  .base b { color: var(--ink); font-family: var(--mono); }
+  .close { color: var(--warn); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+  th { text-align: right; font-weight: 500; font-size: 12px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  td { padding: 8px; text-align: right; border-bottom: 1px solid rgba(36,71,58,0.5); font-family: var(--mono); font-weight: 500; }
+  td:first-child { font-family: 'IBM Plex Sans'; font-weight: 600; }
+  tr.best td { background: rgba(87,214,141,0.08); }
+  tr.best td:first-child { box-shadow: inset 3px 0 0 var(--good); }
+  td.tot { font-weight: 600; }
+  .pos { color: var(--good); } .neg { color: var(--bad); } .zero { color: var(--dim); }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
+  .stat { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .stat .k { font-size: 12px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat .v { font-family: var(--mono); font-size: 15px; margin-top: 3px; }
+  .bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 7px; background: var(--line); }
+  .bar span { display: block; height: 100%; }
+  details { margin-top: 14px; }
+  summary { cursor: pointer; color: var(--dim); font-size: 14px; }
+  summary:hover { color: var(--ink); }
+  .note { font-size: 13px; color: var(--faint); margin-top: 10px; }
+
+  .progress { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; margin-top: 12px; }
+  .progress span { display: block; height: 100%; width: 0; background: var(--gold); transition: width .15s; }
+  .empty { color: var(--dim); text-align: center; padding: 40px 10px; }
+  .empty .big { font-family: 'Fraunces', serif; font-size: 22px; color: var(--ink); margin-bottom: 6px; }
+
+  .valid td:nth-child(2), .valid td:nth-child(3) { white-space: nowrap; }
+  footer { margin-top: 30px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--faint); }
+  footer input { background: var(--felt-deep); border: 1px solid var(--line); color: var(--ink); border-radius: 7px; padding: 6px 9px; font: 14px 'IBM Plex Sans'; }
+  footer button, .btn { background: var(--felt-2); border: 1px solid var(--line); color: var(--ink); border-radius: 7px; padding: 6px 12px; font: 500 13px 'IBM Plex Sans'; cursor: pointer; }
+  footer button:hover, .btn:hover { border-color: var(--gold-dim); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Hold'em <span>EV</span></h1>
+      <div class="sub">Exact expected value for every decision — counted over every possible deal, not simulated.</div>
+    </div>
+    <div class="seg" id="gameSeg">
+      <button data-g="uth" class="on">Ultimate Texas</button>
+      <button data-g="wpt">WPT Heads-Up</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div>
+      <div class="panel">
+        <div class="ptitle">Table rules</div>
+        <div class="opts" id="opts"></div>
+      </div>
+      <div class="panel">
+        <div class="ptitle">The hand <small id="streetNote"></small></div>
+        <div class="seg" id="streetSeg" style="margin-bottom:12px;">
+          <button data-s="preflop" class="on">Preflop</button>
+          <button data-s="flop">Flop</button>
+          <button data-s="river">River</button>
+        </div>
+        <div class="slots" id="slots"></div>
+        <div class="picker" id="picker"></div>
+        <div class="pickhint" id="pickhint"></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel" id="results"><div class="empty"><div class="big">Pick your two cards</div>Results appear as soon as the hand is complete.</div></div>
+      <div class="panel" id="validation"></div>
+    </div>
+  </div>
+
+  <footer>
+    <span id="kvStatus">Cache: not configured</span>
+    <span style="flex:1"></span>
+    <span id="tokenArea"></span>
+  </footer>
+</div>
+
+<script id="engine-src">
+/*
+ * Hold'em table-game EV engine (Ultimate Texas Hold'em, WPT Heads-Up Hold'em).
+ *
+ * Exact enumeration, not simulation. Two phases:
+ *   1. Board stats (game-independent): for every possible completion of the board, count how the
+ *      dealer's possible hands fare against ours: W/L (all dealer hands) and Wq/Lq (dealer
+ *      qualifies), plus our hand's category. Rank-pair tables make this ~91 lookups per board
+ *      instead of ~990 hand evaluations.
+ *   2. Decisions (per game + paytable): walk river → flop → preflop, taking the better action at
+ *      each node (backward induction), summing EVs per bet spot.
+ *
+ * Cards: id = rank*4 + suit, rank 0..12 = 2..A, suit 0..3 = s h d c.
+ */
+(function (root) {
+  'use strict';
+  const RANKS = '23456789TJQKA', SUITS = 'shdc';
+  const B16 = 1048576; // 16^5: category multiplier in a hand value
+  const PAIRV = B16;    // smallest value that is a pair or better (dealer qualifies)
+
+  // ── Hand values ──────────────────────────────────────────────────────────
+  // value = cat*16^5 + five 4-bit kickers. cat: 0 high card … 8 straight flush.
+  // Payout category ("pcat") is the same but 9 = royal flush.
+  function mkVal(cat, k) { let v = cat; for (let i = 0; i < 5; i++) v = v * 16 + (k[i] || 0); return v; }
+  function straightTop(mask) {
+    for (let t = 12; t >= 4; t--) if (((mask >> (t - 4)) & 31) === 31) return t;
+    return (mask & 0x100F) === 0x100F ? 3 : -1; // wheel A-2-3-4-5
+  }
+  function evalRanks(cnt) { // non-flush value of a rank multiset (5–7 cards)
+    let mask = 0, quad = -1; const trips = [], pairs = [], singles = [];
+    for (let r = 12; r >= 0; r--) {
+      const c = cnt[r]; if (!c) continue; mask |= 1 << r;
+      if (c === 4) quad = r; else if (c === 3) trips.push(r); else if (c === 2) pairs.push(r); else singles.push(r);
+    }
+    if (quad >= 0) { let k = -1; for (let r = 12; r >= 0; r--) if (r !== quad && cnt[r]) { k = r; break; } return mkVal(7, [quad, k]); }
+    if (trips.length && (trips.length > 1 || pairs.length)) return mkVal(6, [trips[0], Math.max(trips[1] ?? -1, pairs[0] ?? -1)]);
+    const st = straightTop(mask); if (st >= 0) return mkVal(4, [st]);
+    if (trips.length) return mkVal(3, [trips[0], ...singles.slice(0, 2)]);
+    if (pairs.length >= 2) return mkVal(2, [pairs[0], pairs[1], Math.max(pairs[2] ?? -1, singles[0] ?? -1)]);
+    if (pairs.length === 1) return mkVal(1, [pairs[0], ...singles.slice(0, 3)]);
+    return mkVal(0, singles.slice(0, 5));
+  }
+  const popcnt = x => { let n = 0; while (x) { x &= x - 1; n++; } return n; };
+  const FLUSH = new Int32Array(8192); // best flush/straight-flush value of a suited rank mask (0 if < 5 cards)
+  for (let m = 0; m < 8192; m++) {
+    if (popcnt(m) < 5) continue;
+    const st = straightTop(m);
+    if (st >= 0) { FLUSH[m] = mkVal(8, [st]); continue; }
+    const k = []; for (let r = 12; r >= 0 && k.length < 5; r--) if (m >> r & 1) k.push(r);
+    FLUSH[m] = mkVal(5, k);
+  }
+  function pcatOf(v) { const c = Math.floor(v / B16); return c === 8 && Math.floor(v / 65536) % 16 === 12 ? 9 : c; }
+
+  // Rank table: every 5-card board rank multiset × every two extra ranks → non-flush value.
+  const BKEY = new Int32Array(371293).fill(-1); // sorted 5 ranks (base 13) → board multiset index
+  let nb = 0; const boardRanks = [];
+  for (let a = 0; a < 13; a++) for (let b = a; b < 13; b++) for (let c = b; c < 13; c++) for (let d = c; d < 13; d++) for (let e = d; e < 13; e++) {
+    if (a === e) continue; // five of a rank
+    BKEY[(((a * 13 + b) * 13 + c) * 13 + d) * 13 + e] = nb++; boardRanks.push([a, b, c, d, e]);
+  }
+  const TAB = new Int32Array(nb * 169).fill(-1);
+  { const cnt = new Int8Array(13);
+    for (let i = 0; i < nb; i++) {
+      cnt.fill(0); for (const r of boardRanks[i]) cnt[r]++;
+      for (let x = 0; x < 13; x++) for (let y = x; y < 13; y++) {
+        cnt[x]++; cnt[y]++;
+        if (cnt[x] <= 4 && cnt[y] <= 4) TAB[i * 169 + x * 13 + y] = TAB[i * 169 + y * 13 + x] = evalRanks(cnt);
+        cnt[x]--; cnt[y]--;
+      }
+    }
+  }
+  // Full 7-card evaluator (testing / simple paths)
+  function eval7(cards) {
+    const cnt = new Int8Array(13), sm = [0, 0, 0, 0];
+    for (const c of cards) { cnt[c >> 2]++; sm[c & 3] |= 1 << (c >> 2); }
+    let v = evalRanks(cnt);
+    for (const m of sm) if (FLUSH[m] > v) v = FLUSH[m];
+    return v;
+  }
+
+  // Binomials for colex ranking
+  const BIN = []; for (let n = 0; n <= 52; n++) { BIN[n] = new Float64Array(7); for (let k = 0; k <= 6; k++) BIN[n][k] = k === 0 ? 1 : n < k ? 0 : (n === k ? 1 : 0); }
+  for (let n = 1; n <= 52; n++) for (let k = 1; k <= 6; k++) BIN[n][k] = BIN[n - 1][k - 1] + BIN[n - 1][k];
+  const binom = (n, k) => (n < 0 || k < 0 || n < k) ? 0 : BIN[n][k];
+
+  // ── Phase 1: board stats ─────────────────────────────────────────────────
+  // spec: { hole:[c,c], board:[known board cards], dealer:[0..1 known dealer cards], dead:[…] }
+  // Returns typed arrays indexed by the colex rank of the unknown board subset (indices into `pool`).
+  function setup(spec) {
+    const used = new Set([...spec.hole, ...spec.board, ...spec.dealer, ...(spec.dead || [])]);
+    if (used.size !== spec.hole.length + spec.board.length + spec.dealer.length + (spec.dead || []).length) throw new Error('A card is used twice');
+    const pool = []; for (let c = 0; c < 52; c++) if (!used.has(c)) pool.push(c);
+    const uB = 5 - spec.board.length;
+    const du = 2 - spec.dealer.length;
+    const nDealer = du === 2 ? binom(pool.length - uB, 2) : pool.length - uB;
+    return { pool, uB, du, nDealer, nBoards: binom(pool.length, uB) };
+  }
+
+  // Compute stats for boards whose highest pool index is in [jFrom, jTo) (or all boards).
+  function boardStats(spec, ctx, jFrom = 0, jTo = Infinity) {
+    const { pool, uB, du } = ctx, n = pool.length;
+    // Boards whose largest pool index is j occupy colex ranks [C(j,uB), C(j+1,uB)), so a j-range is
+    // one contiguous slice of the full arrays — that is what lets workers split the work.
+    const top0 = Math.max(uB - 1, 0);
+    const rStart = uB === 0 || jFrom <= top0 ? 0 : BIN[jFrom][uB];
+    const rEnd = uB === 0 || jTo >= n ? ctx.nBoards : BIN[jTo][uB];
+    const len = rEnd - rStart;
+    const out = {
+      rStart, rEnd,
+      W: new Uint16Array(len), L: new Uint16Array(len),
+      Wq: new Uint16Array(len), Lq: new Uint16Array(len), cat: new Uint8Array(len),
+    };
+    const cBase = new Int8Array(13); for (const c of pool) cBase[c >> 2]++;
+    const c = new Int8Array(13);
+    const h1 = spec.hole[0] >> 2, h2 = spec.hole[1] >> 2;
+    const holeSuit = [0, 0, 0, 0]; for (const x of spec.hole) holeSuit[x & 3] |= 1 << (x >> 2);
+    const kb = spec.board.slice().sort((a, b) => a - b);
+    const dk = du === 1 ? spec.dealer[0] : -1, dkr = dk >> 2, dks = dk & 3;
+    const idx = new Int32Array(Math.max(uB, 1)), cards = new Int32Array(5), inSub = new Uint8Array(52);
+    let W, L, Wq, Lq, pv;
+    const cls = (dv, w) => { if (dv > pv) { L += w; if (dv >= PAIRV) Lq += w; } else if (dv < pv) { W += w; if (dv >= PAIRV) Wq += w; } };
+
+    const doBoard = (rank) => {
+      // merge known board + subset (both sorted card ids → sorted ranks)
+      let a = 0, b = 0, k = 0;
+      while (k < 5) cards[k++] = (b >= uB || (a < kb.length && kb[a] < pool[idx[b]])) ? kb[a++] : pool[idx[b++]];
+      for (let r = 0; r < 13; r++) c[r] = cBase[r];
+      for (let t = 0; t < uB; t++) { c[pool[idx[t]] >> 2]--; inSub[pool[idx[t]]] = 1; }
+      const bi = BKEY[((((cards[0] >> 2) * 13 + (cards[1] >> 2)) * 13 + (cards[2] >> 2)) * 13 + (cards[3] >> 2)) * 13 + (cards[4] >> 2)];
+      const base = bi * 169;
+      const sc = [0, 0, 0, 0], sm = [0, 0, 0, 0];
+      for (let t = 0; t < 5; t++) { sc[cards[t] & 3]++; sm[cards[t] & 3] |= 1 << (cards[t] >> 2); }
+      let fs = -1; for (let s = 0; s < 4; s++) if (sc[s] >= 3) fs = s;
+      pv = TAB[base + h1 * 13 + h2];
+      if (fs >= 0) { const f = FLUSH[sm[fs] | holeSuit[fs]]; if (f > pv) pv = f; }
+      W = L = Wq = Lq = 0;
+      if (du === 2) {
+        for (let r1 = 0; r1 < 13; r1++) {
+          const c1 = c[r1]; if (!c1) continue; const row = base + r1 * 13;
+          if (c1 > 1) cls(TAB[row + r1], c1 * (c1 - 1) / 2);
+          for (let r2 = r1 + 1; r2 < 13; r2++) if (c[r2]) cls(TAB[row + r2], c1 * c[r2]);
+        }
+      } else {
+        const row = base + dkr * 13;
+        for (let r2 = 0; r2 < 13; r2++) if (c[r2]) cls(TAB[row + r2], c[r2]);
+      }
+      if (fs >= 0) { // dealer flushes: replace the non-flush value for combos that make one
+        const m = sc[fs], bm = sm[fs];
+        const adj = (x, y) => { // dealer cards x (,y)
+          const dv0 = TAB[base + (x >> 2) * 13 + (y >> 2)];
+          let mask = bm; if ((x & 3) === fs) mask |= 1 << (x >> 2); if ((y & 3) === fs) mask |= 1 << (y >> 2);
+          const f = FLUSH[mask]; if (f <= dv0) return;
+          cls(dv0, -1); cls(f, 1);
+        };
+        if (du === 1) {
+          const need = 5 - m - (dks === fs ? 1 : 0);
+          for (let i = 0; i < n; i++) { const y = pool[i]; if (inSub[y]) continue; if ((need <= 0) || ((y & 3) === fs && need <= 1)) adj(dk, y); }
+        } else if (m === 5) {
+          for (let i = 0; i < n; i++) { const x = pool[i]; if (inSub[x]) continue; for (let j = i + 1; j < n; j++) { const y = pool[j]; if (!inSub[y]) adj(x, y); } }
+        } else {
+          for (let i = 0; i < n; i++) {
+            const x = pool[i]; if (inSub[x] || (x & 3) !== fs) continue;
+            for (let j = 0; j < n; j++) {
+              const y = pool[j]; if (j === i || inSub[y]) continue;
+              const ys = (y & 3) === fs;
+              if (ys ? j > i : m === 4) adj(x, y);
+            }
+          }
+        }
+      }
+      const o = rank - rStart;
+      out.W[o] = W; out.L[o] = L; out.Wq[o] = Wq; out.Lq[o] = Lq; out.cat[o] = pcatOf(pv);
+      for (let t = 0; t < uB; t++) inSub[pool[idx[t]]] = 0;
+    };
+
+    if (uB === 0) { doBoard(0); return out; }
+    // enumerate subsets with max element in range; colex rank = Σ C(idx[t], t+1)
+    const rec = (t, hi, rank) => {
+      if (t < 0) { doBoard(rank); return; }
+      for (let i = t; i < hi; i++) { idx[t] = i; rec(t - 1, i, rank + BIN[i][t + 1]); }
+    };
+    const top = uB - 1;
+    for (let j = Math.max(jFrom, top); j < Math.min(jTo, n); j++) { idx[top] = j; rec(top - 1, j, BIN[j][uB]); }
+    return out;
+  }
+
+  // Join worker slices (any order) into full arrays.
+  function mergeStats(ctx, parts) {
+    const n = ctx.nBoards, st = { W: new Uint16Array(n), L: new Uint16Array(n), Wq: new Uint16Array(n), Lq: new Uint16Array(n), cat: new Uint8Array(n) };
+    for (const p of parts) for (const k of ['W', 'L', 'Wq', 'Lq', 'cat']) st[k].set(p[k], p.rStart);
+    return st;
+  }
+  // Split pool indices into chunks of roughly equal work (boards with max index j: C(j, uB-1)).
+  function splitWork(ctx, parts) {
+    const n = ctx.pool.length, uB = ctx.uB;
+    if (uB === 0) return [[0, n]];
+    const w = j => binom(j, uB - 1), total = ctx.nBoards, out = [];
+    let from = uB - 1, acc = 0;
+    for (let j = uB - 1; j < n; j++) { acc += w(j); if (acc >= total / parts * (out.length + 1) && out.length < parts - 1) { out.push([from, j + 1]); from = j + 1; } }
+    out.push([from, n]);
+    return out;
+  }
+
+  // ── Games & paytables ────────────────────────────────────────────────────
+  // Payout arrays indexed by pcat: 0 HC 1 P 2 2P 3 Trips 4 Str 5 Flush 6 FH 7 Quads 8 SF 9 Royal
+  const GAMES = {
+    uth: {
+      name: 'Ultimate Texas Hold\'em', spot2: 'Blind', playName: 'Play', preflopBets: [4, 3],
+      blind: [0, 0, 0, 0, 1, 1.5, 3, 10, 50, 500],
+      trips: {
+        'UTH-01': [-1, -1, -1, 3, 4, 7, 9, 30, 40, 50],
+        'UTH-02': [-1, -1, -1, 3, 5, 6, 8, 30, 40, 50],
+        'UTH-03': [-1, -1, -1, 3, 4, 7, 8, 30, 40, 50],
+        'UTH-04': [-1, -1, -1, 3, 5, 6, 7, 20, 40, 50],
+      },
+    },
+    wpt: {
+      name: 'WPT Heads-Up Hold\'em', spot2: 'Odds', playName: 'Raise', preflopBets: [3, 2, 1],
+      odds: [0, 0, 0, 0, 1, 1.5, 3, 10, 50, 500],
+      badBeat: { // paid when we LOSE holding a straight or better (royal can't lose)
+        'BB-1': [-1, -1, -1, -1, 5, 8, 10, 50, 500, 500],
+        'BB-2': [-1, -1, -1, -1, 5, 6, 10, 50, 500, 500],
+        'BB-3': [-1, -1, -1, -1, 4, 5, 10, 50, 500, 500],
+        'BB-4': [-1, -1, -1, -1, 4, 5, 6, 25, 500, 500],
+      },
+      trips: {
+        'TP-1': [-1, -1, -1, 3, 4, 7, 9, 30, 40, 100],
+        'TP-2': [-1, -1, -1, 3, 5, 6, 8, 30, 40, 100],
+        'TP-3': [-1, -1, -1, 3, 4, 7, 8, 30, 40, 100],
+        'TP-4': [-1, -1, -1, 3, 5, 6, 7, 30, 40, 100],
+      },
+      pocket: { 'PB-1': [30, 20, 10, 5], 'PB-2': [25, 20, 10, 5], 'PB-3': [30, 20, 10, 4] }, // AA, suited A+face, offsuit A+face, KK or lower pair
+    },
+  };
+
+  // spot2 payout per board (summed over dealer hands) for a won / lost / tied hand
+  function spot2Fn(game, opts) {
+    if (game === 'uth') { const bl = GAMES.uth.blind; return (W, L, cat) => W * bl[cat] - L; }
+    const od = GAMES.wpt.odds, bb = GAMES.wpt.badBeat[opts.badBeat || 'BB-1'];
+    return (W, L, cat) => W * od[cat] + L * (cat >= 4 ? bb[cat] : -1);
+  }
+
+  function pocketEV(hole, table) {
+    const r1 = hole[0] >> 2, r2 = hole[1] >> 2, suited = (hole[0] & 3) === (hole[1] & 3);
+    if (r1 === r2) return r1 === 12 ? table[0] : table[3];
+    const hi = Math.max(r1, r2), lo = Math.min(r1, r2);
+    if (hi === 12 && lo >= 9) return suited ? table[1] : table[2];
+    return -1;
+  }
+
+  // ── Phase 2: decisions ───────────────────────────────────────────────────
+  // street: 'preflop' (board.length 0–1, the known card is a flop card), 'flop' (3), 'river' (5)
+  function decide(spec, ctx, st, game, opts = {}) {
+    const { pool, uB, nDealer: N } = ctx, n = pool.length;
+    const f2 = spot2Fn(game, opts);
+    const tripsT = GAMES[game].trips[opts.trips || Object.keys(GAMES[game].trips)[0]];
+    const street = spec.street || (spec.board.length >= 5 ? 'river' : spec.board.length >= 3 ? 'flop' : 'preflop');
+
+    // per-board EV pieces (sums over the N dealer hands)
+    const boardEV = (r) => {
+      const W = st.W[r], L = st.L[r], cat = st.cat[r];
+      return { ante: st.Wq[r] - st.Lq[r], side: f2(W, L, cat), B: W - L, W, L, Wq: st.Wq[r], Lq: st.Lq[r] };
+    };
+    // river node: bet 1x vs fold. Returns the optimal path's pieces.
+    const river = (r) => {
+      const e = boardEV(r);
+      const bet = e.ante + e.side + e.B, fold = -2 * N;
+      return bet >= fold ? { ante: e.ante, side: e.side, play: e.B, folded: 0 } : { ante: -N, side: -N, play: 0, folded: 1 };
+    };
+
+    // Trips: every board completion equally likely; dealer cards don't matter
+    let tripsSum = 0; for (let r = 0; r < ctx.nBoards; r++) tripsSum += tripsT[st.cat[r]];
+    const hist = new Array(10).fill(0); for (let r = 0; r < ctx.nBoards; r++) hist[st.cat[r]]++;
+    const res = { street, N, boards: ctx.nBoards, trips: tripsSum / ctx.nBoards, catHist: hist.map(x => x / ctx.nBoards) };
+    if (game === 'wpt') res.pocket = pocketEV(spec.hole, GAMES.wpt.pocket[opts.pocket || 'PB-1']);
+
+    // "Bet now" outcome breakdown (dealer qualifies / win / lose)
+    let sW = 0, sL = 0, sWq = 0, sLq = 0, sQ = 0;
+    // We need dealer-qualify counts: Wq+Lq+ties-with-qualify; ties ignored for qualify rate here.
+    for (let r = 0; r < ctx.nBoards; r++) { sW += st.W[r]; sL += st.L[r]; sWq += st.Wq[r]; sLq += st.Lq[r]; }
+    const tot = ctx.nBoards * N;
+    res.outcome = { win: sW / tot, lose: sL / tot, tie: (tot - sW - sL) / tot, winQ: sWq / tot, loseQ: sLq / tot };
+
+    if (street === 'river') {
+      const e = boardEV(0), rv = river(0);
+      res.actions = {
+        bet1: { ante: e.ante / N, side: e.side / N, play: e.B / N },
+        fold: { ante: -1, side: -1, play: 0 },
+      };
+      finish(res);
+      return res;
+    }
+
+    // Enumerate (flop completion, turn+river) and fold up decisions.
+    const rankOf = (sorted) => { let r = 0; for (let t = 0; t < sorted.length; t++) r += BIN[sorted[t]][t + 1]; return r; };
+    const flopU = street === 'flop' ? 0 : 3 - spec.board.length;
+    const tmp = new Int32Array(uB);
+    const F = new Int32Array(Math.max(flopU, 1)), used = new Uint8Array(n);
+    // preflop accumulators
+    const P = { ante: 0, side: 0, B: 0, chk: { ante: 0, side: 0, play: 0 }, flopBet: 0, riverBet: 0, riverFold: 0, nBoards: 0, nFlops: 0 };
+    const flopEVs = []; // per flop: [bet2, check] in units of ante
+
+    // Per-board pieces, computed once (the flop loop visits each board up to 10 times)
+    const EA = new Float64Array(ctx.nBoards), ES = new Float64Array(ctx.nBoards), EBv = new Float64Array(ctx.nBoards);
+    for (let r = 0; r < ctx.nBoards; r++) { EA[r] = st.Wq[r] - st.Lq[r]; ES[r] = f2(st.W[r], st.L[r], st.cat[r]); EBv[r] = st.W[r] - st.L[r]; }
+    const two = new Int32Array(2), foldV = -2 * N;
+    const doFlop = () => {
+      // sum over turn/river pairs
+      let A = 0, S = 0, Bs = 0, rA = 0, rS = 0, rP = 0, rFold = 0, nb = 0;
+      for (let i = 0; i < n; i++) {
+        if (used[i]) continue;
+        two[0] = i;
+        for (let j = i + 1; j < n; j++) {
+          if (used[j]) continue;
+          two[1] = j;
+          // merge F (sorted) with i,j → colex rank
+          let a = 0, b = 0, r = 0;
+          for (let k = 0; k < uB; k++) {
+            const x = (b >= 2 || (a < flopU && F[a] < two[b])) ? F[a++] : two[b++];
+            r += BIN[x][k + 1];
+          }
+          const ea = EA[r], es = ES[r], eb = EBv[r];
+          A += ea; S += es; Bs += eb;
+          if (ea + es + eb >= foldV) { rA += ea; rS += es; rP += eb; } else { rA -= N; rS -= N; rFold++; }
+          nb++;
+        }
+      }
+      const bet2 = A + S + 2 * Bs, chk = rA + rS + rP;
+      const scale = nb * N;
+      flopEVs.push([bet2 / scale, chk / scale]);
+      P.ante += A; P.side += S; P.B += Bs; P.nBoards += nb; P.nFlops++;
+      if (bet2 >= chk) { P.chk.ante += A; P.chk.side += S; P.chk.play += 2 * Bs; P.flopBet += nb; }
+      else { P.chk.ante += rA; P.chk.side += rS; P.chk.play += rP; P.riverFold += rFold; P.riverBet += nb - rFold; }
+      return { bet2, chk, A, S, Bs, rA, rS, rP, nb, rFold };
+    };
+
+    if (street === 'flop') {
+      const f = doFlop(), scale = f.nb * N;
+      res.actions = {
+        bet2: { ante: f.A / scale, side: f.S / scale, play: 2 * f.Bs / scale },
+        check: { ante: f.rA / scale, side: f.rS / scale, play: f.rP / scale },
+      };
+      res.check = { riverBetPct: (f.nb - f.rFold) / f.nb, riverFoldPct: f.rFold / f.nb };
+      finish(res); return res;
+    }
+
+    // preflop: choose flopU cards from pool
+    const recF = (t, lo) => {
+      if (t === flopU) { doFlop(); return; }
+      for (let i = lo; i < n; i++) { F[t] = i; used[i] = 1; recF(t + 1, i + 1); used[i] = 0; }
+    };
+    recF(0, 0);
+    const scale = P.nBoards * N;
+    res.actions = {};
+    for (const m of GAMES[game].preflopBets) res.actions['bet' + m] = { ante: P.ante / scale, side: P.side / scale, play: m * P.B / scale };
+    res.actions.check = { ante: P.chk.ante / scale, side: P.chk.side / scale, play: P.chk.play / scale };
+    res.check = { flopBetPct: P.flopBet / P.nBoards, riverBetPct: P.riverBet / P.nBoards, riverFoldPct: P.riverFold / P.nBoards };
+    res.flops = { count: P.nFlops, betPct: flopEVs.filter(x => x[0] >= x[1]).length / flopEVs.length };
+    res.flopEVs = flopEVs;
+    finish(res);
+    return res;
+  }
+  function finish(res) {
+    let best = null;
+    for (const [k, a] of Object.entries(res.actions)) { a.total = a.ante + a.side + a.play; if (!best || a.total > res.actions[best].total) best = k; }
+    res.best = best;
+  }
+
+  // ── Convenience ──────────────────────────────────────────────────────────
+  function parseCard(s) { const r = RANKS.indexOf(s[0].toUpperCase()), su = SUITS.indexOf(s[1].toLowerCase()); if (r < 0 || su < 0) throw new Error('Bad card ' + s); return r * 4 + su; }
+  const cardStr = c => RANKS[c >> 2] + SUITS[c & 3];
+  function solve(spec, game, opts) {
+    const ctx = setup(spec);
+    const st = boardStats(spec, ctx);
+    return decide(spec, ctx, st, game, opts);
+  }
+
+  const api = { mergeStats, splitWork, RANKS, SUITS, GAMES, B16, mkVal, evalRanks, eval7, FLUSH, pcatOf, setup, boardStats, decide, solve, parseCard, cardStr, binom, pocketEV };
+  if (typeof module !== 'undefined') module.exports = api; else root.HoldemEngine = api;
+})(typeof self !== 'undefined' ? self : this);
+
+</script>
+<script>
+'use strict';
+const E = HoldemEngine;
+const SUIT_SYM = { s: '♠', h: '♥', d: '♦', c: '♣' };
+const RANK_TXT = r => E.RANKS[r] === 'T' ? '10' : E.RANKS[r];
+const PUBLISHED = {
+  uthEdge: -0.021850, uth4x: 0.377073, uth2x: 0.212846, uth1x: 0.218265, uthFold: 0.191816, uthWager: 4.152252,
+  trips: { 'UTH-01': 0.90, 'UTH-02': 1.90, 'UTH-03': 3.50, 'UTH-04': 6.18 },
+};
+
+// ── Config / KV ───────────────────────────────────────────────────────────
+let CFG = { cf_worker_url: '', kv_prefix: 'uth/' };
+let writeToken = (() => { try { return localStorage.getItem('writeToken') || ''; } catch (_) { return ''; } })();
+const ENGINE_VERSION = 'v1';
+const workerBase = () => { let b = (CFG.cf_worker_url || '').trim().replace(/\/+$/, ''); return b && !/^https?:/.test(b) ? 'https://' + b : b; };
+async function kvGet(key) {
+  if (!workerBase()) return null;
+  try { const r = await fetch(`${workerBase()}/${CFG.kv_prefix}${key}`, { cache: 'no-store' }); return r.ok ? await r.json() : null; } catch (_) { return null; }
+}
+async function kvPut(key, data) {
+  if (!workerBase() || !writeToken) return false;
+  try { const r = await fetch(`${workerBase()}/${CFG.kv_prefix}${key}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Token': writeToken }, body: JSON.stringify(data) }); return r.ok; } catch (_) { return false; }
+}
+
+// ── State ─────────────────────────────────────────────────────────────────
+const S = {
+  game: 'uth', street: 'preflop',
+  tables: { uthTrips: 'UTH-01', badBeat: 'BB-1', wptTrips: 'TP-1', pocket: 'PB-1' },
+  wptRaises: { 3: true, 2: false, 1: false },
+  hole: [null, null], flopCard: [null], board: [null, null, null, null, null], dealer: [null], dead: [],
+  active: 'hole',
+};
+try { Object.assign(S.tables, JSON.parse(localStorage.getItem('uthTables') || '{}')); Object.assign(S.wptRaises, JSON.parse(localStorage.getItem('uthRaises') || '{}')); } catch (_) {}
+const saveOpts = () => { try { localStorage.setItem('uthTables', JSON.stringify(S.tables)); localStorage.setItem('uthRaises', JSON.stringify(S.wptRaises)); } catch (_) {} };
+
+function boardSlots() { return S.street === 'preflop' ? S.flopCard : S.street === 'flop' ? S.board.slice(0, 3) : S.board; }
+function groups() {
+  return [
+    { id: 'hole', label: 'Your hand', hint: '2 cards', arr: S.hole },
+    S.street === 'preflop'
+      ? { id: 'flopCard', label: 'Known flop card', hint: 'optional · one of the three flop cards', arr: S.flopCard, optional: true }
+      : { id: 'board', label: S.street === 'flop' ? 'The flop' : 'The board', hint: S.street === 'flop' ? '3 cards' : '5 cards', arr: boardSlots() },
+    { id: 'dealer', label: 'Dealer card', hint: 'optional · one card you saw', arr: S.dealer, optional: true },
+    { id: 'dead', label: 'Other players\' cards', hint: 'optional · up to 12 · out of the deck', arr: S.dead, open: true },
+  ];
+}
+function allUsed() { return new Set([...S.hole, ...S.flopCard, ...boardSlots(), ...S.dealer, ...S.dead].filter(c => c !== null)); }
+
+// ── Rendering: inputs ─────────────────────────────────────────────────────
+function cardHTML(c, extra = '') {
+  if (c === null || c === undefined) return `<div class="pc empty" ${extra}>+</div>`;
+  const s = E.SUITS[c & 3];
+  return `<div class="pc ${s}" ${extra}>${RANK_TXT(c >> 2)}<i>${SUIT_SYM[s]}</i><span class="x">✕</span></div>`;
+}
+function renderOpts() {
+  const sel = (key, label, options) => `<div class="opt"><label>${label}</label><select data-t="${key}">${options.map(([v, t]) => `<option value="${v}" ${S.tables[key] === v ? 'selected' : ''}>${t}</option>`).join('')}</select></div>`;
+  const fmt = (t, idx) => idx.map(i => t[i]).join('/');
+  let h = '';
+  if (S.game === 'uth') {
+    h += sel('uthTrips', 'Trips pay table', Object.entries(E.GAMES.uth.trips).map(([k, t]) => [k, `${k} · FH ${t[6]} / Fl ${t[5]} / St ${t[4]}${t[7] !== 30 ? ' / Q ' + t[7] : ''}`]));
+    h += `<div class="opt"><label>Blind pays</label><select disabled><option>500 / 50 / 10 / 3 / 3:2 / 1</option></select></div>`;
+  } else {
+    h += sel('badBeat', 'Bad beat pay table', Object.entries(E.GAMES.wpt.badBeat).map(([k, t]) => [k, `${k} · ${[8, 7, 6, 5, 4].map(i => t[i]).join('/')}`]));
+    h += sel('wptTrips', 'Trips Plus', Object.entries(E.GAMES.wpt.trips).map(([k, t]) => [k, `${k} · FH ${t[6]} / Fl ${t[5]} / St ${t[4]}`]));
+    h += sel('pocket', 'Pocket Bonus', Object.entries(E.GAMES.wpt.pocket).map(([k, t]) => [k, `${k} · ${t.join('/')}`]));
+    h += `<div class="opt"><label>Preflop raise allowed</label>${[3, 2, 1].map(m => `<label class="chk"><input type="checkbox" data-r="${m}" ${S.wptRaises[m] ? 'checked' : ''} ${m === 3 ? 'disabled' : ''}>${m}x</label>`).join('')}</div>`;
+  }
+  const el = document.getElementById('opts');
+  el.innerHTML = h;
+  el.querySelectorAll('select[data-t]').forEach(s => s.onchange = () => { S.tables[s.dataset.t] = s.value; saveOpts(); scheduleSolve(); });
+  el.querySelectorAll('input[data-r]').forEach(i => i.onchange = () => { S.wptRaises[i.dataset.r] = i.checked; saveOpts(); scheduleSolve(); });
+}
+function renderSlots() {
+  const el = document.getElementById('slots');
+  el.innerHTML = groups().map(g => {
+    let cards = g.arr.map((c, i) => cardHTML(c, `data-g="${g.id}" data-i="${i}"`)).join('');
+    if (g.open && g.arr.length < 12) cards += cardHTML(null, `data-g="${g.id}" data-i="${g.arr.length}"`);
+    const any = g.arr.some(c => c !== null);
+    return `<div class="slotgroup ${S.active === g.id ? 'active' : ''}" data-group="${g.id}">
+      <div class="slothead"><b>${g.label}</b><span>${g.hint}${any ? ` · <button class="clear" data-clear="${g.id}">clear</button>` : ''}</span></div>
+      <div class="slotcards">${cards}</div></div>`;
+  }).join('');
+  el.querySelectorAll('.slotgroup').forEach(g => g.onclick = () => { S.active = g.dataset.group; render(); });
+  el.querySelectorAll('.pc:not(.empty)').forEach(c => c.onclick = e => { e.stopPropagation(); removeCard(c.dataset.g, +c.dataset.i); });
+  el.querySelectorAll('[data-clear]').forEach(b => b.onclick = e => { e.stopPropagation(); clearGroup(b.dataset.clear); });
+  const used = allUsed();
+  const picker = document.getElementById('picker');
+  let p = '';
+  for (let s = 0; s < 4; s++) for (let r = 12; r >= 0; r--) {
+    const c = r * 4 + s, su = E.SUITS[s];
+    p += `<div class="pk ${su} ${used.has(c) ? 'used' : ''}" data-c="${c}">${RANK_TXT(r)}<i>${SUIT_SYM[su]}</i></div>`;
+  }
+  picker.innerHTML = p;
+  picker.querySelectorAll('.pk:not(.used)').forEach(k => k.onclick = () => addCard(+k.dataset.c));
+  const g = groups().find(x => x.id === S.active);
+  document.getElementById('pickhint').innerHTML = g ? `Adding to <b>${g.label}</b>. Click a card above to remove it.` : '';
+  document.getElementById('streetNote').textContent = S.street === 'preflop' ? 'Decision: bet now or check' : S.street === 'flop' ? 'Decision: bet 2x or check' : 'Decision: bet 1x or fold';
+}
+function groupArr(id) { return id === 'board' ? S.board : S[id]; }
+function addCard(c) {
+  const order = groups().map(g => g.id);
+  let gid = S.active, arr = groupArr(gid);
+  const g = groups().find(x => x.id === gid);
+  if (gid === 'dead') { if (arr.length >= 12) return; arr.push(c); }
+  else {
+    const limit = gid === 'board' ? (S.street === 'flop' ? 3 : 5) : arr.length;
+    const i = arr.findIndex((x, k) => x === null && k < limit);
+    if (i < 0) return;
+    arr[i] = c;
+    if (!arr.slice(0, limit).includes(null)) { // group full → next required group still missing cards
+      const next = order.find(id => { const gg = groups().find(x => x.id === id); return !gg.optional && !gg.open && gg.arr.includes(null); });
+      if (next) S.active = next;
+    }
+  }
+  render(); scheduleSolve();
+}
+function removeCard(gid, i) { const arr = groupArr(gid); if (gid === 'dead') arr.splice(i, 1); else arr[i] = null; S.active = gid; render(); scheduleSolve(); }
+function clearGroup(gid) { const arr = groupArr(gid); if (gid === 'dead') arr.length = 0; else arr.fill(null); S.active = gid; render(); scheduleSolve(); }
+
+// ── Solving ───────────────────────────────────────────────────────────────
+const NW = Math.max(1, Math.min(8, (navigator.hardwareConcurrency || 4)));
+let workers = [], workerJobs = new Map(), jobSeq = 0;
+function initWorkers() {
+  const src = document.getElementById('engine-src').textContent + `
+    self.onmessage = (e) => {
+      const m = e.data, E = self.HoldemEngine;
+      try {
+        if (m.type === 'stats') {
+          const ctx = E.setup(m.spec), p = E.boardStats(m.spec, ctx, m.from, m.to);
+          self.postMessage({ id: m.id, part: p }, [p.W.buffer, p.L.buffer, p.Wq.buffer, p.Lq.buffer, p.cat.buffer]);
+        } else {
+          const ctx = E.setup(m.spec), r = E.decide(m.spec, ctx, m.st, m.game, m.opts);
+          self.postMessage({ id: m.id, res: r });
+        }
+      } catch (err) { self.postMessage({ id: m.id, error: err.message }); }
+    };`;
+  const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
+  for (let i = 0; i < NW; i++) {
+    const w = new Worker(url);
+    w.onmessage = e => { const j = workerJobs.get(e.data.id); if (!j) return; workerJobs.delete(e.data.id); e.data.error ? j.reject(new Error(e.data.error)) : j.resolve(e.data); };
+    workers.push(w);
+  }
+}
+function runJob(wi, msg, transfer) { return new Promise((resolve, reject) => { const id = ++jobSeq; workerJobs.set(id, { resolve, reject }); workers[wi].postMessage({ ...msg, id }, transfer || []); }); }
+
+function currentSpec() {
+  const b = boardSlots().filter(c => c !== null);
+  return { hole: S.hole.slice(), board: b, dealer: S.dealer.filter(c => c !== null), dead: S.dead.slice(), street: S.street };
+}
+function specReady(sp) {
+  if (sp.hole.some(c => c === null)) return 'Pick your two cards';
+  if (S.street === 'flop' && sp.board.length !== 3) return 'Pick the three flop cards';
+  if (S.street === 'river' && sp.board.length !== 5) return 'Pick all five board cards';
+  return null;
+}
+function gameOpts() {
+  return S.game === 'uth' ? { trips: S.tables.uthTrips } : { badBeat: S.tables.badBeat, trips: S.tables.wptTrips, pocket: S.tables.pocket };
+}
+// Canonical form: the same situation with suits relabelled gives the same key (A♠K♠ ≡ A♥K♥).
+const PERMS = (() => { const out = []; const rec = (p, rest) => { if (!rest.length) { out.push(p); return; } rest.forEach((x, i) => rec([...p, x], rest.filter((_, k) => k !== i))); }; rec([], [0, 1, 2, 3]); return out; })();
+function canonKey(sp) {
+  let best = null;
+  for (const pm of PERMS) {
+    const m = c => (c >> 2) * 4 + pm[c & 3];
+    const part = a => a.map(m).sort((x, y) => y - x).map(E.cardStr).join('');
+    const k = [part(sp.hole), part(sp.board), part(sp.dealer), part(sp.dead)].join('_');
+    if (best === null || k < best) best = k;
+  }
+  return best.toLowerCase();
+}
+const variantKey = () => S.game === 'uth' ? 'uth' : 'wpt-' + S.tables.badBeat.toLowerCase();
+
+let statsCache = { key: null, st: null, ctx: null };
+let solveTimer = null, solveSeq = 0;
+function scheduleSolve() { clearTimeout(solveTimer); solveTimer = setTimeout(solve, 120); }
+
+async function solve() {
+  const seq = ++solveSeq;
+  const sp = currentSpec(), notReady = specReady(sp);
+  const out = document.getElementById('results');
+  if (notReady) { out.innerHTML = `<div class="empty"><div class="big">${notReady}</div>Results appear as soon as the hand is complete.</div>`; return; }
+  const ck = `${sp.street}-${canonKey(sp)}`;
+  const ctx = E.setup(sp);
+  const heavy = ctx.nBoards > 300000;
+  out.innerHTML = `<div class="empty"><div class="big">Counting every deal…</div><span id="solveMsg">${ctx.nBoards.toLocaleString()} boards × ${ctx.nDealer} dealer hands</span><div class="progress"><span id="prog"></span></div></div>`;
+  const t0 = performance.now();
+  let res = null, cached = false;
+  const kvKey = `${ENGINE_VERSION}/${variantKey()}/${ck.replace(/[^a-z0-9_-]/g, '')}.json`;
+  if (heavy) { res = await kvGet(kvKey); if (res) cached = true; }
+  if (seq !== solveSeq) return;
+  if (!res) {
+    try {
+      let st;
+      const exact = JSON.stringify(sp); // arrays are tied to the exact cards, not the suit-canonical form
+      if (statsCache.key === exact) st = statsCache.st;
+      else {
+        const parts = E.splitWork(ctx, ctx.nBoards > 50000 ? NW : 1);
+        let done = 0;
+        const got = await Promise.all(parts.map(([a, b], i) => runJob(i % NW, { type: 'stats', spec: sp, from: a, to: b }).then(r => { done++; const p = document.getElementById('prog'); if (p && seq === solveSeq) p.style.width = (done / parts.length * 85) + '%'; return r.part; })));
+        if (seq !== solveSeq) return;
+        st = E.mergeStats(ctx, got);
+        statsCache = { key: exact, st, ctx };
+      }
+      const m = document.getElementById('solveMsg'); if (m) m.textContent = 'Working out the best play on every flop and river…';
+      const copy = { W: st.W.slice(), L: st.L.slice(), Wq: st.Wq.slice(), Lq: st.Lq.slice(), cat: st.cat.slice() };
+      const r = await runJob(0, { type: 'decide', spec: sp, st: copy, game: S.game, opts: gameOpts() }, [copy.W.buffer, copy.L.buffer, copy.Wq.buffer, copy.Lq.buffer, copy.cat.buffer]);
+      res = r.res;
+      if (res.flopEVs) { res.flopBetShare = res.flops.betPct; delete res.flopEVs; }
+      res.ms = Math.round(performance.now() - t0);
+      if (heavy && res.ms > 1500) kvPut(kvKey, res).then(ok => ok && setKvStatus('Saved this result to the shared cache'));
+    } catch (e) {
+      if (seq === solveSeq) out.innerHTML = `<div class="empty"><div class="big">Something went wrong</div>${e.message}</div>`;
+      return;
+    }
+  }
+  if (seq !== solveSeq) return;
+  renderResults(sp, res, cached);
+}
+
+// ── Results ───────────────────────────────────────────────────────────────
+const fmt = (x, d = 3) => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x).toFixed(d);
+const cls = x => x > 0.0005 ? 'pos' : x < -0.0005 ? 'neg' : 'zero';
+const pct = x => (x * 100).toFixed(1) + '%';
+const ACT_LABEL = { bet4: 'Bet 4x', bet3: 'Bet 3x', bet2: 'Bet 2x', bet1: 'Bet 1x', check: 'Check', fold: 'Fold' };
+function allowedActions(res) {
+  return Object.keys(res.actions).filter(k => !(S.game === 'wpt' && S.street === 'preflop' && /^bet[12]$/.test(k) && !S.wptRaises[k.slice(3)]));
+}
+function bestOf(res) { return allowedActions(res).reduce((a, k) => !a || res.actions[k].total > res.actions[a].total ? k : a, null); }
+function handClass(hole) {
+  const [a, b] = hole.map(c => c >> 2).sort((x, y) => y - x), R = E.RANKS;
+  return a === b ? R[a] + R[b] : R[a] + R[b] + ((hole[0] & 3) === (hole[1] & 3) ? 's' : 'o');
+}
+function sideBetEV(res) {
+  const t = S.game === 'uth' ? E.GAMES.uth.trips[S.tables.uthTrips] : E.GAMES.wpt.trips[S.tables.wptTrips];
+  return res.catHist.reduce((s, p, c) => s + p * t[c], 0);
+}
+function renderResults(sp, res, cached) {
+  const acts = allowedActions(res), best = bestOf(res), A = res.actions;
+  const sorted = acts.slice().sort((a, b) => A[b].total - A[a].total);
+  const second = sorted[1];
+  const passive = S.street === 'river' ? 'fold' : 'check';
+  const aggr = acts.filter(k => k.startsWith('bet')).sort((a, b) => +b.slice(3) - +a.slice(3))[0]; // the max bet
+  const margin = A[aggr].total - A[passive].total;
+  const g = E.GAMES[S.game];
+  const actCls = best.startsWith('bet') ? 'bet' : best;
+  const closeCall = Math.abs(A[best].total - A[second].total) < 0.02;
+
+  let h = `<div class="verdict"><div class="act ${actCls}">${ACT_LABEL[best]}</div>
+    <div class="why">${best.startsWith('bet')
+      ? `Beats ${passive}ing by <b>${margin.toFixed(3)}</b> antes`
+      : `${ACT_LABEL[aggr]} would cost <b>${(-margin).toFixed(3)}</b> antes more than ${passive}ing`}
+      · EV <b>${fmt(A[best].total)}</b>${closeCall ? ' · <span class="close">close call</span>' : ''}</div>`;
+  const extra = sp.board.length + sp.dealer.length + sp.dead.length;
+  if (S.street === 'preflop' && extra && BASE) {
+    const bk = BASE[handClass(sp.hole)];
+    const bg = bk && bk.games[S.game === 'uth' ? 'uth' : 'wpt:' + S.tables.badBeat];
+    if (bg) {
+      const bAgg = S.game === 'uth' ? 'bet4' : 'bet3';
+      const bMargin = bg.actions[bAgg].total - bg.actions.check.total;
+      h += `<div class="base">Without the extra cards (${handClass(sp.hole)}): ${bMargin >= 0 ? 'bet' : 'check'}, margin <b>${fmt(bMargin)}</b>, EV <b>${fmt(Math.max(bg.actions[bAgg].total, bg.actions.check.total))}</b>.
+        What you see moves the bet-vs-check margin by <b class="${cls(margin - bMargin)}">${fmt(margin - bMargin)}</b>${(bMargin >= 0) !== (margin >= 0) ? ' — <b style="color:var(--gold)">and flips the decision</b>' : ''}.</div>`;
+    }
+  }
+  h += `</div>`;
+
+  h += `<table><thead><tr><th>Action</th><th>Ante</th><th>${g.spot2}</th><th>${g.playName}</th><th>Total</th></tr></thead><tbody>`;
+  for (const k of sorted) {
+    const a = A[k];
+    h += `<tr class="${k === best ? 'best' : ''}"><td>${ACT_LABEL[k]}</td><td class="${cls(a.ante)}">${fmt(a.ante)}</td><td class="${cls(a.side)}">${fmt(a.side)}</td><td class="${cls(a.play)}">${fmt(a.play)}</td><td class="tot ${cls(a.total)}">${fmt(a.total)}</td></tr>`;
+  }
+  h += `</tbody></table><div class="note">Expected value per 1-unit ante (the ${g.spot2} bet equals the ante). Each row assumes perfect play on later streets.</div>`;
+
+  const o = res.outcome;
+  h += `<div class="stats">
+    <div class="stat"><div class="k">If you bet now</div><div class="v">Win ${pct(o.win)} · Push ${pct(o.tie)} · Lose ${pct(o.lose)}</div>
+      <div class="bar"><span style="width:${o.win * 100}%;background:var(--good)"></span><span style="width:${o.tie * 100}%;background:var(--faint)"></span><span style="width:${o.lose * 100}%;background:var(--bad)"></span></div></div>`;
+  if (res.check && S.street !== 'river') {
+    const c = res.check;
+    h += S.street === 'preflop'
+      ? `<div class="stat"><div class="k">If you check</div><div class="v">Flop 2x ${pct(c.flopBetPct)} · River 1x ${pct(c.riverBetPct)} · Fold ${pct(c.riverFoldPct)}</div>
+          <div class="bar"><span style="width:${c.flopBetPct * 100}%;background:var(--good)"></span><span style="width:${c.riverBetPct * 100}%;background:var(--warn)"></span><span style="width:${c.riverFoldPct * 100}%;background:var(--bad)"></span></div></div>`
+      : `<div class="stat"><div class="k">If you check</div><div class="v">River 1x ${pct(c.riverBetPct)} · Fold ${pct(c.riverFoldPct)}</div>
+          <div class="bar"><span style="width:${c.riverBetPct * 100}%;background:var(--warn)"></span><span style="width:${c.riverFoldPct * 100}%;background:var(--bad)"></span></div></div>`;
+  }
+  const tr = sideBetEV(res);
+  h += `<div class="stat"><div class="k">${S.game === 'uth' ? 'Trips' : 'Trips Plus'} (${S.game === 'uth' ? S.tables.uthTrips : S.tables.wptTrips})</div><div class="v ${cls(tr)}">${fmt(tr)} per unit</div></div>`;
+  if (S.game === 'wpt') { const pb = E.pocketEV(sp.hole, E.GAMES.wpt.pocket[S.tables.pocket]); h += `<div class="stat"><div class="k">Pocket Bonus (${S.tables.pocket})</div><div class="v ${cls(pb)}">${pb > 0 ? 'Pays ' + pb + ' to 1' : 'Loses'}</div></div>`; }
+  h += `</div>`;
+
+  const names = ['High card', 'Pair', 'Two pair', 'Trips', 'Straight', 'Flush', 'Full house', 'Quads', 'Straight flush', 'Royal flush'];
+  h += `<details><summary>Your final hand — how often you make each category</summary><table><tbody>${res.catHist.map((p, i) => p > 0 ? `<tr><td>${names[i]}</td><td>${(p * 100).toFixed(p < 0.001 ? 4 : 2)}%</td></tr>` : '').join('')}</tbody></table></details>`;
+  h += `<div class="note">${res.boards.toLocaleString()} board completions × ${res.N} dealer hands${cached ? ' · from the shared cache' : res.ms !== undefined ? ` · ${(res.ms / 1000).toFixed(1)} s` : ''}</div>`;
+  document.getElementById('results').innerHTML = h;
+}
+
+// ── Validation (from baselines.json) ──────────────────────────────────────
+let BASE = null;
+function renderValidation() {
+  const el = document.getElementById('validation');
+  if (!BASE) { el.style.display = 'none'; return; }
+  el.style.display = '';
+  const keys = Object.keys(BASE), W = keys.reduce((a, k) => a + BASE[k].w, 0);
+  const game = (g, bets) => {
+    let ev = 0, big = 0, med = 0, small = 0, fold = 0, wager = 0;
+    for (const k of keys) {
+      const r = BASE[k].games[g], w = BASE[k].w / W;
+      const b = bets.reduce((a, m) => !a || r.actions['bet' + m].total > r.actions['bet' + a].total ? m : a, null), ba = r.actions['bet' + b];
+      if (ba.total >= r.actions.check.total) { ev += w * ba.total; big += w; wager += w * (2 + b); }
+      else { ev += w * r.actions.check.total; med += w * r.check.flopBetPct; small += w * r.check.riverBetPct; fold += w * r.check.riverFoldPct; wager += w * (2 + 2 * r.check.flopBetPct + r.check.riverBetPct); }
+    }
+    return { ev, big, med, small, fold, wager };
+  };
+  const trips = t => -keys.reduce((a, k) => a + BASE[k].w / W * BASE[k].catHist.reduce((s, p, c) => s + p * t[c], 0), 0) * 100;
+  let h = `<details><summary class="ptitle" style="display:list-item;margin:0;">Sanity check against published figures</summary>`;
+  if (S.game === 'uth') {
+    const u = game('uth', [4, 3]);
+    const row = (l, ours, pub, d = 4) => `<tr><td>${l}</td><td>${typeof ours === 'number' ? ours.toFixed(d) : ours}</td><td>${typeof pub === 'number' ? pub.toFixed(d) : pub}</td></tr>`;
+    h += `<table class="valid"><thead><tr><th>Figure</th><th>This engine</th><th>Wizard of Odds</th></tr></thead><tbody>
+      ${row('House edge (per ante)', (-u.ev * 100).toFixed(3) + '%', (-PUBLISHED.uthEdge * 100).toFixed(3) + '%')}
+      ${row('Bet 4x preflop', u.big, PUBLISHED.uth4x)}${row('Bet 2x on flop', u.med, PUBLISHED.uth2x)}${row('Bet 1x on river', u.small, PUBLISHED.uth1x)}${row('Fold', u.fold, PUBLISHED.uthFold)}
+      ${row('Average total wager', u.wager, PUBLISHED.uthWager)}
+      ${Object.entries(E.GAMES.uth.trips).map(([k, t]) => row(`Trips ${k} edge`, trips(t).toFixed(2) + '%', PUBLISHED.trips[k].toFixed(2) + '%')).join('')}
+    </tbody></table>`;
+  } else {
+    h += `<table class="valid"><thead><tr><th>Figure</th><th>House edge</th><th>Element of risk</th></tr></thead><tbody>`;
+    for (const bb of Object.keys(E.GAMES.wpt.badBeat)) { const r = game('wpt:' + bb, [3]); h += `<tr><td>Base game ${bb}</td><td>${(-r.ev * 100).toFixed(3)}%</td><td>${(-r.ev / r.wager * 100).toFixed(3)}%</td></tr>`; }
+    for (const [k, t] of Object.entries(E.GAMES.wpt.trips)) h += `<tr><td>Trips Plus ${k}</td><td>${trips(t).toFixed(2)}%</td><td></td></tr>`;
+    for (const [k, t] of Object.entries(E.GAMES.wpt.pocket)) { let ev = 0; for (let a = 0; a < 52; a++) for (let b = a + 1; b < 52; b++) ev += E.pocketEV([a, b], t); h += `<tr><td>Pocket Bonus ${k}</td><td>${(-ev / 1326 * 100).toFixed(2)}%</td><td></td></tr>`; }
+    h += `</tbody></table><div class="note">Raise 3x or check preflop. Wizard of Odds quotes an element of risk of about 0.64% for Heads-Up Hold'em.</div>`;
+  }
+  el.innerHTML = h + `</details>`;
+}
+
+// ── Wiring ────────────────────────────────────────────────────────────────
+function render() { renderSlots(); }
+function setKvStatus(t) { document.getElementById('kvStatus').textContent = t; }
+function renderToken() {
+  const el = document.getElementById('tokenArea');
+  el.innerHTML = writeToken
+    ? `Write token saved — slow results are shared to the cache <button id="tokOut">Forget</button>`
+    : `<input id="tokIn" type="password" placeholder="Write token (optional)"> <button id="tokSave">Save</button>`;
+  document.getElementById('tokOut')?.addEventListener('click', () => { writeToken = ''; try { localStorage.removeItem('writeToken'); } catch (_) {} renderToken(); });
+  document.getElementById('tokSave')?.addEventListener('click', () => { writeToken = document.getElementById('tokIn').value.trim(); try { localStorage.setItem('writeToken', writeToken); } catch (_) {} renderToken(); });
+}
+document.querySelectorAll('#gameSeg button').forEach(b => b.onclick = () => {
+  S.game = b.dataset.g; document.querySelectorAll('#gameSeg button').forEach(x => x.classList.toggle('on', x === b));
+  renderOpts(); renderValidation(); scheduleSolve();
+});
+document.querySelectorAll('#streetSeg button').forEach(b => b.onclick = () => {
+  S.street = b.dataset.s; document.querySelectorAll('#streetSeg button').forEach(x => x.classList.toggle('on', x === b));
+  if (S.street !== 'preflop' && S.flopCard[0] !== null && S.board[0] === null) S.board[0] = S.flopCard[0]; // carry the known flop card over
+  if (!groups().some(g => g.id === S.active)) S.active = S.street === 'preflop' ? 'flopCard' : 'board';
+  render(); scheduleSolve();
+});
+
+(async () => {
+  initWorkers(); renderOpts(); render(); renderToken();
+  try { const c = await fetch('config.json?t=' + Date.now()); if (c.ok) Object.assign(CFG, await c.json()); } catch (_) {}
+  if (CFG.kv_prefix && !CFG.kv_prefix.endsWith('/')) CFG.kv_prefix += '/';
+  setKvStatus(workerBase() ? `Shared cache: ${CFG.kv_prefix}` : 'Shared cache: off (no config.json)');
+  try { const b = await fetch('baselines.json'); if (b.ok) BASE = await b.json(); } catch (_) {}
+  renderValidation();
+})();
+</script>
+</body>
+</html>
