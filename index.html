@@ -136,6 +136,16 @@
   .legend small { color: var(--faint); font-size: 12px; }
   .rc.chg::after { content: ''; position: absolute; inset: 0; border: 2px solid var(--gold); border-radius: 3px; }
   .rc.sel { outline: 2px solid #fff; outline-offset: 1px; z-index: 1; }
+  .rc .bdg { position: absolute; right: -3px; bottom: -3px; z-index: 2; font: 700 12px/1 var(--mono); color: #fff; padding: 2px 3px; border-radius: 4px; letter-spacing: -0.03em; box-shadow: 0 0 0 1.5px #0a1611; }
+  .legend .lg-b { position: relative; width: 18px !important; height: 18px !important; }
+  .legend .lg-b b { position: absolute; right: -4px; bottom: -4px; font: 700 11px/1 var(--mono); color: #fff; padding: 1px 2px; border-radius: 3px; }
+  .cinfo { margin-top: 12px; border: 1px solid var(--gold-dim); border-radius: 10px; padding: 10px 12px; background: rgba(230,192,106,0.05); }
+  .cinfo-h { display: flex; gap: 8px; align-items: baseline; font-size: 14px; color: var(--dim); }
+  .cinfo-h b { color: var(--ink); font-family: var(--mono); }
+  .cinfo-h .clear { margin-left: auto; }
+  .cinfo td:first-child { white-space: normal; }
+  .combo { background: var(--felt-2); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; margin: 2px 2px 2px 0; font: 600 13px var(--mono); cursor: pointer; }
+  .combo:hover { border-color: var(--gold-dim); }
   .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 13px; color: var(--dim); align-items: center; }
   .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
   .chart-tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
@@ -189,6 +199,7 @@
     .mbar .mopen { color: var(--gold); font-weight: 600; font-size: 14px; white-space: nowrap; }
     body.sheet-open { overflow: hidden; }
     .rc { font-size: 9px; }
+    .rc .bdg { font-size: 10px; padding: 1px 2px; right: -2px; bottom: -2px; }
     td, th { padding: 7px 5px; }
   }
 </style>
@@ -236,7 +247,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 19:45</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 20:24</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -1094,7 +1105,8 @@ const knownForChart = () => ({ street: S.street, board: boardSlots().filter(c =>
 const VARIANTS = { uth: { game: 'uth', opts: {} }, 'wpt-bb-1': { game: 'wpt', opts: { badBeat: 'BB-1' } }, 'wpt-bb-2': { game: 'wpt', opts: { badBeat: 'BB-2' } },
   'wpt-bb-3': { game: 'wpt', opts: { badBeat: 'BB-3' } }, 'wpt-bb-4': { game: 'wpt', opts: { badBeat: 'BB-4' } } };
 const chartKnownKey = kn => `${kn.street}-` + (canonKey({ hole: [], board: kn.board, dealer: kn.dealer, dead: kn.dead }).replace(/[^a-z0-9_-]/g, '') || 'none');
-const chartKvKey = (variant, kn) => `${ENGINE_VERSION}/chart/${variant}/${chartKnownKey(kn)}.json`;
+const CHART_VERSION = 'v2'; // v2: each combo group carries its canonical key (k), so the chart can say which suits bet
+const chartKvKey = (variant, kn) => `${CHART_VERSION}/chart/${variant}/${chartKnownKey(kn)}.json`;
 const chartMem = new Map(); // variant|known → CH
 let CH = null;              // { key, street, data: {cls: [{w, a:{bet4: total, …}}]}, base, done, total, startedAt, complete }
 let chartTimer = null, chartSeq = 0;
@@ -1122,7 +1134,7 @@ async function computeChart(kn, variant, { prio = 1, stale, onProgress } = {}) {
     }
   }
   const data = {}, total = uniq.size; let done = 0;
-  const fill = () => { for (const c of CLASSES) if (!data[c.key]) { const parts = [...perClass[c.key]]; if (parts.every(([k]) => uniq.get(k).res)) data[c.key] = parts.map(([k, w]) => ({ w, a: uniq.get(k).res })); } };
+  const fill = () => { for (const c of CLASSES) if (!data[c.key]) { const parts = [...perClass[c.key]]; if (parts.every(([k]) => uniq.get(k).res)) data[c.key] = parts.map(([k, w]) => ({ w, k, a: uniq.get(k).res })); } };
   onProgress?.(data, 0, total);
   await Promise.all([...uniq.values()].map(u => runJob({ type: 'solve', spec: u.sp, game, opts }, { prio, stale }).then(r => {
     u.res = r.res.actions; done++; if (onProgress) { fill(); onProgress(data, done, total); }
@@ -1161,30 +1173,84 @@ async function buildChart() {
   } catch (_) { return; }
   CH.complete = true; chartMem.set(key, CH); renderChart();
 }
-// Per class: weighted share of suit combos that should bet, the mean margin (max bet − check/fold),
-// and the mean margin separately over the combos that bet and those that don't (for shading).
+// One combo's verdict from its action totals: does a bet beat check/fold, and by how much does the max bet.
+function comboVerdict(a) {
+  const bets = Object.keys(a).filter(k => /^bet\d$/.test(k) && allowedAction(k));
+  const passive = a.check !== undefined ? a.check : a.fold;
+  const maxBet = bets.slice().sort((x, y) => +y.slice(3) - +x.slice(3))[0];
+  return { bet: Math.max(...bets.map(k => a[k])) > passive, margin: a[maxBet] - passive };
+}
+// Per class: weighted share of combos that bet, mean margin, and mean margin within each side.
 function classStat(list) {
   let w = 0, wb = 0, m = 0, mb = 0, mc = 0;
   for (const { w: cw, a } of list) {
-    const bets = Object.keys(a).filter(k => /^bet\d$/.test(k) && allowedAction(k));
-    const passive = a.check !== undefined ? a.check : a.fold;
-    const maxBet = bets.sort((x, y) => +y.slice(3) - +x.slice(3))[0];
-    const margin = a[maxBet] - passive, bestBet = Math.max(...bets.map(k => a[k]));
-    w += cw; m += cw * margin;
-    if (bestBet > passive) { wb += cw; mb += cw * margin; } else mc += cw * margin;
+    const v = comboVerdict(a);
+    w += cw; m += cw * v.margin;
+    if (v.bet) { wb += cw; mb += cw * v.margin; } else mc += cw * v.margin;
   }
   return { share: wb / w, margin: m / w, mBet: wb ? mb / wb : 0, mChk: w - wb ? mc / (w - wb) : 0, w, wb };
 }
-function cellColors(st, street) {
-  const scale = street === 'preflop' ? 1.2 : 2; // margin (in antes) that gets the full colour
-  const t = m => Math.min(1, Math.abs(m) / scale);
-  const bet = m => `rgba(52,178,104,${(0.55 + 0.45 * t(m)).toFixed(3)})`;   // always clearly green; brighter = bigger edge
-  const chk = m => `rgba(150,160,156,${(0.30 - 0.2 * t(m)).toFixed(3)})`;   // grey; lighter = closer call, darker = clear check/fold
-  if (st.share >= 0.999) return bet(st.mBet);
-  if (st.share <= 0.001) return chk(st.mChk);
-  const p = (st.share * 100).toFixed(1);
-  return `linear-gradient(90deg, ${bet(st.mBet)} 0 ${p}%, ${chk(st.mChk)} ${p}% 100%)`;
+// The class's concrete combos (minus any that use a known card), each with its verdict.
+function classCombos(cls, list) {
+  const kn = knownForChart(), used = new Set([...kn.board, ...kn.dealer, ...kn.dead]);
+  const byK = new Map(list.filter(x => x.k).map(x => [x.k, x]));
+  return CLASSES.find(x => x.key === cls).combos.filter(h => !used.has(h[0]) && !used.has(h[1])).map(h => {
+    const g = !list[0].k ? list[0] : byK.get(canonKey({ hole: h, board: kn.board, dealer: kn.dealer, dead: kn.dead }));
+    return g ? { h, ...comboVerdict(g.a) } : null;
+  }).filter(Boolean);
 }
+// Describe the smaller side of a split class in card/suit terms: "♥", "any ♦", "the K♦", "the K♦ or the 9♦".
+// Tries every union of up to three simple conditions (a suit in the hand, a specific card) that matches exactly.
+function describeSplit(cls, combos) {
+  const bet = combos.filter(x => x.bet), pas = combos.filter(x => !x.bet);
+  const minorBet = bet.length <= pas.length, minor = minorBet ? bet : pas;
+  const keyOf = x => x.h.join(), target = new Set(minor.map(keyOf));
+  const suited = cls.endsWith('s') && cls.length === 3, pair = cls.length === 2;
+  const preds = [], seen = new Set();
+  const addPred = (p, members) => { const set = new Set(members.map(keyOf)), sig = [...set].sort().join('|'); if (!set.size || seen.has(sig)) return; seen.add(sig); preds.push({ ...p, set }); };
+  const cards = [...new Set(combos.flatMap(x => x.h))].sort((x, y) => y - x);
+  if (pair) for (const c of cards) addPred({ type: 'card', v: c }, combos.filter(x => x.h.includes(c)));
+  for (let su = 0; su < 4; su++) addPred({ type: 'suit', v: su }, combos.filter(x => x.h.some(c => (c & 3) === su)));
+  if (!pair) for (const c of cards) addPred({ type: 'card', v: c }, combos.filter(x => x.h.includes(c)));
+  const eq = sets => { const u = new Set(); for (const p of sets) for (const k of p.set) { if (!target.has(k)) return false; u.add(k); } return u.size === target.size; };
+  let found = null;
+  for (let i = 0; i < preds.length && !found; i++) if (eq([preds[i]])) found = [preds[i]];
+  for (let i = 0; i < preds.length && !found; i++) for (let j = i + 1; j < preds.length && !found; j++) if (eq([preds[i], preds[j]])) found = [preds[i], preds[j]];
+  for (let i = 0; i < preds.length && !found; i++) for (let j = i + 1; j < preds.length && !found; j++) for (let k = j + 1; k < preds.length && !found; k++) if (eq([preds[i], preds[j], preds[k]])) found = [preds[i], preds[j], preds[k]];
+  const sym = su => `<span class="t${E.SUITS[su]}">${SUIT_SYM[E.SUITS[su]]}</span>`;
+  let text, badge;
+  if (found) {
+    text = 'with ' + found.map(p => p.type === 'card' ? `the ${cardTxt(p.v)}` : suited ? `${sym(p.v)}s` : `any ${sym(p.v)}`).join(' or ');
+    badge = found.length <= 2 ? found.map(p => p.type === 'card' ? RANK_TXT(p.v >> 2) + SUIT_SYM[E.SUITS[p.v & 3]] : SUIT_SYM[E.SUITS[p.v & 3]]).join('') : '•';
+  } else {
+    text = minor.length <= 3 ? 'with ' + minor.map(x => x.h.map(cardTxt).join('')).join(', ') : `with ${minor.length} of ${combos.length} combos`;
+    badge = '•';
+  }
+  return { minorBet, text, badge, minor };
+}
+const SHADE = { scale: street => street === 'preflop' ? 1.2 : 2 };
+const betShade = (m, street) => `rgba(52,178,104,${(0.55 + 0.45 * Math.min(1, Math.abs(m) / SHADE.scale(street))).toFixed(3)})`; // always clearly green; brighter = bigger edge
+const chkShade = (m, street) => `rgba(150,160,156,${(0.30 - 0.2 * Math.min(1, Math.abs(m) / SHADE.scale(street))).toFixed(3)})`; // grey; lighter = closer, darker = clearer
+// Everything the chart shows about one class
+function classView(cls, list, street, betLbl, pasLbl) {
+  const st = classStat(list), v = { st, mixed: st.share > 0.001 && st.share < 0.999 };
+  const bl = betLbl.toLowerCase(), pl = pasLbl.toLowerCase();
+  if (!v.mixed) {
+    v.bg = st.share >= 0.999 ? betShade(st.mBet, street) : chkShade(st.mChk, street);
+    v.summary = st.share >= 0.999 ? `${betLbl}` : `${pasLbl}`;
+    return v;
+  }
+  const combos = classCombos(cls, list), d = combos.length ? describeSplit(cls, combos) : null;
+  const majBet = d ? !d.minorBet : st.share > 0.5;
+  v.bg = majBet ? betShade(st.mBet, street) : chkShade(st.mChk, street);
+  if (d) {
+    v.badge = d.badge;
+    v.badgeBg = d.minorBet ? betShade(st.mBet, street) : 'rgba(6,14,11,0.88)';
+    v.summary = d.minorBet ? `${pasLbl} — but ${bl} ${d.text}` : `${betLbl} — but ${pl} ${d.text}`;
+  } else v.summary = `${betLbl} with ${st.wb} of ${st.w} combos`;
+  return v;
+}
+let chartSel = null; // class whose details are open under the chart
 function renderChart() {
   const el = document.getElementById('tabChart');
   if (S.tab !== 'chart') return;
@@ -1198,40 +1264,62 @@ function renderChart() {
   if (CH?.needBoard) h += `<div class="empty" style="padding:20px">Enter the ${street === 'flop' ? 'three flop cards' : 'five board cards'} to see which hands should ${street === 'flop' ? 'bet 2x' : 'bet 1x'}.</div>`;
   else if (!CH || CH.pendingTab || CH.loading) h += `<div class="empty" style="padding:20px">Loading…</div>`;
   else {
-    const sel = S.hole.every(c => c !== null) ? handClass(S.hole) : null;
+    const holeCls = S.hole.every(c => c !== null) ? handClass(S.hole) : null;
+    if (chartSel && CH.complete && !CH.data?.[chartSel]?.length) chartSel = null; // keep a selection made while the chart is still filling in
+    const stripTags = x => x.replace(/<[^>]+>/g, '');
     h += `<div class="rgrid">`;
     for (const c of CLASSES) {
       const list = CH.data?.[c.key];
       if (!list) { h += `<div class="rc wait" data-k="${c.key}">${c.key}</div>`; continue; }
       if (!list.length) { h += `<div class="rc blocked" title="${c.key}: every combo uses a known card">${c.key}</div>`; continue; }
-      const st = classStat(list);
-      let tip = `${c.key}: ${st.share >= 0.999 ? betLbl.toLowerCase() : st.share <= 0.001 ? pasLbl.toLowerCase() : `${betLbl.toLowerCase()} with ${st.wb} of ${st.w} suit combos`} · ${betLbl.replace('Bet ', '')} vs ${pasLbl.toLowerCase()} ${money(st.margin)}`;
-      let chg = false;
-      if (CH.base?.[c.key]?.length && !CH.none) { const b = classStat(CH.base[c.key]); chg = (b.share >= 0.5) !== (st.share >= 0.5); tip += ` · ${street === 'preflop' ? 'with nothing known' : 'without the dealer/others\' cards'} ${money(b.margin)}`; }
-      h += `<div class="rc ${chg ? 'chg' : ''} ${sel === c.key ? 'sel' : ''}" style="background:${cellColors(st, street)}" data-k="${c.key}" title="${tip}">${c.key}</div>`;
+      const v = classView(c.key, list, street, betLbl, pasLbl);
+      let chg = false, tip = `${c.key}: ${stripTags(v.summary)} · ${betLbl.replace('Bet ', '')} vs ${pasLbl.toLowerCase()} ${money(v.st.margin)}`;
+      if (CH.base?.[c.key]?.length && !CH.none) { const b = classStat(CH.base[c.key]); chg = (b.share >= 0.5) !== (v.st.share >= 0.5); tip += ` · ${street === 'preflop' ? 'with nothing known' : 'without the dealer/others\' cards'} ${money(b.margin)}`; }
+      const selCls = (chartSel || holeCls) === c.key ? 'sel' : '';
+      const badge = v.badge ? `<span class="bdg" style="background:${v.badgeBg}">${v.badge}</span>` : '';
+      h += `<div class="rc ${chg ? 'chg' : ''} ${selCls}" style="background:${v.bg}" data-k="${c.key}" title="${tip}">${c.key}${badge}</div>`;
     }
     h += `</div>`;
     if (CH.total && !CH.complete && CH.done < CH.total) {
       const secs = (performance.now() - CH.startedAt) / 1000, eta = CH.done ? secs / CH.done * (CH.total - CH.done) : 0;
       h += `<div class="progress"><span style="width:${CH.done / CH.total * 100}%"></span></div><div class="note">${CH.done} of ${CH.total} distinct hands solved${CH.done > 3 ? ` · about ${Math.ceil(eta)} s left` : ''}</div>`;
     }
+    if (chartSel && CH.data?.[chartSel]?.length) h += chartInfoHtml(chartSel, CH.data[chartSel], street, betLbl, pasLbl);
     const cmp = street === 'preflop' ? 'from no info' : 'by the dealer/others\' cards';
     h += `<div class="legend"><span><i style="background:rgba(52,178,104,1)"></i>${betLbl} <small>(brighter = bigger edge)</small></span>
       <span><i style="background:rgba(150,160,156,0.3)"></i>${pasLbl} <small>(darker = clearer)</small></span>
-      <span><i style="background:linear-gradient(90deg,rgba(52,178,104,1) 0 33%,rgba(150,160,156,0.3) 33% 100%)"></i>Split: only some suit combos bet — the green width is their share</span>
+      <span><i class="lg-b" style="background:rgba(150,160,156,0.3)"><b style="background:rgba(52,178,104,1)">♥</b></i>Badge = the exception: green → ${betLbl.toLowerCase()} only with that suit/card, dark → ${pasLbl.toLowerCase()} with it</span>
       ${CH.none || (!CH.base && street !== 'preflop') ? '' : `<span><i style="border:2px solid var(--gold)"></i>Changed ${cmp}</span>`}</div>`;
-    h += `<div class="note">Tap a hand to see its full breakdown${CH.cached ? ' · from the shared cache' : ''}. Hover (desktop) shows the margin.</div>`;
+    h += `<div class="note">${chartSel ? '' : 'Tap a hand for the details of every suit combo. '}${CH.cached ? 'From the shared cache.' : ''}</div>`;
   }
   el.innerHTML = h;
-  el.querySelectorAll('.rc[data-k]:not(.wait)').forEach(d => d.onclick = () => pickClass(d.dataset.k));
+  el.querySelectorAll('.rc[data-k]:not(.wait)').forEach(d => d.onclick = () => {
+    chartSel = chartSel === d.dataset.k ? null : d.dataset.k; renderChart();
+    if (chartSel) document.getElementById('cinfo')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+  el.querySelectorAll('[data-h]').forEach(b => b.onclick = () => openCombo(b.dataset.h.split(',').map(Number)));
+  el.querySelector('#cinfoClose')?.addEventListener('click', () => { chartSel = null; renderChart(); });
 }
+// Details under the chart: one row per group of combos that play the same way.
+function chartInfoHtml(cls, list, street, betLbl, pasLbl) {
+  const v = classView(cls, list, street, betLbl, pasLbl);
+  const combos = classCombos(cls, list);
+  const groups = new Map();
+  for (const x of combos) { const k = `${x.bet}|${x.margin.toFixed(4)}`; if (!groups.has(k)) groups.set(k, { ...x, hs: [] }); groups.get(k).hs.push(x.h); }
+  const rows = [...groups.values()].sort((a, b) => b.margin - a.margin).map(g => `<tr>
+      <td>${g.hs.map(h => `<button class="combo" data-h="${h.join(',')}" title="Open this hand">${h.map(cardTxt).join('')}</button>`).join(' ')}</td>
+      <td><span class="chip ${g.bet ? 'bet' : street === 'river' ? 'fold' : 'check'}">${g.bet ? betLbl : pasLbl}</span></td>
+      <td class="${cls_(g.margin)}">${money(g.margin)}</td></tr>`).join('');
+  return `<div class="cinfo" id="cinfo"><div class="cinfo-h"><b>${cls}</b> · ${v.summary}<button class="clear" id="cinfoClose">close</button></div>
+    <table><thead><tr><th>Combos (tap to open)</th><th>Play</th><th>${betLbl.replace('Bet ', '')} vs ${pasLbl.toLowerCase()}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+const cls_ = x => cls(x);
+function openCombo(h) { S.hole = [h[0], h[1]]; S.active = 'board'; setTab('hand'); render(); scheduleSolve(); }
 function pickClass(k) {
   const c = CLASSES.find(x => x.key === k);
   const used = new Set([...S.board, ...S.dealer, ...S.dead].filter(x => x !== null));
   const h = c.combos.find(x => !used.has(x[0]) && !used.has(x[1]));
-  if (!h) return;
-  S.hole = [h[0], h[1]]; S.active = 'board';
-  setTab('hand'); render(); scheduleSolve();
+  if (h) openCombo(h);
 }
 
 // ── Pre-seeding the shared cache (browser console) ────────────────────────
