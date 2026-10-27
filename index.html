@@ -206,6 +206,21 @@
   .guide .key b { font-family: var(--mono); color: var(--gold); font-size: 18px; }
   .guide .street { display: grid; grid-template-columns: 90px 1fr; gap: 6px 14px; max-width: 760px; margin-bottom: 10px; }
   .guide .street > b { font-family: var(--sans); }
+  .felt { background: radial-gradient(ellipse at 50% 30%, #1f6145, #0d2c20 75%); border: 1px solid var(--line); border-radius: 18px; padding: 22px 20px; max-width: 440px;
+    display: grid; grid-template-columns: 110px 46px 110px; gap: 20px 0; justify-content: center; justify-items: center; align-items: center; margin: 8px 0 14px; }
+  .guide .foot { font-size: 13px; margin-top: 10px; }
+  .frow { display: flex; align-items: center; gap: 26px; }
+  .spot { width: 92px; height: 92px; border-radius: 50%; border: 3px solid #efe4c4; background: rgba(239,228,196,0.06); color: #efe4c4; font: 700 14px var(--sans); cursor: pointer; display: grid; place-items: center; text-align: center; line-height: 1.15; transition: transform .12s, background .15s, border-color .15s; padding: 0; }
+  .spot:hover { transform: scale(1.04); }
+  .spot.on { background: var(--gold); border-color: var(--gold); color: #1c1606; box-shadow: 0 0 24px rgba(230,192,106,.45); }
+  .spot.diamond { width: 76px; height: 76px; border-radius: 10px; transform: rotate(45deg); }
+  .spot.diamond span { transform: rotate(-45deg); }
+  .spot.diamond:hover { transform: rotate(45deg) scale(1.04); }
+  .spot.big { width: 108px; height: 108px; font-size: 17px; }
+  .felt .eq { font: 700 26px var(--sans); color: #efe4c4; }
+  .betinfo { border: 1px solid var(--line); border-radius: 12px; padding: 4px 16px 10px; background: rgba(255,255,255,.03); max-width: 760px; }
+  .betinfo h4 { margin-top: 12px; }
+  .note-strong { border-left: 3px solid var(--gold); padding: 8px 12px; margin: 6px 0 8px; background: rgba(230,192,106,.07); border-radius: 0 8px 8px 0; }
   .qbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
   .qopts { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
   .qlbl { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.06em; }
@@ -386,7 +401,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 12:27</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 12:58</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -2053,66 +2068,77 @@ function mainEdge() { // house edge per ante with perfect play, and the average 
 function payRows(t, from, fmt = v => v === 0 ? 'Push' : v === 1.5 ? '3 to 2' : v + ' to 1') {
   return HAND_LABEL.map((n, i) => i >= from ? `<tr><td>${n}</td><td class="r">${t[i] < 0 ? 'Loses' : fmt(t[i])}</td></tr>` : '').reverse().join('');
 }
+let guideBet = 'ante';
+function guideEV() { // per hand with perfect play: what the Ante+Blind and the Play bet each contribute
+  if (!BASE) return null;
+  const g = S.game === 'uth' ? 'uth' : 'wpt:' + S.tables.badBeat, k = S.game === 'uth' ? 'bet4' : 'bet3';
+  let w = 0, as = 0, pl = 0;
+  for (const e of Object.values(BASE)) { const a = e.games[g].actions, best = a[k].total > a.check.total ? a[k] : a.check; w += e.w; as += e.w * (best.ante + best.side); pl += e.w * best.play; }
+  return { as: as / w, play: pl / w };
+}
 function renderGuide() {
   const el = document.getElementById('guide'); if (!el) return;
   const uth = S.game === 'uth', G = E.GAMES[S.game], s2 = uth ? 'Blind' : 'Odds', play = uth ? 'Play' : 'Raise', max = uth ? 4 : 3;
-  const me = mainEdge();
-  const tripsName = uth ? 'Trips' : 'Trips Plus', tripsTabs = uth ? G.trips : G.trips, tripsSel = uth ? S.tables.uthTrips : S.tables.wptTrips;
+  const me = mainEdge(), gv = guideEV();
+  const tripsName = uth ? 'Trips' : 'Trips Plus', tripsSel = uth ? S.tables.uthTrips : S.tables.wptTrips, tripsT = G.trips;
+  const range = (tabs, f) => { const v = Object.values(tabs).map(f); return [Math.min(...v), Math.max(...v)]; };
+  const [tLo, tHi] = range(tripsT, sideEdge), [pLo, pHi] = range(E.GAMES.wpt.pocket, pocketEdge);
+  const amt = x => `<b>${money(Math.abs(x)).replace(/[+−]/, '')}</b>${unitWord()}`;
+  const spot = (id, label, shape = 'circle') => `<button class="spot ${shape} ${guideBet === id ? 'on' : ''}" data-bet="${id}"><span>${label}</span></button>`;
+  const detail = {
+    ante: `<h4>Ante (required)</h4><p>Your base bet. The <b>${s2}</b> next to it must be the <b>same amount</b> — if your Ante is $10, your ${s2} is $10.</p>
+      <ul><li>You win and the dealer <b>qualifies</b> (pair or better): pays 1 to 1.</li><li>You win but the dealer <b>doesn't qualify</b>: pushes (returned).</li><li>You lose: loses. Tie: pushes.</li><li>If you fold on the river, the Ante and ${s2} are lost.</li></ul>`,
+    blind: `<h4>${s2} (required, equal to the Ante)</h4><p>Only pays when you win with a <b>straight or better</b>; any other win pushes it. It loses when you lose${uth ? '' : ` — except the <b>Bad Beat</b> bonus: lose with a straight or better and the ${s2} pays instead`}. Ties push.</p>
+      <div class="tables"><table><thead><tr><th>You win with</th><th class="r"></th></tr></thead><tbody>${payRows(uth ? G.blind : G.odds, 4)}<tr><td>Anything less</td><td class="r">Push</td></tr></tbody></table>
+      ${uth ? '' : `<table><thead><tr><th>Bad Beat (${S.tables.badBeat}): you lose with</th><th class="r"></th></tr></thead><tbody>${payRows(G.badBeat[S.tables.badBeat], 4).replace(/<tr><td>Royal flush<\/td><td class="r">[^<]*<\/td><\/tr>/, '')}</tbody></table>`}</div>`,
+    trips: `<h4>${tripsName} (optional bonus)</h4><p>Pays on <b>your own final hand</b> — three of a kind or better — no matter what the dealer has${uth ? ', even if you fold' : ''}. Wins about 15% of the time.</p>
+      <div class="tables"><table><thead><tr><th>${tripsSel}</th><th class="r"></th></tr></thead><tbody>${payRows(tripsT[tripsSel], 3)}<tr><td>Anything less</td><td class="r">Loses</td></tr></tbody></table></div>
+      <p>House edge: <b>${pctE(tLo)} to ${pctE(tHi)}</b> depending on the pay table — ${pctE(sideEdge(tripsT[tripsSel]))} for the one selected in Table settings.</p>`,
+    pocket: `<h4>Pocket Bonus (optional bonus${uth ? ', where offered' : ''})</h4><p>Pays on <b>your two starting cards</b> only, and is settled before the flop. Wins about 9.5% of the time.</p>
+      <div class="tables"><table><thead><tr><th>${S.tables.pocket}</th><th class="r"></th></tr></thead><tbody>
+        ${['Pair of aces', 'Ace + K, Q or J, suited', 'Ace + K, Q or J, offsuit', 'Any other pair'].map((n, i) => `<tr><td>${n}</td><td class="r">${E.GAMES.wpt.pocket[S.tables.pocket][i]} to 1</td></tr>`).join('')}
+        <tr><td>Anything else</td><td class="r">Loses</td></tr></tbody></table></div>
+      <p>House edge: <b>${pctE(pLo)} to ${pctE(pHi)}</b> depending on the pay table — ${pctE(pocketEdge(E.GAMES.wpt.pocket[S.tables.pocket]))} for the one selected.${uth ? ' Some Ultimate Texas tables use a longer version (often called Ultimate Pairs: AA 30, AKs 25, AQs/AJs 20, AKo 15, KK–JJ 10, AQo/AJo 5, TT–22 3) with about an 8.9% edge.' : ''}</p>`,
+    play: `<h4>${play} bet (your decision during the hand)</h4><p>The one bet you choose to make as the cards come out: <b>${uth ? '3x or 4x' : 'up to 3x'}</b> your Ante before the flop, <b>2x</b> on the flop, or <b>1x</b> on the river (or fold). It pays <b>1 to 1</b> whenever you beat the dealer — qualified or not — loses when you lose, and pushes on a tie.</p>
+      <div class="note-strong"><b>This bet is where you win.</b> ${gv ? `With perfect play the Ante and ${s2} together lose ${amt(gv.as)} per hand on average; the ${play} bet wins back ${amt(gv.play)}, leaving the ${pctE(me.edge)} house edge.` : ''} So when you're favored, bet <b>as much as you can, as early as you can</b> — ${max}x preflop with a good hand, not a smaller raise or a wait for the flop. Every time you're ahead and check, you give back money the ${play} bet should have won.</div>`,
+  };
+  detail.odds = detail.blind;
   let h = `<h2>The game</h2>
-    <p>You play against the dealer only — not the other players. You and the dealer each get two cards, and five community cards are dealt face up in the middle (three on the <b>flop</b>, then the <b>turn</b> and <b>river</b> together). Each side makes the <b>best five-card poker hand</b> from their two cards plus the five on the board, and the higher hand wins.</p>
-    <p>The dealer <b>qualifies</b> with a pair or better. Qualifying only matters for your Ante: if the dealer doesn't qualify, your Ante is returned.</p>
+    <p>You play against the dealer only — not the other players. You and the dealer each get two cards, and five community cards are dealt face up in the middle (three on the <b>flop</b>, then the <b>turn</b> and <b>river</b> together). Each side makes the <b>best five-card poker hand</b> from their two cards plus the five on the board, and the higher hand wins. The dealer <b>qualifies</b> with a pair or better.</p>
 
     <h2>The bets</h2>
-    <h4>Ante and ${s2} (required)</h4>
-    <p>You start every hand with two equal bets: the <b>Ante</b> and the <b>${s2}</b>. If your Ante is $10, your ${s2} is $10.</p>
-    <ul>
-      <li><b>Ante</b> pays 1 to 1 when you win and the dealer qualifies. If the dealer doesn't qualify, it pushes. It loses when you lose.</li>
-      <li><b>${s2}</b> only pays when you win with a straight or better (table below); a win with less pushes it. It loses when you lose${uth ? '' : ` — <b>except</b> the Bad Beat bonus: if you lose with a straight or better, the ${s2} pays instead`}. Ties push.</li>
-    </ul>
-    <div class="tables">
-      <table><thead><tr><th>${s2} pays (on a win)</th><th class="r"></th></tr></thead><tbody>${payRows(uth ? G.blind : G.odds, 4)}<tr><td>Anything less</td><td class="r">Push</td></tr></tbody></table>
-      ${uth ? '' : `<table><thead><tr><th>Bad Beat (${S.tables.badBeat}) — you lose with</th><th class="r"></th></tr></thead><tbody>${payRows(G.badBeat[S.tables.badBeat], 4).replace(/<tr><td>Royal flush<\/td><td class="r">[^<]*<\/td><\/tr>/, '')}</tbody></table>`}
+    <p>Here's the layout in front of you. Tap a bet to see how it works.</p>
+    <div class="felt">
+      ${spot('trips', tripsName, 'diamond')}<span></span>${spot('pocket', 'Pocket<br>Bonus')}
+      ${spot('ante', 'Ante')}<span class="eq">=</span>${spot('blind', s2)}
+      ${spot('play', play, 'circle big')}<span></span><span></span>
     </div>
-    <h4>${play} bet (made during the hand)</h4>
-    <p>This is the bet you choose to make — or not — as the cards come (see below). It pays <b>1 to 1</b> whenever you beat the dealer, whether or not the dealer qualifies, loses when you lose, and pushes on a tie.</p>
-    <h4>Bonus bets (optional)</h4>
-    <ul>
-      <li><b>${tripsName}</b> pays on <b>your own final hand</b> — three of a kind or better — no matter what the dealer has. It wins about 15% of the time.</li>
-      ${uth ? '' : `<li><b>Pocket Bonus</b> pays on <b>your two starting cards</b> only: a pair, or an ace with a king, queen or jack. It wins about 9.5% of the time and is settled before the flop.</li>`}
-    </ul>
-    <div class="tables">
-      <table><thead><tr><th>${tripsName} table</th><th class="r">FH / Fl / St</th><th class="r">House edge</th></tr></thead><tbody>
-        ${Object.entries(tripsTabs).map(([k, t]) => `<tr class="${k === tripsSel ? 'sel' : ''}"><td>${k}</td><td class="r">${t[6]} / ${t[5]} / ${t[4]}</td><td class="r">${pctE(sideEdge(t))}</td></tr>`).join('')}
-      </tbody></table>
-      ${uth ? '' : `<table><thead><tr><th>Pocket Bonus table</th><th class="r">AA / AK-AJ suited / offsuit / pair</th><th class="r">House edge</th></tr></thead><tbody>
-        ${Object.entries(G.pocket).map(([k, t]) => `<tr class="${k === S.tables.pocket ? 'sel' : ''}"><td>${k}</td><td class="r">${t.join(' / ')}</td><td class="r">${pctE(pocketEdge(t))}</td></tr>`).join('')}
-      </tbody></table>`}
-    </div>
-    <p style="font-size:13px">Your selected tables (Table settings) are highlighted. Edges are the average loss per dollar bet on that wager.</p>
+    <div class="betinfo">${detail[guideBet]}</div>
+    <p class="foot">Many tables also offer a <b>progressive jackpot</b> side bet, usually a small fixed bet that pays a share of a growing jackpot for a royal flush or other big hands. Its odds depend on the casino's pay table and the current jackpot, so it isn't covered here.</p>
 
     <h2>How a hand plays</h2>
-    <p>You get one chance to make the ${play} bet. The earlier you make it, the bigger it can be; once it's in, you just wait for the showdown.</p>
     <div class="street">
-      <b>Preflop</b><span>After seeing your two cards: <b>bet ${uth ? '3x or 4x' : '1x to 3x'}</b> your Ante, or check. (A smaller bet is never better than the max — always bet ${max}x if you bet.)</span>
+      <b>Preflop</b><span>After seeing your two cards: <b>bet ${uth ? '3x or 4x' : '1x to 3x'}</b> your Ante, or check. A smaller bet is never better — if you bet, bet ${max}x.</span>
       <b>Flop</b><span>If you checked: <b>bet 2x</b> or check.</span>
-      <b>River</b><span>If you checked twice: <b>bet 1x</b> or <b>fold</b>. Folding gives up your Ante and ${s2}.</span>
+      <b>River</b><span>If you checked twice: <b>bet 1x</b> or <b>fold</b> (folding gives up your Ante and ${s2}).</span>
     </div>
-    <p>Then the dealer's cards are turned over and every bet is settled.</p>
+    <p>Once your ${play} bet is in, you make no more decisions. Then the dealer's cards are turned over and every bet is settled.</p>
 
     <h2>Simple strategy</h2>
-    <p>These rules use only your own cards and the board. They match perfect play on about 97–98% of decisions.</p>
+    <p>These rules use only your own cards and the board, and match perfect play on about 97–98% of decisions.</p>
     <div class="street">
       <b>Preflop</b><span>Bet ${max}x with: ${uth
-        ? '<b>any pair except 2s</b>; <b>any ace</b>; <b>K2 suited</b> or better and <b>K5 offsuit</b> or better; <b>Q6 suited / Q8 offsuit</b> or better; <b>J8 suited / JT offsuit</b>.'
+        ? '<b>any pair except 2s</b>; <b>any ace</b>; <b>K2 suited / K5 offsuit</b> or better; <b>Q6 suited / Q8 offsuit</b> or better; <b>J8 suited / JT offsuit</b>.'
         : '<b>any pair except 2s</b>; <b>any ace</b>; <b>K4 suited / K7 offsuit</b> or better; <b>Q8 suited / QT offsuit</b> or better; <b>JT suited</b>.'} Check everything else.</span>
-      <b>Flop</b><span>Bet 2x with <b>two pair or better</b>, a <b>hidden pair</b> (one that uses your cards — except pocket 2s), or <b>four to a flush</b> when you hold a T or higher of that suit. Straight draws and pairs that are only on the board aren't enough.</span>
-      <b>River</b><span>Count the single dealer cards that would beat you (with the board). Bet 1x if <b>21 or fewer</b>; otherwise fold.</span>
+      <b>Flop</b><span>Bet 2x with a <b>pair or better that uses your hole cards</b> (except pocket 2s), or <b>four to a flush</b> when you hold a T or higher of that suit. Otherwise check.</span>
+      <b>River</b><span>Count the individual cards the dealer could have that would beat you. Bet 1x if <b>21 or fewer</b>; otherwise fold.</span>
     </div>
     <h4>House edge with perfect play</h4>
     ${me ? `<div class="key">Ante + ${s2} + ${play}: <b>${(me.edge * 100).toFixed(3)}%</b> of the Ante per hand</div>
-    <p>That's about ${money(me.edge * (S.ante || 1)).replace(/[+−]/, '')}${S.ante ? '' : ' antes'} lost per hand${S.ante ? ` at a $${S.ante} ante` : ''}. Counting everything you bet in an average hand (${me.avg.toFixed(2)} antes, including the ${play} bet), it's <b>${(me.edge / me.avg * 100).toFixed(3)}%</b> of the money wagered.${uth ? '' : ` This uses the ${S.tables.badBeat} Bad Beat table.`} Side bets are extra and have their own edge above.</p>`
+    <p>That's about ${money(me.edge).replace(/[+−]/, '')}${unitWord()} lost per hand${S.ante ? ` at a $${S.ante} ante` : ''}. An average hand puts ${me.avg.toFixed(2)} antes in play counting the ${play} bet, so it's <b>${(me.edge / me.avg * 100).toFixed(3)}%</b> of the money wagered.${uth ? '' : ` (Bad Beat table ${S.tables.badBeat}.)`} Bonus bets have their own edge, shown with each bet above.</p>`
     : '<p>Loading…</p>'}`;
   el.innerHTML = h;
+  el.querySelectorAll('[data-bet]').forEach(b => b.onclick = () => { guideBet = b.dataset.bet; renderGuide(); });
 }
 
 let mode = store.get('uth.mode', 'analyze');
