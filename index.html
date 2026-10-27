@@ -209,6 +209,9 @@
   .felt { background: radial-gradient(ellipse at 50% 30%, #1f6145, #0d2c20 75%); border: 1px solid var(--line); border-radius: 18px; padding: 22px 20px; max-width: 440px;
     display: grid; grid-template-columns: 110px 46px 110px; gap: 20px 0; justify-content: center; justify-items: center; align-items: center; margin: 8px 0 14px; }
   .guide .foot { font-size: 13px; margin-top: 10px; }
+  .ptpick { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0 4px; font-size: 13px; }
+  .ptpick button { border: 1px solid var(--line); background: var(--felt-2); color: var(--dim); border-radius: 8px; padding: 4px 10px; font: 600 13px var(--mono); cursor: pointer; }
+  .ptpick button.on { background: var(--gold); border-color: var(--gold); color: #1c1606; }
   .frow { display: flex; align-items: center; gap: 26px; }
   .spot { width: 92px; height: 92px; border-radius: 50%; border: 3px solid #efe4c4; background: rgba(239,228,196,0.06); color: #efe4c4; font: 700 14px var(--sans); cursor: pointer; display: grid; place-items: center; text-align: center; line-height: 1.15; transition: transform .12s, background .15s, border-color .15s; padding: 0; }
   .spot:hover { transform: scale(1.04); }
@@ -220,6 +223,25 @@
   .felt .eq { font: 700 26px var(--sans); color: #efe4c4; }
   .betinfo { border: 1px solid var(--line); border-radius: 12px; padding: 4px 16px 10px; background: rgba(255,255,255,.03); max-width: 760px; }
   .betinfo h4 { margin-top: 12px; }
+  .demo { max-width: 520px; margin: 6px 0 16px; }
+  .dtable { background: radial-gradient(ellipse at 50% 45%, #1f6145, #0d2c20 80%); border: 1px solid var(--line); border-radius: 22px 22px 90px 90px / 22px 22px 60px 60px; padding: 14px 12px 22px; display: grid; justify-items: center; gap: 8px; }
+  .drow { display: flex; gap: 6px; } .drow.board { margin-top: 6px; }
+  .dlabel { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #efe4c4; opacity: .75; }
+  .dnote { font-family: var(--serif); font-size: 13px; color: #efe4c4; opacity: .8; margin-bottom: 6px; }
+  .demo .pc { width: 44px; height: 62px; font-size: 19px; cursor: default; transition: transform .3s, opacity .3s, box-shadow .3s; }
+  .demo .pc.new { animation: dealIn .35s ease-out; }
+  .demo .pc .x { display: none !important; }
+  .demo .pc.back { background: repeating-linear-gradient(45deg, #7a2b2b 0 5px, #6a2222 5px 10px); border: 2px solid #efe4c4; box-shadow: none; animation: none; }
+  .demo .pc.dim { opacity: .3; }
+  .demo .pc.lit { transform: translateY(-4px); box-shadow: 0 0 0 2px var(--gold), 0 6px 16px rgba(0,0,0,.4); }
+  .demo .pc.lit-dealer { box-shadow: 0 0 0 2px #7fb3ff, 0 6px 16px rgba(0,0,0,.4); }
+  @keyframes dealIn { from { transform: translateY(-14px) rotateY(80deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  .dcap { min-height: 44px; margin-top: 10px; color: var(--dim); }
+  .dcap .cy { color: var(--gold); } .dcap .cd { color: #7fb3ff; } .dcap .r-win { color: var(--good); } .dcap .r-lose { color: var(--bad); } .dcap .r-tie { color: var(--ink); }
+  .dctl { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 13px; }
+  .dctl button { border: 1px solid var(--line); background: var(--felt-2); color: var(--ink); border-radius: 8px; padding: 5px 12px; font: 600 13px var(--sans); cursor: pointer; }
+  .dctl span { color: var(--faint); margin-left: 4px; }
+  @media (prefers-reduced-motion: reduce) { .demo .pc { animation: none; transition: none; } }
   .note-strong { border-left: 3px solid var(--gold); padding: 8px 12px; margin: 6px 0 8px; background: rgba(230,192,106,.07); border-radius: 0 8px 8px 0; }
   .qbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
   .qopts { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
@@ -401,7 +423,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 12:58</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 13:21</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -2069,6 +2091,58 @@ function payRows(t, from, fmt = v => v === 0 ? 'Push' : v === 1.5 ? '3 to 2' : v
   return HAND_LABEL.map((n, i) => i >= from ? `<tr><td>${n}</td><td class="r">${t[i] < 0 ? 'Loses' : fmt(t[i])}</td></tr>` : '').reverse().join('');
 }
 let guideBet = 'ante';
+// ── Guide: animated example hands ─────────────────────────────────────────
+// Deals a hand step by step (your cards → flop → turn & river → dealer), then lights up each side's
+// best five cards and settles the bets. Examples chosen to show a win, a kicker, a tie and a
+// non-qualifying dealer.
+const DEMOS = [
+  { you: 'Ah Kh', dealer: 'Qs Qd', board: 'Qh 7h 2c 9d 4h', note: 'Your flush beats the dealer\'s three queens.', pay: (s2, pl) => `Dealer qualifies: Ante pays 1 to 1, ${pl} pays 1 to 1, and the ${s2} pays 3 to 2 for the flush.` },
+  { you: 'Ks 9d', dealer: 'Kc Js', board: 'Kh 7c 4d 2s 3h', note: 'Both have a pair of kings — the dealer\'s jack kicker beats your 9.', pay: (s2, pl) => `You lose the Ante, ${s2} and ${pl}.` },
+  { you: '3c 2d', dealer: '7h 5s', board: 'As Kd Qc Jh Ts', note: 'The board is a straight and nobody can beat it — both of you play the board.', pay: () => 'A tie: every bet pushes.' },
+  { you: 'Ac 8d', dealer: 'Ks 6h', board: 'Qd 9c 5s 3h 2c', note: 'Your ace high beats the dealer\'s king high — but the dealer didn\'t make a pair.', pay: (s2, pl) => `Dealer doesn't qualify: the Ante pushes, the ${pl} pays 1 to 1, and the ${s2} pushes (you didn't win with a straight or better).` },
+];
+const DEMO = { i: 0, step: 0, timer: null };
+const demoCards = d => ({ you: d.you.split(' ').map(E.parseCard), dealer: d.dealer.split(' ').map(E.parseCard), board: d.board.split(' ').map(E.parseCard) });
+function bestFive(cards) { let best = null, bv = -1; for (let a = 0; a < 7; a++) for (let b = a + 1; b < 7; b++) { const f = cards.filter((_, i) => i !== a && i !== b), v = E.eval7(f); if (v > bv) { bv = v; best = f; } } return { v: bv, cards: best }; }
+const DEMO_STEPS = 7; // 0 backs · 1 your cards · 2 flop · 3 turn+river · 4 dealer · 5 your best five · 6 dealer's best five · 7 result
+function demoPlay(fromStart = true) {
+  clearTimeout(DEMO.timer);
+  if (fromStart) DEMO.step = 0;
+  if (reduceMotion()) { DEMO.step = DEMO_STEPS; drawDemo(); return; }
+  const tick = () => { drawDemo(); if (DEMO.step < DEMO_STEPS) { DEMO.step++; DEMO.timer = setTimeout(tick, DEMO.step >= 5 ? 1300 : 650); } };
+  tick();
+}
+function drawDemo() {
+  const el = document.getElementById('demo'); if (!el) return;
+  const d = DEMOS[DEMO.i], C = demoCards(d), st = DEMO.step, s2 = S.game === 'uth' ? 'Blind' : 'Odds';
+  const yb = bestFive([...C.you, ...C.board]), db = bestFive([...C.dealer, ...C.board]);
+  const hl = st === 5 ? new Set(yb.cards) : st === 6 ? new Set(db.cards) : st >= 7 ? new Set([...yb.cards, ...db.cards]) : null;
+  const who = st === 5 ? 'you' : st === 6 ? 'dealer' : null;
+  const card = (c, show, side, at) => {
+    if (!show) return '<div class="pc back"></div>';
+    const fresh = st === at ? ' new' : ''; // only cards turned over on this step animate
+    const lit = hl && (st >= 7 ? (side === 'board' ? yb.cards.includes(c) || db.cards.includes(c) : (side === 'you' ? yb : db).cards.includes(c)) : hl.has(c) && (side === 'board' || side === who));
+    return cardHTML(c).replace('class="pc', `class="pc${fresh} ${hl ? (lit ? 'lit' : 'dim') : ''} ${st >= 5 && st <= 6 && lit ? 'lit-' + who : st >= 7 && lit && side === 'dealer' ? 'lit-dealer' : ''}`);
+  };
+  const res = yb.v > db.v ? 'win' : yb.v < db.v ? 'lose' : 'tie';
+  const name = v => HAND_LABEL[E.pcatOf(v)];
+  const caption = st === 0 ? 'Press play to deal a hand.' : st === 1 ? 'You get your two cards…' : st === 2 ? 'The flop…' : st === 3 ? 'The turn and river…' : st === 4 ? 'The dealer turns over two cards.'
+    : st === 5 ? `<b class="cy">Your best five:</b> ${name(yb.v)}` : st === 6 ? `<b class="cd">Dealer's best five:</b> ${name(db.v)}`
+    : `<b class="r-${res}">${res === 'win' ? 'You win' : res === 'lose' ? 'Dealer wins' : 'Tie'}</b> — ${d.note} ${d.pay(s2, S.game === 'uth' ? 'Play' : 'Raise')}`;
+  el.innerHTML = `<div class="dtable">
+      <div class="dlabel">Dealer</div><div class="drow">${C.dealer.map(c => card(c, st >= 4, 'dealer', 4)).join('')}</div>
+      <div class="drow board">${C.board.map((c, i) => card(c, st >= (i < 3 ? 2 : 3), 'board', i < 3 ? 2 : 3)).join('')}</div>
+      <div class="dnote">Ante pushes if dealer has less than a pair</div>
+      <div class="drow">${C.you.map(c => card(c, st >= 1, 'you', 1)).join('')}</div><div class="dlabel">You</div>
+    </div>
+    <div class="dcap">${caption}</div>
+    <div class="dctl"><button data-d="prev" aria-label="Previous example">◀</button><button data-d="play">${st >= DEMO_STEPS ? '↻ Replay' : st === 0 ? '▶ Play' : '⏭ Skip'}</button><button data-d="next" aria-label="Next example">▶</button><span>Example ${DEMO.i + 1} of ${DEMOS.length}</span></div>`;
+  el.querySelectorAll('[data-d]').forEach(b => b.onclick = () => {
+    const a = b.dataset.d;
+    if (a === 'play') { if (DEMO.step > 0 && DEMO.step < DEMO_STEPS) { clearTimeout(DEMO.timer); DEMO.step = DEMO_STEPS; drawDemo(); } else demoPlay(true); return; }
+    DEMO.i = (DEMO.i + (a === 'next' ? 1 : DEMOS.length - 1)) % DEMOS.length; demoPlay(true);
+  });
+}
 function guideEV() { // per hand with perfect play: what the Ante+Blind and the Play bet each contribute
   if (!BASE) return null;
   const g = S.game === 'uth' ? 'uth' : 'wpt:' + S.tables.badBeat, k = S.game === 'uth' ? 'bet4' : 'bet3';
@@ -2084,27 +2158,33 @@ function renderGuide() {
   const range = (tabs, f) => { const v = Object.values(tabs).map(f); return [Math.min(...v), Math.max(...v)]; };
   const [tLo, tHi] = range(tripsT, sideEdge), [pLo, pHi] = range(E.GAMES.wpt.pocket, pocketEdge);
   const amt = x => `<b>${money(Math.abs(x)).replace(/[+−]/, '')}</b>${unitWord()}`;
+  // pay-table picker: changes the same table as Table settings
+  const chips = (key, tabs) => `<div class="ptpick"><span>Pay table:</span>${Object.keys(tabs).map(k => `<button class="${S.tables[key] === k ? 'on' : ''}" data-pt="${key}" data-v="${k}">${k}</button>`).join('')}</div>`;
+  const varies = '<p class="foot">Pay tables vary by casino.</p>';
   const spot = (id, label, shape = 'circle') => `<button class="spot ${shape} ${guideBet === id ? 'on' : ''}" data-bet="${id}"><span>${label}</span></button>`;
   const detail = {
     ante: `<h4>Ante (required)</h4><p>Your base bet. The <b>${s2}</b> next to it must be the <b>same amount</b> — if your Ante is $10, your ${s2} is $10.</p>
       <ul><li>You win and the dealer <b>qualifies</b> (pair or better): pays 1 to 1.</li><li>You win but the dealer <b>doesn't qualify</b>: pushes (returned).</li><li>You lose: loses. Tie: pushes.</li><li>If you fold on the river, the Ante and ${s2} are lost.</li></ul>`,
     blind: `<h4>${s2} (required, equal to the Ante)</h4><p>Only pays when you win with a <b>straight or better</b>; any other win pushes it. It loses when you lose${uth ? '' : ` — except the <b>Bad Beat</b> bonus: lose with a straight or better and the ${s2} pays instead`}. Ties push.</p>
       <div class="tables"><table><thead><tr><th>You win with</th><th class="r"></th></tr></thead><tbody>${payRows(uth ? G.blind : G.odds, 4)}<tr><td>Anything less</td><td class="r">Push</td></tr></tbody></table>
-      ${uth ? '' : `<table><thead><tr><th>Bad Beat (${S.tables.badBeat}): you lose with</th><th class="r"></th></tr></thead><tbody>${payRows(G.badBeat[S.tables.badBeat], 4).replace(/<tr><td>Royal flush<\/td><td class="r">[^<]*<\/td><\/tr>/, '')}</tbody></table>`}</div>`,
+      ${uth ? '' : `<div>${chips('badBeat', G.badBeat)}<table><thead><tr><th>Bad Beat (${S.tables.badBeat}): you lose with</th><th class="r"></th></tr></thead><tbody>${payRows(G.badBeat[S.tables.badBeat], 4).replace(/<tr><td>Royal flush<\/td><td class="r">[^<]*<\/td><\/tr>/, '')}</tbody></table></div>`}</div>${uth ? '' : varies}`,
     trips: `<h4>${tripsName} (optional bonus)</h4><p>Pays on <b>your own final hand</b> — three of a kind or better — no matter what the dealer has${uth ? ', even if you fold' : ''}. Wins about 15% of the time.</p>
+      ${chips(uth ? 'uthTrips' : 'wptTrips', tripsT)}
       <div class="tables"><table><thead><tr><th>${tripsSel}</th><th class="r"></th></tr></thead><tbody>${payRows(tripsT[tripsSel], 3)}<tr><td>Anything less</td><td class="r">Loses</td></tr></tbody></table></div>
-      <p>House edge: <b>${pctE(tLo)} to ${pctE(tHi)}</b> depending on the pay table — ${pctE(sideEdge(tripsT[tripsSel]))} for the one selected in Table settings.</p>`,
+      <p>House edge: <b>${pctE(tLo)} to ${pctE(tHi)}</b> depending on the pay table — <b>${pctE(sideEdge(tripsT[tripsSel]))}</b> for ${tripsSel}.</p>${varies}`,
     pocket: `<h4>Pocket Bonus (optional bonus${uth ? ', where offered' : ''})</h4><p>Pays on <b>your two starting cards</b> only, and is settled before the flop. Wins about 9.5% of the time.</p>
+      ${chips('pocket', E.GAMES.wpt.pocket)}
       <div class="tables"><table><thead><tr><th>${S.tables.pocket}</th><th class="r"></th></tr></thead><tbody>
         ${['Pair of aces', 'Ace + K, Q or J, suited', 'Ace + K, Q or J, offsuit', 'Any other pair'].map((n, i) => `<tr><td>${n}</td><td class="r">${E.GAMES.wpt.pocket[S.tables.pocket][i]} to 1</td></tr>`).join('')}
         <tr><td>Anything else</td><td class="r">Loses</td></tr></tbody></table></div>
-      <p>House edge: <b>${pctE(pLo)} to ${pctE(pHi)}</b> depending on the pay table — ${pctE(pocketEdge(E.GAMES.wpt.pocket[S.tables.pocket]))} for the one selected.${uth ? ' Some Ultimate Texas tables use a longer version (often called Ultimate Pairs: AA 30, AKs 25, AQs/AJs 20, AKo 15, KK–JJ 10, AQo/AJo 5, TT–22 3) with about an 8.9% edge.' : ''}</p>`,
-    play: `<h4>${play} bet (your decision during the hand)</h4><p>The one bet you choose to make as the cards come out: <b>${uth ? '3x or 4x' : 'up to 3x'}</b> your Ante before the flop, <b>2x</b> on the flop, or <b>1x</b> on the river (or fold). It pays <b>1 to 1</b> whenever you beat the dealer — qualified or not — loses when you lose, and pushes on a tie.</p>
+      <p>House edge: <b>${pctE(pLo)} to ${pctE(pHi)}</b> depending on the pay table — <b>${pctE(pocketEdge(E.GAMES.wpt.pocket[S.tables.pocket]))}</b> for ${S.tables.pocket}.${uth ? ' Some Ultimate Texas tables use a longer version (often called Ultimate Pairs: AA 30, AKs 25, AQs/AJs 20, AKo 15, KK–JJ 10, AQo/AJo 5, TT–22 3) with about an 8.9% edge.' : ''}</p>${varies}`,
+    play: `<h4>${play} bet (your decision during the hand)</h4><p>The one bet you choose to make as the cards come out: <b>${uth ? '3x or 4x' : '3x'}</b> your Ante before the flop, <b>2x</b> on the flop, or <b>1x</b> on the river (or fold). It pays <b>1 to 1</b> whenever you beat the dealer — qualified or not — loses when you lose, and pushes on a tie.</p>
       <div class="note-strong"><b>This bet is where you win.</b> ${gv ? `With perfect play the Ante and ${s2} together lose ${amt(gv.as)} per hand on average; the ${play} bet wins back ${amt(gv.play)}, leaving the ${pctE(me.edge)} house edge.` : ''} So when you're favored, bet <b>as much as you can, as early as you can</b> — ${max}x preflop with a good hand, not a smaller raise or a wait for the flop. Every time you're ahead and check, you give back money the ${play} bet should have won.</div>`,
   };
   detail.odds = detail.blind;
   let h = `<h2>The game</h2>
     <p>You play against the dealer only — not the other players. You and the dealer each get two cards, and five community cards are dealt face up in the middle (three on the <b>flop</b>, then the <b>turn</b> and <b>river</b> together). Each side makes the <b>best five-card poker hand</b> from their two cards plus the five on the board, and the higher hand wins. The dealer <b>qualifies</b> with a pair or better.</p>
+    <div class="demo" id="demo"></div>
 
     <h2>The bets</h2>
     <p>Here's the layout in front of you. Tap a bet to see how it works.</p>
@@ -2114,11 +2194,11 @@ function renderGuide() {
       ${spot('play', play, 'circle big')}<span></span><span></span>
     </div>
     <div class="betinfo">${detail[guideBet]}</div>
-    <p class="foot">Many tables also offer a <b>progressive jackpot</b> side bet, usually a small fixed bet that pays a share of a growing jackpot for a royal flush or other big hands. Its odds depend on the casino's pay table and the current jackpot, so it isn't covered here.</p>
+    <p class="foot">Many tables also offer a <b>progressive jackpot</b> side bet, usually a small fixed bet that pays a share of a growing jackpot for a royal flush or other big hands. Its odds depend on the casino's pay table and the current jackpot.</p>
 
     <h2>How a hand plays</h2>
     <div class="street">
-      <b>Preflop</b><span>After seeing your two cards: <b>bet ${uth ? '3x or 4x' : '1x to 3x'}</b> your Ante, or check. A smaller bet is never better — if you bet, bet ${max}x.</span>
+      <b>Preflop</b><span>After seeing your two cards: <b>bet ${uth ? '3x or 4x' : '3x'}</b> your Ante, or check.${uth ? ' 3x is never better than 4x — if you bet, bet 4x.' : ''}</span>
       <b>Flop</b><span>If you checked: <b>bet 2x</b> or check.</span>
       <b>River</b><span>If you checked twice: <b>bet 1x</b> or <b>fold</b> (folding gives up your Ante and ${s2}).</span>
     </div>
@@ -2139,6 +2219,8 @@ function renderGuide() {
     : '<p>Loading…</p>'}`;
   el.innerHTML = h;
   el.querySelectorAll('[data-bet]').forEach(b => b.onclick = () => { guideBet = b.dataset.bet; renderGuide(); });
+  drawDemo();
+  el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); renderGuide(); });
 }
 
 let mode = store.get('uth.mode', 'analyze');
@@ -2147,7 +2229,7 @@ function setMode(m) {
   document.querySelectorAll('#modeSeg button').forEach(x => x.classList.toggle('on', x.dataset.m === m));
   document.body.classList.toggle('quiz-mode', m === 'quiz');
   document.body.classList.toggle('guide-mode', m === 'guide');
-  if (m === 'guide') renderGuide();
+  if (m === 'guide') { renderGuide(); if (DEMO.step === 0) demoPlay(true); } else clearTimeout(DEMO.timer);
   if (m === 'quiz') { if (!QZ.cur || QZ.cur.key !== quizKey()) { QZ.next = null; quizNew(); } else renderQuiz(); }
 }
 
