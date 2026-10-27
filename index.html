@@ -236,7 +236,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 19:12</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 19:45</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -1237,9 +1237,10 @@ function pickClass(k) {
 // ── Pre-seeding the shared cache (browser console) ────────────────────────
 // seedCache()                                  → common preflop charts for the selected game
 // seedCache({ kinds: ['dealer', 'flop', 'flop+dealer'], variants: ['uth', 'wpt-bb-1'] })
+// seedCache({ kinds: ['dead1', 'dead2'] })     → charts for 1 or 2 seen player cards (dead2 is an overnight job)
+// seedCache({ kinds: ['dead2'], part: [1, 2] }) on one device and part: [2, 2] on another → split the work
 // seedCache.list()  → what would be done      seedCache.stop() → stop after the current chart
-// Charts already in the cache are skipped. Needs the write token. Others'-card charts aren't seeded:
-// there are too many combinations.
+// Charts already in the cache are skipped (so runs can be stopped, resumed or split). Needs the write token.
 function seedScenarios(kinds) {
   const out = [], seen = new Set();
   const add = kn => { const k = chartKnownKey(kn); if (!seen.has(k)) { seen.add(k); out.push(kn); } };
@@ -1251,21 +1252,30 @@ function seedScenarios(kinds) {
       if (r1 === r2 && ss === 0) continue; // same rank → must be different suits
       add({ street: 'preflop', board: [card(r1, 0)], dealer: [card(r2, ss)], dead: [] });
     }
+    // other players' cards (nothing else known): 13 single cards, 169 pairs (same suit / different suit / paired)
+    if (kind === 'dead1') for (let r = 12; r >= 0; r--) add({ street: 'preflop', board: [], dealer: [], dead: [card(r, 0)] });
+    if (kind === 'dead2') for (let r1 = 12; r1 >= 0; r1--) for (let r2 = r1; r2 >= 0; r2--) for (const ss of [0, 1]) {
+      if (r1 === r2 && ss === 0) continue;
+      add({ street: 'preflop', board: [], dealer: [], dead: [card(r1, 0), card(r2, ss)] });
+    }
   }
   return out;
 }
 let seedStop = false;
-async function seedCache({ kinds = ['dealer', 'flop', 'flop+dealer'], variants = [variantKey()] } = {}) {
+// part: [i, n] takes every n-th chart starting at i (1-based), to split a long run across devices.
+async function seedCache({ kinds = ['dealer', 'flop', 'flop+dealer'], variants = [variantKey()], part = [1, 1] } = {}) {
   if (!workerBase()) return console.warn('No cf_worker_url in config.json — nothing to seed into.');
   if (!writeToken) return console.warn('Save the write token first (bottom of the page).');
   seedStop = false;
-  const jobs = []; for (const v of variants) for (const kn of seedScenarios(kinds)) jobs.push([v, kn]);
-  console.log(`Seeding up to ${jobs.length} charts (${kinds.join(', ')} × ${variants.join(', ')}). seedCache.stop() to stop.`);
+  let jobs = []; for (const v of variants) for (const kn of seedScenarios(kinds)) jobs.push([v, kn]);
+  jobs = jobs.filter((_, i) => i % part[1] === part[0] - 1);
+  let wake = null; try { wake = await navigator.wakeLock?.request('screen'); } catch (_) {} // keep the screen (and the run) awake
+  console.log(`Seeding up to ${jobs.length} charts (${kinds.join(', ')} × ${variants.join(', ')}${part[1] > 1 ? `, part ${part[0]} of ${part[1]}` : ''}). seedCache.stop() to stop. Keep this tab open.`);
   const t0 = performance.now(); let made = 0, skipped = 0, failed = 0, timeMade = 0;
   for (let i = 0; i < jobs.length; i++) {
     if (seedStop) { console.log('Stopped.'); break; }
     const [v, kn] = jobs[i], key = chartKvKey(v, kn);
-    const label = `${v} ${kn.board.length ? 'flop ' + E.cardStr(kn.board[0]) : ''} ${kn.dealer.length ? 'dealer ' + E.cardStr(kn.dealer[0]) : ''}`.trim();
+    const label = `${v} ${kn.board.length ? 'flop ' + E.cardStr(kn.board[0]) : ''} ${kn.dealer.length ? 'dealer ' + E.cardStr(kn.dealer[0]) : ''} ${kn.dead.length ? 'seen ' + kn.dead.map(E.cardStr).join(' ') : ''}`.replace(/\s+/g, ' ').trim();
     if (await kvGet(key)) { skipped++; continue; }
     const t = performance.now();
     try {
@@ -1278,9 +1288,14 @@ async function seedCache({ kinds = ['dealer', 'flop', 'flop+dealer'], variants =
     } catch (e) { failed++; console.warn(`✗ ${label}: ${e.message}`); }
   }
   console.log(`Done: ${made} computed, ${skipped} already cached, ${failed} failed, ${((performance.now() - t0) / 60000).toFixed(1)} min.`);
+  try { await wake?.release(); } catch (_) {}
 }
 seedCache.stop = () => { seedStop = true; };
-seedCache.list = (opts = {}) => { const k = opts.kinds || ['dealer', 'flop', 'flop+dealer']; const v = opts.variants || [variantKey()]; const n = seedScenarios(k).length * v.length; console.log(`${n} charts: ${k.join(', ')} × ${v.join(', ')}`); return n; };
+seedCache.list = (opts = {}) => {
+  const k = opts.kinds || ['dealer', 'flop', 'flop+dealer'], v = opts.variants || [variantKey()];
+  for (const kind of k) console.log(`${kind}: ${seedScenarios([kind]).length * v.length} charts`);
+  const n = seedScenarios(k).length * v.length; console.log(`total ${n} charts × ${v.join(', ')}`); return n;
+};
 window.seedCache = seedCache;
 
 // ── Wiring ────────────────────────────────────────────────────────────────
