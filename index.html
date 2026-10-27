@@ -338,7 +338,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 23:32</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 23:41</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -1156,14 +1156,23 @@ function riverGroups(sp) {
   return { G, N, unseen, cat, boardPlays: pv === E.eval7(sp.board) };
 }
 const listJoin = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' or ' + a[a.length - 1];
-function ranksIn(cards, unseen) { // "2, 3 or 4" (whole ranks) / "some 9s" (only part of a rank)
-  const out = [];
+const SUIT_WORD = { s: 'spade', h: 'heart', d: 'diamond', c: 'club' };
+// Describe a group of dealer cards: "a 2, 3 or 4" / "any club, or a 7 or 4" / "a non-club A, K or 9".
+// A suit counts as a block when every unseen card of it lands in one group (a flush draw for the dealer).
+function ranksIn(cards, unseen, groups) {
+  const blocks = [0, 1, 2, 3].filter(su => { const all = unseen.filter(c => (c & 3) === su); return all.length > 1 && groups.some(g => g.length < unseen.length && all.every(c => g.includes(c))); });
+  const mine = blocks.filter(su => unseen.filter(c => (c & 3) === su).every(c => cards.includes(c)));
+  const rest = cards.filter(c => !blocks.includes(c & 3)), pool = unseen.filter(c => !blocks.includes(c & 3));
+  const rk = [];
   for (let r = 12; r >= 0; r--) {
-    const k = cards.filter(c => c >> 2 === r).length; if (!k) continue;
-    const tot = unseen.filter(c => c >> 2 === r).length;
-    out.push(k === tot ? RANK_TXT(r) : `some ${RANK_TXT(r)}s`);
+    const k = rest.filter(c => c >> 2 === r).length; if (!k) continue;
+    rk.push(k === pool.filter(c => c >> 2 === r).length ? RANK_TXT(r) : `some ${RANK_TXT(r)}s`);
   }
-  return listJoin(out);
+  const suitTxt = mine.map(su => `any ${SUIT_WORD[E.SUITS[su]]}`).join(' or ');
+  const other = blocks.filter(su => !mine.includes(su)).map(su => SUIT_WORD[E.SUITS[su]]);
+  const art = other.length ? 'a' : /^(A|8)/.test(rk[0] || '') ? 'an' : 'a';
+  const rankTxt = rk.length ? `${art} ${other.length ? 'non-' + other.join('/non-') + ' ' : ''}${listJoin(rk)}` : '';
+  return suitTxt && rankTxt ? `${suitTxt}, or ${rankTxt}` : suitTxt || rankTxt;
 }
 function explainLogic() {
   const sp = RES.sp, A = RES.res.actions, g = E.GAMES[S.game], sp2 = g.spot2;
@@ -1176,14 +1185,17 @@ function explainLogic() {
   }
   if (sp.street === 'river') {
     const R = riverGroups(sp), { G, N } = R, who = sp.dealer.length ? "the dealer's other card is" : null;
-    const rk = grp => who && G[grp].cards.length ? ` — ${who} ${ranksIn(G[grp].cards, R.unseen)}` : '';
+    const groups = Object.values(G).map(g => g.cards).filter(a => a.length);
+    const rk = grp => who && G[grp].cards.length ? ` — ${who} ${ranksIn(G[grp].cards, R.unseen, groups)}` : '';
     const avg = grp => G[grp].v / G[grp].n, vsFold = grp => avg(grp) + 2;
+    const bbNote = S.game === 'wpt' && R.cat >= 4 ? ' (the bad-beat bonus on your Odds bet pays when your straight-or-better loses)' : '';
+    const lostTxt = grp => avg(grp) < 0 ? `you lose ${amt(avg(grp))}` : `you still collect ${sg(avg(grp))}${bbNote}`;
     const cmp = d => Math.abs(d) < 1e-9 ? 'the same as folding' : d > 0 ? `${amt(d)} better than folding` : `${amt(d)} worse than folding`;
     const items = [];
     if (G.win.n) items.push(`<b>Win</b> ${pct(G.win.n / N)}${rk('win')}: worth ${sg(avg('win'))} on average, ${cmp(vsFold('win'))}.`);
     if (G.tie.n) items.push(`<b>Tie</b> ${pct(G.tie.n / N)}${rk('tie')}: everything pushes, ${cmp(vsFold('tie'))}.`);
-    if (G.loseNQ.n) items.push(`<b>Lose, dealer doesn't qualify</b> ${pct(G.loseNQ.n / N)}${rk('loseNQ')}: your ante pushes, so you lose ${amt(avg('loseNQ'))} — ${cmp(vsFold('loseNQ'))}.`);
-    if (G.loseQ.n) items.push(`<b>Lose to a qualifying dealer</b> ${pct(G.loseQ.n / N)}${rk('loseQ')}: you lose ${amt(avg('loseQ'))}, ${cmp(vsFold('loseQ'))}.`);
+    if (G.loseNQ.n) items.push(`<b>Lose, dealer doesn't qualify</b> ${pct(G.loseNQ.n / N)}${rk('loseNQ')}: your ante pushes, so ${lostTxt('loseNQ')} — ${cmp(vsFold('loseNQ'))}.`);
+    if (G.loseQ.n) items.push(`<b>Lose to a qualifying dealer</b> ${pct(G.loseQ.n / N)}${rk('loseQ')}: ${lostTxt('loseQ')}, ${cmp(vsFold('loseQ'))}.`);
     out.push(`Folding gives up your ante and ${sp2} bet: ${amt(2)}. If you bet 1x instead:<ul>${items.map(x => `<li>${x}</li>`).join('')}</ul>`);
     const parts = ['win', 'tie', 'loseNQ', 'loseQ'].filter(k => G[k].n && Math.abs(vsFold(k)) > 1e-9).map(k => ({ k, c: G[k].n / N * vsFold(k) }));
     const net = parts.reduce((t, x) => t + x.c, 0), name = { win: 'wins', tie: 'ties', loseNQ: 'non-qualifying losses', loseQ: 'qualifying losses' };
