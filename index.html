@@ -228,8 +228,26 @@
   .drow { display: flex; gap: 6px; } .drow.board { margin-top: 6px; }
   .dlabel { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #efe4c4; opacity: .75; }
   .dnote { font-family: var(--serif); font-size: 13px; color: #efe4c4; opacity: .8; margin-bottom: 6px; }
-  .demo .pc { width: 44px; height: 62px; font-size: 19px; cursor: default; transition: transform .3s, opacity .3s, box-shadow .3s; }
-  .demo .pc.new { animation: dealIn .35s ease-out; }
+  .demo .pc { width: 44px; height: 62px; font-size: 19px; cursor: default; transition: transform .36s, opacity .36s, box-shadow .36s; }
+  .demo .pc.new { animation: dealIn .42s ease-out; }
+  .dlow { display: flex; align-items: center; gap: 22px; margin-top: 2px; }
+  .dbets { display: grid; grid-template-columns: auto 18px auto; gap: 6px 4px; align-items: center; justify-items: center; }
+  .ceq { color: #efe4c4; font: 700 18px var(--sans); opacity: .8; }
+  .dyou { display: grid; justify-items: center; gap: 6px; }
+  .cspot { display: grid; justify-items: center; gap: 3px; font-size: 11px; color: #efe4c4; }
+  .cspot span { opacity: .75; letter-spacing: .04em; }
+  .cspot em { font-style: normal; font: 600 12px var(--mono); }
+  .cspot em.w { color: var(--good); } .cspot em.l { color: var(--bad); } .cspot em.p { color: #efe4c4; opacity: .8; } .cspot em.a { color: #efe4c4; opacity: .6; }
+  .cring { width: 54px; height: 40px; border: 2px solid rgba(239,228,196,.55); border-radius: 50%; display: flex; align-items: flex-end; justify-content: center; gap: 4px; padding-bottom: 6px; position: relative; }
+  .stack { display: flex; flex-direction: column-reverse; align-items: center; }
+  .stack i { display: block; width: 22px; height: 6px; margin-top: -2px; border-radius: 50%; background: #c43b3b; border: 1.5px dashed #f4e8c8; box-shadow: 0 1px 0 rgba(0,0,0,.35); }
+  .stack.paid i { background: #2f8f5b; }
+  .stack.drop { animation: chipDrop .5s ease-out; }
+  .stack.paid.anim { animation: chipIn .7s cubic-bezier(.2,.9,.3,1); }
+  .stack.gone { opacity: 0; } .stack.gone.anim { animation: chipOut .8s ease-in forwards; }
+  @keyframes chipDrop { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes chipIn { from { transform: translateY(-170px); opacity: 0; } 30% { opacity: 1; } to { transform: none; opacity: 1; } }
+  @keyframes chipOut { from { transform: none; opacity: 1; } to { transform: translateY(-170px); opacity: 0; } }
   .demo .pc .x { display: none !important; }
   .demo .pc.back { background: repeating-linear-gradient(45deg, #7a2b2b 0 5px, #6a2222 5px 10px); border: 2px solid #efe4c4; box-shadow: none; animation: none; }
   .demo .pc.dim { opacity: .3; }
@@ -423,7 +441,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 13:21</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 13:29</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -2096,10 +2114,12 @@ let guideBet = 'ante';
 // best five cards and settles the bets. Examples chosen to show a win, a kicker, a tie and a
 // non-qualifying dealer.
 const DEMOS = [
-  { you: 'Ah Kh', dealer: 'Qs Qd', board: 'Qh 7h 2c 9d 4h', note: 'Your flush beats the dealer\'s three queens.', pay: (s2, pl) => `Dealer qualifies: Ante pays 1 to 1, ${pl} pays 1 to 1, and the ${s2} pays 3 to 2 for the flush.` },
-  { you: 'Ks 9d', dealer: 'Kc Js', board: 'Kh 7c 4d 2s 3h', note: 'Both have a pair of kings — the dealer\'s jack kicker beats your 9.', pay: (s2, pl) => `You lose the Ante, ${s2} and ${pl}.` },
-  { you: '3c 2d', dealer: '7h 5s', board: 'As Kd Qc Jh Ts', note: 'The board is a straight and nobody can beat it — both of you play the board.', pay: () => 'A tie: every bet pushes.' },
-  { you: 'Ac 8d', dealer: 'Ks 6h', board: 'Qd 9c 5s 3h 2c', note: 'Your ace high beats the dealer\'s king high — but the dealer didn\'t make a pair.', pay: (s2, pl) => `Dealer doesn't qualify: the Ante pushes, the ${pl} pays 1 to 1, and the ${s2} pushes (you didn't win with a straight or better).` },
+  // play: 'max' = raised preflop (4x UTH / 3x WPT), 1 = bet 1x on the river. out: [Ante, Blind/Odds, Play] → pays N to 1, −1 loses, 0 pushes.
+  { play: 'max', out: [1, 1.5, 1], you: 'Ah Kh', dealer: 'Qs Qd', board: 'Qh 7h 2c 9d 4h', note: 'Your flush beats the dealer\'s three queens.', pay: (s2, pl) => `Dealer qualifies: Ante pays 1 to 1, ${pl} pays 1 to 1, and the ${s2} pays 3 to 2 for the flush.` },
+  { play: 'max', out: [-1, -1, -1], you: 'Ks 9d', dealer: 'Kc Js', board: 'Kh 7c 4d 2s 3h', note: 'Both have a pair of kings — the dealer\'s jack kicker beats your 9.', pay: (s2, pl) => `You lose the Ante, ${s2} and ${pl}.` },
+  { play: 1, out: [0, 0, 0], you: '3c 2d', dealer: '7h 5s', board: 'As Kd Qc Jh Ts', note: 'The board is a straight and nobody can beat it — both of you play the board.', pay: () => 'A tie: every bet pushes.' },
+  { play: 'max', out: [0, 0, 1], you: 'Ac 8d', dealer: 'Ks 6h', board: 'Qd 9c 5s 3h 2c', note: 'Your ace high beats the dealer\'s king high — but the dealer didn\'t make a pair.', pay: (s2, pl) => `Dealer doesn't qualify: the Ante pushes, the ${pl} pays 1 to 1, and the ${s2} pushes (you didn't win with a straight or better).` },
+  { play: 'max', out: [-1, -1, -1], you: '3c 3d', dealer: 'As 5h', board: 'Ks Kd Qh Qc 7s', note: 'You have three pairs, but only your best five cards count: K-K-Q-Q with a 7. Your 3s are <b>counterfeited</b> — they don\'t play. The dealer has the same two pair with an ace, so the dealer\'s ace wins.', pay: (s2, pl) => `The dealer qualifies with the board's two pair. You lose the Ante, ${s2} and ${pl}.` },
 ];
 const DEMO = { i: 0, step: 0, timer: null };
 const demoCards = d => ({ you: d.you.split(' ').map(E.parseCard), dealer: d.dealer.split(' ').map(E.parseCard), board: d.board.split(' ').map(E.parseCard) });
@@ -2109,7 +2129,7 @@ function demoPlay(fromStart = true) {
   clearTimeout(DEMO.timer);
   if (fromStart) DEMO.step = 0;
   if (reduceMotion()) { DEMO.step = DEMO_STEPS; drawDemo(); return; }
-  const tick = () => { drawDemo(); if (DEMO.step < DEMO_STEPS) { DEMO.step++; DEMO.timer = setTimeout(tick, DEMO.step >= 5 ? 1300 : 650); } };
+  const tick = () => { DEMO.fresh = true; drawDemo(); DEMO.fresh = false; if (DEMO.step < DEMO_STEPS) { DEMO.step++; DEMO.timer = setTimeout(tick, DEMO.step >= 5 ? 1560 : 780); } };
   tick();
 }
 function drawDemo() {
@@ -2125,6 +2145,19 @@ function drawDemo() {
     return cardHTML(c).replace('class="pc', `class="pc${fresh} ${hl ? (lit ? 'lit' : 'dim') : ''} ${st >= 5 && st <= 6 && lit ? 'lit-' + who : st >= 7 && lit && side === 'dealer' ? 'lit-dealer' : ''}`);
   };
   const res = yb.v > db.v ? 'win' : yb.v < db.v ? 'lose' : 'tie';
+  // Chips: Ante and Blind/Odds from the start; the Play/Raise when it's made (preflop, or 1x after the river).
+  // At the result, winning bets get paid (chips slide in from the dealer), losing ones slide away, pushes stay.
+  const pl = S.game === 'uth' ? 'Play' : 'Raise', mult = d.play === 'max' ? (S.game === 'uth' ? 4 : 3) : 1, playAt = d.play === 'max' ? 1 : 3;
+  const unit = S.ante || 1, fmt = n => S.ante ? '$' + (Number.isInteger(n) ? n.toLocaleString() : n.toFixed(2)) : n + 'x';
+  const stack = (n, cls = '') => `<div class="stack ${cls}">${Array.from({ length: Math.min(6, Math.max(1, Math.round(n))) }, () => '<i></i>').join('')}</div>`;
+  const betsArr = [['Ante', 1, true], [s2, 1, true], [pl, mult, st >= playAt]].map(([lbl, n, placed], k) => {
+    if (!placed) return `<div class="cspot"><div class="cring"></div><span>${lbl}</span><em class="a">&nbsp;</em></div>`;
+    const o = d.out[k], done = st >= DEMO_STEPS, anim = done && st === DEMO_STEPS && DEMO.fresh;
+    const chips = done && o < 0 ? stack(n, 'gone' + (anim ? ' anim' : '')) : stack(n, st === playAt && k === 2 ? 'drop' : '') + (done && o > 0 ? stack(n * o, 'paid' + (anim ? ' anim' : '')) : '');
+    const tag = done ? `<em class="${o > 0 ? 'w' : o < 0 ? 'l' : 'p'}">${o > 0 ? '+' + fmt(n * o * unit / (S.ante ? 1 : 1)) : o < 0 ? '−' + fmt(n * unit) : 'push'}</em>` : `<em class="a">${fmt(n * unit)}</em>`;
+    return `<div class="cspot"><div class="cring">${chips}</div><span>${lbl}</span>${tag}</div>`;
+  });
+  const bets = `${betsArr[0]}<span class="ceq">=</span>${betsArr[1]}${betsArr[2]}`;
   const name = v => HAND_LABEL[E.pcatOf(v)];
   const caption = st === 0 ? 'Press play to deal a hand.' : st === 1 ? 'You get your two cards…' : st === 2 ? 'The flop…' : st === 3 ? 'The turn and river…' : st === 4 ? 'The dealer turns over two cards.'
     : st === 5 ? `<b class="cy">Your best five:</b> ${name(yb.v)}` : st === 6 ? `<b class="cd">Dealer's best five:</b> ${name(db.v)}`
@@ -2133,13 +2166,14 @@ function drawDemo() {
       <div class="dlabel">Dealer</div><div class="drow">${C.dealer.map(c => card(c, st >= 4, 'dealer', 4)).join('')}</div>
       <div class="drow board">${C.board.map((c, i) => card(c, st >= (i < 3 ? 2 : 3), 'board', i < 3 ? 2 : 3)).join('')}</div>
       <div class="dnote">Ante pushes if dealer has less than a pair</div>
-      <div class="drow">${C.you.map(c => card(c, st >= 1, 'you', 1)).join('')}</div><div class="dlabel">You</div>
+      <div class="dlow"><div class="dbets">${bets}</div>
+        <div class="dyou"><div class="drow">${C.you.map(c => card(c, st >= 1, 'you', 1)).join('')}</div><div class="dlabel">You</div></div></div>
     </div>
     <div class="dcap">${caption}</div>
     <div class="dctl"><button data-d="prev" aria-label="Previous example">◀</button><button data-d="play">${st >= DEMO_STEPS ? '↻ Replay' : st === 0 ? '▶ Play' : '⏭ Skip'}</button><button data-d="next" aria-label="Next example">▶</button><span>Example ${DEMO.i + 1} of ${DEMOS.length}</span></div>`;
   el.querySelectorAll('[data-d]').forEach(b => b.onclick = () => {
     const a = b.dataset.d;
-    if (a === 'play') { if (DEMO.step > 0 && DEMO.step < DEMO_STEPS) { clearTimeout(DEMO.timer); DEMO.step = DEMO_STEPS; drawDemo(); } else demoPlay(true); return; }
+    if (a === 'play') { if (DEMO.step > 0 && DEMO.step < DEMO_STEPS) { clearTimeout(DEMO.timer); DEMO.step = DEMO_STEPS; DEMO.fresh = true; drawDemo(); DEMO.fresh = false; } else demoPlay(true); return; }
     DEMO.i = (DEMO.i + (a === 'next' ? 1 : DEMOS.length - 1)) % DEMOS.length; demoPlay(true);
   });
 }
