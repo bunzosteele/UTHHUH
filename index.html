@@ -166,6 +166,24 @@
   .chk input { accent-color: var(--gold); }
 
   /* Settings */
+  .gear { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--gold); font-size: 19px; cursor: pointer; display: grid; place-items: center; }
+  .gear:hover { border-color: var(--gold-dim); }
+  #gameSeg .sm { display: none; }
+  .drawer-bg { position: fixed; inset: 0; background: rgba(3,10,7,.55); z-index: 80; opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw); z-index: 81; background: #0b1f18; border-left: 1px solid var(--line); box-shadow: -20px 0 50px rgba(0,0,0,.5);
+    transform: translateX(105%); transition: transform .25s ease; overflow-y: auto; padding: 0 18px 30px; -webkit-overflow-scrolling: touch; }
+  body.set-open .drawer { transform: none; } body.set-open .drawer-bg { opacity: 1; pointer-events: auto; } body.set-open { overflow: hidden; }
+  .dhead { position: sticky; top: 0; background: #0b1f18; display: flex; justify-content: space-between; align-items: center; padding: 16px 0 10px; z-index: 2; }
+  .dhead b { font-family: var(--serif); font-size: 20px; }
+  .dhead button { background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 8px; width: 34px; height: 34px; font-size: 15px; cursor: pointer; }
+  .dedge { border: 1px solid var(--gold-dim); border-radius: 12px; padding: 12px 14px; background: rgba(230,192,106,.06); margin-bottom: 6px; }
+  .dedge .ek { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+  .dedge .ev { font: 700 30px var(--sans); letter-spacing: -0.02em; } .dedge .ev.neg { color: var(--bad); } .dedge .ev.pos { color: var(--good); }
+  .dedge .ed { font-size: 13px; color: var(--dim); margin-top: 3px; } .dedge .ed b { color: var(--ink); } .dedge .foot { margin-top: 8px; color: var(--faint); }
+  .drawer .opts { grid-template-columns: 1fr; }
+  .drawer .opt .chk { display: flex; margin: 4px 0; }
+  .ptdesc { font-size: 12.5px; color: var(--dim); margin-top: 6px; line-height: 1.5; } .ptdesc b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
+  .ptnote { font-size: 12.5px; color: var(--faint); }
   .settings { margin-top: 18px; }
   .settings > summary { list-style: none; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
   .settings > summary::-webkit-details-marker { display: none; }
@@ -281,6 +299,11 @@
   .qact:hover:not(:disabled) { border-color: var(--gold); transform: translateY(-1px); }
   .qact small { display: block; font: 500 12px 'IBM Plex Sans'; color: var(--faint); margin-top: 3px; }
   .qact:disabled { cursor: default; }
+  .qpath { min-height: 22px; }
+  .qprompt { min-height: 28px; display: flex; align-items: center; }
+  .qverdict b { font: 700 22px var(--sans); letter-spacing: -0.01em; }
+  .qverdict.ok b { color: var(--good); } .qverdict.no b { color: var(--bad); }
+  .qact.qnextbtn { grid-column: 1 / -1; background: var(--gold); border-color: var(--gold); color: #1c1606; font: 700 18px var(--sans); }
   .seg.qmode button { padding: 6px 12px; font-size: 13px; }
   .qbests { font-size: 13px; color: var(--dim); margin-bottom: 8px; } .qbests b { color: var(--ink); font-family: var(--mono); }
   .qhelp { text-transform: none; letter-spacing: 0; font-size: 12px; }
@@ -329,7 +352,11 @@
   @media (max-width: 860px) {
     .wrap { padding: 16px 12px 96px; }
     h1 { font-size: 26px; }
-    header { margin-bottom: 12px; }
+    header { margin-bottom: 12px; display: grid; grid-template-columns: auto 1fr auto; gap: 10px 8px; align-items: center; }
+    header h1 { font-size: 23px; }
+    #gameSeg { justify-self: end; } #gameSeg .lg { display: none; } #gameSeg .sm { display: inline; }
+    #modeSeg { grid-column: 1 / -1; grid-row: 2; display: flex; } #modeSeg button { flex: 1; }
+    .gear { grid-column: 3; grid-row: 1; }
     .layout { grid-template-columns: 1fr; }
     .panel { padding: 13px; }
     .picker { display: none; }
@@ -389,9 +416,10 @@
       <button data-m="guide">Guide</button>
     </div>
     <div class="seg" id="gameSeg">
-      <button data-g="uth">Ultimate Texas</button>
-      <button data-g="wpt">WPT Heads-Up</button>
+      <button data-g="uth"><span class="lg">Ultimate Texas</span><span class="sm">Ultimate</span></button>
+      <button data-g="wpt"><span class="lg">WPT Heads-Up</span><span class="sm">Heads-Up</span></button>
     </div>
+    <button class="gear" id="setBtn" aria-label="Settings" title="Settings">⚙</button>
   </header>
 
   <div class="layout">
@@ -435,18 +463,20 @@
     <div class="note" id="qNote"></div>
   </section>
 
-  <details class="panel settings" id="settings">
-    <summary><span class="ptitle">Table settings</span><span class="sum" id="setSum"></span></summary>
-    <div class="opts" id="opts"></div>
-  </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 13:29</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 16:15</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
 </div>
 <div class="mbar" id="mbar"></div>
+<div class="drawer-bg" id="setBg"></div>
+<aside class="drawer" id="setDrawer" aria-label="Settings">
+  <div class="dhead"><b>Settings</b><button id="setClose" aria-label="Close settings">✕</button></div>
+  <div class="dedge" id="setEdge"></div>
+  <div class="opts" id="opts"></div>
+</aside>
 
 <script id="engine-src">
 /*
@@ -1028,19 +1058,31 @@ function addCard(c) {
 function removeCard(gid, i) { const arr = groupArr(gid); if (gid === 'dead') arr.splice(i, 1); else arr[i] = null; S.active = gid; if (gid === 'board') followBoard(); render(); onCardsChanged(); }
 function clearGroup(gid) { const arr = groupArr(gid); if (gid === 'dead') arr.length = 0; else arr.fill(null); S.active = gid; if (gid === 'board') followBoard(); render(); onCardsChanged(); }
 
+// Pay-table pickers: buttons for each table plus a plain-language line saying what the selected one pays.
+const PT_NAMES = ['High card', 'Pair', 'Two pair', 'Trips', 'Straight', 'Flush', 'Full house', 'Quads', 'Straight flush', 'Royal'];
+function ptLine(key, t) {
+  if (key === 'badBeat') return `Pays when you <b>lose</b> with: ${[8, 7, 6, 5, 4].map(i => `${PT_NAMES[i]} <b>${t[i]}</b>`).join(' · ')}`;
+  if (key === 'pocket') return `AA <b>${t[0]}</b> · A-K/Q/J suited <b>${t[1]}</b> · offsuit <b>${t[2]}</b> · other pairs <b>${t[3]}</b> &nbsp;— edge ${pctE(pocketEdge(t))}`;
+  return `${[9, 8, 7, 6, 5, 4, 3].map(i => `${PT_NAMES[i]} <b>${t[i]}</b>`).join(' · ')} &nbsp;— edge ${pctE(sideEdge(t))}`;
+}
 function renderOpts() {
-  const sel = (key, label, options) => `<div class="opt"><label>${label}</label><select data-t="${key}">${options.map(([v, t]) => `<option value="${v}" ${S.tables[key] === v ? 'selected' : ''}>${t}</option>`).join('')}</select></div>`;
-  let h = `<div class="opt"><label>Before the flop I can see</label><label class="chk"><input type="checkbox" id="peekDealerIn" ${S.peekDealer ? 'checked' : ''}> the dealer's card</label><label class="chk"><input type="checkbox" id="peekFlopIn" ${S.peekFlop ? 'checked' : ''}> a flop card</label><label class="chk"><input type="checkbox" id="seeOthersIn" ${S.seeOthers ? 'checked' : ''}> other players' cards</label></div>`;
-  h += `<div class="opt"><label>Ante (blank = show EV in antes)</label><input class="money" id="anteIn" inputmode="decimal" placeholder="e.g. 50" value="${S.ante || ''}"></div>`;
+  const pick = (key, label, tabs, help) => `<div class="opt wide"><label>${label}</label><div class="ptpick">${Object.keys(tabs).map(k => `<button class="${S.tables[key] === k ? 'on' : ''}" data-pt="${key}" data-v="${k}">${k}</button>`).join('')}</div>
+    <div class="ptdesc">${help ? help + ' ' : ''}${ptLine(key, tabs[S.tables[key]])}</div></div>`;
+  let h = `<div class="opt wide"><label>Before the flop I can see</label>
+      <label class="chk"><input type="checkbox" id="seeOthersIn" ${S.seeOthers ? 'checked' : ''}> other players' cards</label>
+      <label class="chk"><input type="checkbox" id="peekDealerIn" ${S.peekDealer ? 'checked' : ''}> the dealer's card</label>
+      <label class="chk"><input type="checkbox" id="peekFlopIn" ${S.peekFlop ? 'checked' : ''}> a flop card</label></div>`;
+  h += `<div class="opt wide"><label>Ante (blank = show EV in antes)</label><input class="money" id="anteIn" inputmode="decimal" placeholder="e.g. 50" value="${S.ante || ''}"></div>`;
+  h += `<div class="opt wide"><div class="ptnote">Pay tables vary by casino — match the one printed on your table.</div></div>`;
   if (S.game === 'uth') {
-    h += sel('uthTrips', 'Trips pay table', Object.entries(E.GAMES.uth.trips).map(([k, t]) => [k, `${k} · FH ${t[6]} / Fl ${t[5]} / St ${t[4]}${t[7] !== 30 ? ' / Q ' + t[7] : ''}`]));
-    h += `<div class="opt"><label>Blind pays</label><select disabled><option>500 / 50 / 10 / 3 / 3:2 / 1</option></select></div>`;
+    h += pick('uthTrips', 'Trips bonus', E.GAMES.uth.trips, 'Pays on your final hand:');
+    h += `<div class="opt wide"><label>Blind</label><div class="ptdesc">Pays when you <b>win</b> with: Royal <b>500</b> · Straight flush <b>50</b> · Quads <b>10</b> · Full house <b>3</b> · Flush <b>3:2</b> · Straight <b>1</b> (same at every casino)</div></div>`;
   } else {
-    h += sel('badBeat', 'Bad beat pay table', Object.entries(E.GAMES.wpt.badBeat).map(([k, t]) => [k, `${k} · ${[8, 7, 6, 5, 4].map(i => t[i]).join('/')}`]));
-    h += sel('wptTrips', 'Trips Plus', Object.entries(E.GAMES.wpt.trips).map(([k, t]) => [k, `${k} · FH ${t[6]} / Fl ${t[5]} / St ${t[4]}`]));
-    h += sel('pocket', 'Pocket Bonus', Object.entries(E.GAMES.wpt.pocket).map(([k, t]) => [k, `${k} · ${t.join('/')}`]));
+    h += pick('badBeat', 'Bad Beat (on the Odds bet)', E.GAMES.wpt.badBeat, '');
+    h += pick('wptTrips', 'Trips Plus bonus', E.GAMES.wpt.trips, 'Pays on your final hand:');
+    h += pick('pocket', 'Pocket Bonus', E.GAMES.wpt.pocket, 'Pays on your two cards:');
   }
-  h += `<div class="opt"><label>Quiz score</label><div class="qbests" id="qBests"></div><button class="resetbtn" id="qResetBtn">Reset quiz stats</button></div>`;
+  h += `<div class="opt wide"><label>Quiz score</label><div class="qbests" id="qBests"></div><button class="resetbtn" id="qResetBtn">Reset quiz stats</button></div>`;
   const el = document.getElementById('opts');
   el.innerHTML = h;
   if (typeof QZ !== 'undefined') renderQuizBests();
@@ -1048,7 +1090,7 @@ function renderOpts() {
     if (!confirm('Reset your quiz stats for both modes (hands, perfect %, streaks, EV lost)?')) return;
     QZ.statsBy = emptyStatsBy(); saveQuiz(); renderQuizScore();
   };
-  el.querySelectorAll('select[data-t]').forEach(s => s.onchange = () => { S.tables[s.dataset.t] = s.value; saveSettings(); renderSetSum(); onRulesChanged(); });
+  el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); });
   const peekChanged = () => { saveSettings(); renderSetSum(); if ((!S.peekDealer && S.active === 'dealer') || (!S.seeOthers && S.active === 'dead')) S.active = 'hole'; render(); onCardsChanged(); };
   document.getElementById('peekDealerIn').onchange = e => { S.peekDealer = e.target.checked; peekChanged(); };
   document.getElementById('peekFlopIn').onchange = e => { S.peekFlop = e.target.checked; peekChanged(); };
@@ -1059,6 +1101,31 @@ function renderOpts() {
   };
   renderSetSum();
 }
+// House edge for the current settings (perfect play, seeing the checked cards on every hand).
+// Exact runs (edge.js): UTH, and WPT with the BB-2 table. Other WPT bad-beat tables are approximated by
+// shifting the BB-2 values by how much that table changes the no-information edge.
+const INFO_EV = { uth: { none: -0.021850, flop: 0.045213, dealer: 0.135922, both: 0.223286 }, wpt: { none: -0.030573, flop: 0.006824, dealer: 0.119026, both: 0.164774 } };
+// Each other player's hand you see (2 cards), no dealer/flop card: estimated by sampling (deadfx.js).
+const DEAD_GAIN = { uth: null, wpt: null };
+function renderEdgeCard() {
+  const el = document.getElementById('setEdge'); if (!el) return;
+  const kind = S.peekDealer && S.peekFlop ? 'both' : S.peekDealer ? 'dealer' : S.peekFlop ? 'flop' : 'none';
+  let ev = INFO_EV[S.game][kind], approx = false;
+  if (S.game === 'wpt' && S.tables.badBeat !== 'BB-2' && typeof BASE !== 'undefined' && BASE) {
+    const now = mainEdge(), bb2 = (() => { const keep = S.tables.badBeat; S.tables.badBeat = 'BB-2'; const r = mainEdge(); S.tables.badBeat = keep; return r; })();
+    ev += bb2.edge - now.edge; approx = kind !== 'none';
+  }
+  const seen = kind === 'both' ? "the dealer's card and a flop card" : kind === 'dealer' ? "the dealer's card" : kind === 'flop' ? 'a flop card' : null;
+  const pl = S.game === 'uth' ? 'Blind + Play' : 'Odds + Raise';
+  const side = S.game === 'uth' ? [['Trips', sideEdge(E.GAMES.uth.trips[S.tables.uthTrips])]]
+    : [['Trips Plus', sideEdge(E.GAMES.wpt.trips[S.tables.wptTrips])], ['Pocket Bonus', pocketEdge(E.GAMES.wpt.pocket[S.tables.pocket])]];
+  const dg = DEAD_GAIN[S.game];
+  el.innerHTML = `<div class="ek">${ev < 0 ? 'House edge' : 'Player edge'}${approx ? ' (approx.)' : ''}</div>
+    <div class="ev ${ev < 0 ? 'neg' : 'pos'}">${ev < 0 ? '' : '+'}${(Math.abs(ev) * 100).toFixed(2)}%</div>
+    <div class="ed">Ante + ${pl} with perfect play${seen ? `, seeing ${seen} every hand` : ', no extra cards seen'} — per ante.</div>
+    <div class="ed">Bonus bets: ${side.map(([n, e]) => `${n} ${pctE(e)}`).join(' · ')}</div>
+    ${S.seeOthers ? `<div class="ed foot">${dg != null ? `Each other player's hand you see adds about <b>+${(dg * 100).toFixed(2)}%</b> for you (estimate, with no dealer or flop card).` : "Seeing other players' hands helps a little more; that estimate is still being worked out."}</div>` : ''}`;
+}
 function renderSetSum() {
   if (typeof mode !== 'undefined' && mode === 'guide') renderGuide();
   const parts = S.game === 'uth' ? [`Trips ${S.tables.uthTrips}`] : [`Bad beat ${S.tables.badBeat}`, `Trips+ ${S.tables.wptTrips}`, `Pocket ${S.tables.pocket}`];
@@ -1066,7 +1133,7 @@ function renderSetSum() {
   if (!S.peekDealer) parts.push('no dealer card');
   if (!S.peekFlop) parts.push('no early flop card');
   if (!S.seeOthers) parts.push("no other players' cards");
-  document.getElementById('setSum').textContent = parts.join(' · ');
+  renderEdgeCard();
 }
 
 // ── Worker pool (priority queue) ──────────────────────────────────────────
@@ -1962,6 +2029,7 @@ function quizToAnalyzer(st) {
   const sp = nodeSpec(QZ.cur.h, st);
   S.hole = sp.hole.slice(); S.board = [...sp.board, null, null, null, null, null].slice(0, 5); S.dealer = [sp.dealer[0] ?? null]; S.dead = sp.dead.slice();
   S.active = 'board'; setMode('analyze'); setStreet(st); setTab('hand');
+  if (isMobile()) openSheet(true); // phones: go straight to the results, not the card picker
 }
 function renderQuizBests() {
   const el = document.getElementById('qBests');
@@ -1987,7 +2055,7 @@ function renderQuiz() {
   document.querySelector('#quiz .qhelp').style.display = QZ.tough ? '' : 'none';
   const el = document.getElementById('qBody'), q = QZ.cur;
   document.getElementById('qNote').textContent = `EV per ${units() ? '$' + S.ante + ' ante' : '1-unit ante'}, including the ${E.GAMES[S.game].spot2} bet. Each decision is graded against the best play at that point, assuming perfect play afterwards.`;
-  if (!q) { el.innerHTML = `<div class="empty"><div class="big">Dealing…</div>${QZ.tough ? 'Looking for a hand with a tough spot — this can take a few tries.' : ''}</div>`; return; }
+  if (!q) { el.innerHTML = `<div class="empty"><div class="big">Dealing…</div>${QZ.tough ? 'Looking for a hand with a tough spot — this can take a few seconds.' : ''}</div>`; return; }
   const h = q.h, shown = q.done ? q.picks[q.picks.length - 1].st : q.stage;
   const nBoard = shown === 'preflop' ? (h.peekF ? 1 : 0) : shown === 'flop' ? 3 : 5;
   const board = h.board.map((c, i) => i < nBoard ? c : 'h');
@@ -2000,7 +2068,8 @@ function renderQuiz() {
       ${h.dealer.length ? `<div class="qgroup"><div class="k">Dealer shows</div><div class="cards">${pcs([h.dealer[0], 'h'])}</div></div>` : ''}
       ${h.dead.length ? `<div class="qgroup"><div class="k">Other players' cards</div><div class="cards">${[0, 2, 4].filter(i => i < h.dead.length).map(i => pcs(h.dead.slice(i, i + 2).sort((x, y) => y - x))).join('<span class="slotcards"><span class="gap"></span></span>')}</div></div>` : ''}
     </div>`;
-  if (q.picks.length && !q.done) x += `<div class="qpath">${q.picks.map(p => `<span>${QNAME[p.st]}: <b>${ACT_LABEL[p.k]}</b></span>`).join('')}</div>`;
+  // The path line and the prompt line are always there, so the buttons (and then Next hand) stay put.
+  x += `<div class="qpath">${q.picks.map(p => `<span>${QNAME[p.st]}: <b>${ACT_LABEL[p.k]}</b></span>`).join('')}</div>`;
   if (!q.done) {
     const acts = quizActions(q.stage, S.game);
     x += `<div class="qprompt">What's your play? <span style="color:var(--faint)">(keys 1–${acts.length})</span></div>
@@ -2008,7 +2077,9 @@ function renderQuiz() {
   } else {
     const g = q.grade, [word, tone] = gradeWord(g.lost);
     const offLine = g.rows.find(r => r.k === 'check' && r.best !== 'check');
-    x += `<div class="qres ${tone}"><div class="big">${word}</div>
+    x += `<div class="qprompt qverdict ${tone}"><b>${word}</b></div>
+      <div class="qacts"><button class="qact qnextbtn" id="qNext">Next hand ▸</button></div>
+      <div class="qres ${tone}">
       <div class="why">${g.lost < 1e-9 ? 'Every decision matched the best play.' : `You gave up <b>${money(g.lost).replace('+', '')}</b>${unitWord()} of EV this hand.`}
       ${offLine && g.bestEnd ? ` With best play you'd have made your bet ${g.bestEnd.st === 'preflop' ? 'preflop' : 'on the flop'} (<b>${ACT_LABEL[g.bestEnd.k]}</b>), before ${g.bestEnd.st === 'preflop' ? 'the flop came' : 'the turn and river came'}.` : ''}</div>
       <table class="qgrade"><thead><tr><th>Street</th><th>You</th><th>Best</th><th>EV vs other play</th><th></th></tr></thead><tbody>
@@ -2017,8 +2088,7 @@ function renderQuiz() {
         <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${r.loss < 1e-9 ? '+' + money(r.gain).replace(/[+−]/, '') : '−' + money(r.loss).replace(/[+−]/, '')}</td>
         <td><button class="linkbtn" data-an="${r.st}">Analyze</button></td></tr>
         <tr class="qevs"><td colspan="5">${quizActions(r.st, S.game).map(k => `${ACT_LABEL[k]} <b>${money(r.acts[k])}</b>`).join(' · ')}</td></tr>`).join('')}
-      </tbody></table>
-      <div class="qnext"><button class="primary" id="qNext">Next hand ▸</button></div></div>`;
+      </tbody></table></div>`;
   }
   el.innerHTML = x;
   el.querySelectorAll('.qact[data-a]').forEach(b => b.onclick = () => quizPick(b.dataset.a));
@@ -2213,7 +2283,7 @@ function renderGuide() {
         <tr><td>Anything else</td><td class="r">Loses</td></tr></tbody></table></div>
       <p>House edge: <b>${pctE(pLo)} to ${pctE(pHi)}</b> depending on the pay table — <b>${pctE(pocketEdge(E.GAMES.wpt.pocket[S.tables.pocket]))}</b> for ${S.tables.pocket}.${uth ? ' Some Ultimate Texas tables use a longer version (often called Ultimate Pairs: AA 30, AKs 25, AQs/AJs 20, AKo 15, KK–JJ 10, AQo/AJo 5, TT–22 3) with about an 8.9% edge.' : ''}</p>${varies}`,
     play: `<h4>${play} bet (your decision during the hand)</h4><p>The one bet you choose to make as the cards come out: <b>${uth ? '3x or 4x' : '3x'}</b> your Ante before the flop, <b>2x</b> on the flop, or <b>1x</b> on the river (or fold). It pays <b>1 to 1</b> whenever you beat the dealer — qualified or not — loses when you lose, and pushes on a tie.</p>
-      <div class="note-strong"><b>This bet is where you win.</b> ${gv ? `With perfect play the Ante and ${s2} together lose ${amt(gv.as)} per hand on average; the ${play} bet wins back ${amt(gv.play)}, leaving the ${pctE(me.edge)} house edge.` : ''} So when you're favored, bet <b>as much as you can, as early as you can</b> — ${max}x preflop with a good hand, not a smaller raise or a wait for the flop. Every time you're ahead and check, you give back money the ${play} bet should have won.</div>`,
+      <div class="note-strong"><b>This bet is where you win.</b> ${gv ? `With perfect play the Ante and ${s2} together lose ${amt(gv.as)} per hand on average; the ${play} bet wins back ${amt(gv.play)}, leaving the ${pctE(me.edge)} house edge.` : ''} So when you're favored, bet <b>as much as you can, as early as you can</b>: with a good starting hand that means the full ${max}x before the flop, rather than checking and betting 2x later. Every time you're ahead and check, you give back money the ${play} bet should have won.</div>`,
   };
   detail.odds = detail.blind;
   let h = `<h2>The game</h2>
@@ -2308,6 +2378,11 @@ document.querySelectorAll('#gameSeg button').forEach(b => b.onclick = () => setG
 document.querySelectorAll('#streetSeg button').forEach(b => b.onclick = () => setStreet(b.dataset.s));
 document.querySelectorAll('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.t));
 document.querySelectorAll('#modeSeg button').forEach(b => b.onclick = () => setMode(b.dataset.m));
+const openSettings = open => { document.body.classList.toggle('set-open', open); if (open) renderEdgeCard(); };
+document.getElementById('setBtn').onclick = () => openSettings(true);
+document.getElementById('setClose').onclick = () => openSettings(false);
+document.getElementById('setBg').onclick = () => openSettings(false);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('set-open')) openSettings(false); });
 document.getElementById('mbar').onclick = () => openSheet(true);
 document.getElementById('sheetClose').onclick = () => openSheet(false);
 document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.board = [null, null, null, null, null]; S.dealer = [null]; S.dead = []; S.active = 'hole'; render(); onCardsChanged(); };
