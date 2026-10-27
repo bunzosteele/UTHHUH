@@ -170,6 +170,44 @@
 
   .mbar { display: none; }
 
+  /* Quiz */
+  .quiz { display: none; }
+  body.quiz-mode .quiz { display: block; }
+  body.quiz-mode .layout, body.quiz-mode .mbar { display: none !important; }
+  .qbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+  .qopts { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+  .qlbl { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.06em; }
+  .qscore { display: flex; gap: 14px; flex-wrap: wrap; align-items: baseline; font-size: 13px; color: var(--dim); }
+  .qscore b { font-family: var(--mono); color: var(--ink); font-size: 15px; }
+  .qscore .clear { margin-left: 4px; }
+  .qhead { font-family: var(--serif); font-size: 22px; font-weight: 600; }
+  .qhead small { font-family: 'IBM Plex Sans'; font-size: 14px; color: var(--faint); font-weight: 400; margin-left: 8px; }
+  .qtable { display: flex; flex-wrap: wrap; gap: 14px 26px; margin: 16px 0 6px; }
+  .qgroup .k { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .qgroup .cards { display: flex; gap: 6px; align-items: center; }
+  .qgroup .pc { cursor: default; width: 46px; height: 64px; font-size: 20px; }
+  .qgroup .pc .x { display: none !important; }
+  .qgroup .pc.hidden { background: repeating-linear-gradient(45deg, #1c3a2f 0 6px, #17322a 6px 12px); border-color: #2c5545; box-shadow: none; }
+  .qprompt { margin: 18px 0 10px; color: var(--dim); }
+  .qacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+  .qact { padding: 16px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--felt-2); color: var(--ink); font: 700 18px var(--serif); cursor: pointer; transition: transform .08s, border-color .15s; }
+  .qact:hover:not(:disabled) { border-color: var(--gold); transform: translateY(-1px); }
+  .qact small { display: block; font: 500 12px 'IBM Plex Sans'; color: var(--faint); margin-top: 3px; }
+  .qact:disabled { cursor: default; }
+  .qact.right { border-color: var(--good); background: rgba(87,214,141,0.14); }
+  .qact.wrong { border-color: var(--bad); background: rgba(255,122,110,0.12); }
+  .qact.best { box-shadow: inset 0 0 0 2px var(--good); }
+  .qres { margin-top: 16px; border-radius: 12px; padding: 14px 16px; border: 1px solid; }
+  .qres.ok { border-color: rgba(87,214,141,0.6); background: rgba(87,214,141,0.07); }
+  .qres.no { border-color: rgba(255,122,110,0.55); background: rgba(255,122,110,0.06); }
+  .qres .big { font-family: var(--serif); font-size: 24px; font-weight: 800; }
+  .qres.ok .big { color: var(--good); } .qres.no .big { color: var(--bad); }
+  .qres .why { color: var(--dim); margin-top: 4px; }
+  .qres .why b { color: var(--ink); font-family: var(--mono); }
+  .qnext { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .qnext button { padding: 10px 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-2); color: var(--ink); font-weight: 600; font-size: 15px; cursor: pointer; }
+  .qnext button.primary { background: var(--gold); color: #1c1606; border-color: var(--gold); }
+
   /* ── Mobile: one column; results become a bottom sheet ── */
   @media (max-width: 860px) {
     .wrap { padding: 16px 12px 96px; }
@@ -191,6 +229,8 @@
     .sheet-head::before { content: ''; position: absolute; left: 50%; top: 5px; width: 40px; height: 4px; border-radius: 2px; background: var(--line); transform: translateX(-50%); }
     .sheet-close { background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 8px; padding: 5px 12px; font-size: 14px; }
     .pane .tabs { margin: 6px 0 12px; }
+    .qgroup .pc { width: 40px; height: 56px; font-size: 18px; }
+    .qhead { font-size: 19px; }
     .mbar { display: flex; position: fixed; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 40; align-items: center; gap: 12px;
             background: #0f2a20; border: 1px solid var(--gold-dim); border-radius: 14px; padding: 11px 14px; box-shadow: 0 8px 30px rgba(0,0,0,.55); cursor: pointer; }
     .mbar .mact { font-family: var(--serif); font-weight: 800; font-size: 20px; }
@@ -208,6 +248,10 @@
 <div class="wrap">
   <header>
     <h1>Hold'em <span>EV</span></h1>
+    <div class="seg" id="modeSeg">
+      <button data-m="analyze">Analyze</button>
+      <button data-m="quiz">Quiz</button>
+    </div>
     <div class="seg" id="gameSeg">
       <button data-g="uth">Ultimate Texas</button>
       <button data-g="wpt">WPT Heads-Up</button>
@@ -241,13 +285,28 @@
     </aside>
   </div>
 
+  <section class="panel quiz" id="quiz">
+    <div class="qbar">
+      <div class="qopts">
+        <span class="qlbl">Streets</span>
+        <label class="chk"><input type="checkbox" data-qs="preflop"> Preflop</label>
+        <label class="chk"><input type="checkbox" data-qs="flop"> Flop</label>
+        <label class="chk"><input type="checkbox" data-qs="river"> River</label>
+        <label class="chk"><input type="checkbox" id="qClose"> Close decisions only</label>
+      </div>
+      <div class="qscore" id="qScore"></div>
+    </div>
+    <div id="qBody"></div>
+    <div class="note" id="qNote"></div>
+  </section>
+
   <details class="panel settings" id="settings">
     <summary><span class="ptitle">Table settings</span><span class="sum" id="setSum"></span></summary>
     <div class="opts" id="opts"></div>
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 20:39</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 21:19</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -723,26 +782,28 @@ const S = {
   game: store.get('uth.game', 'uth'), street: store.get('uth.street', 'preflop'), tab: store.get('uth.tab', 'hand'),
   tables: Object.assign({ uthTrips: 'UTH-01', badBeat: 'BB-1', wptTrips: 'TP-1', pocket: 'PB-1' }, store.get('uthTables', {})),
   wptRaises: Object.assign({ 3: true, 2: false, 1: false }, store.get('uthRaises', {})),
-  ante: store.get('uth.ante', 0), peek: store.get('uth.peek', true), // peek: you can see the dealer's card and a flop card before the flop
+  ante: store.get('uth.ante', 0),
+  // What you can see before the flop (each optional): the dealer's card, and one flop card
+  peekDealer: store.get('uth.peekDealer', store.get('uth.peek', true)), peekFlop: store.get('uth.peekFlop', store.get('uth.peek', true)),
   hole: [null, null], board: [null, null, null, null, null], dealer: [null], dead: [],
   active: 'hole', kpRank: null,
 };
 function saveSettings() {
   store.set('uth.game', S.game); store.set('uth.street', S.street); store.set('uth.tab', S.tab); store.set('uthTables', S.tables);
-  store.set('uthRaises', S.wptRaises); store.set('uth.ante', S.ante); store.set('uth.peek', S.peek);
+  store.set('uthRaises', S.wptRaises); store.set('uth.ante', S.ante); store.set('uth.peekDealer', S.peekDealer); store.set('uth.peekFlop', S.peekFlop);
 }
 
 // The board is always five slots. Preflop uses the first (a flop card you've seen), the flop
 // the first three, the river all five; the rest stay visible but dimmed, so the layout never moves.
 // Entering board cards moves the street along: 0–2 cards → preflop, 3 → flop, 4–5 → river.
-const boardLimit = () => S.street === 'preflop' ? (S.peek ? 1 : 0) : S.street === 'flop' ? 3 : 5;
+const boardLimit = () => S.street === 'preflop' ? (S.peekFlop ? 1 : 0) : S.street === 'flop' ? 3 : 5;
 function boardSlots() { return S.board.slice(0, boardLimit()); }
-const dealerCards = () => S.peek ? S.dealer.filter(c => c !== null) : []; // hidden (and ignored) when the setting is off
+const dealerCards = () => S.peekDealer ? S.dealer.filter(c => c !== null) : []; // hidden (and ignored) when the setting is off
 function groups() {
-  const hint = { preflop: S.peek ? 'a flop card you saw, or enter the flop' : 'enter the flop to move on', flop: 'add the turn and river to move on', river: 'all five cards' }[S.street];
+  const hint = { preflop: S.peekFlop ? 'a flop card you saw, or enter the flop' : 'enter the flop to move on', flop: 'add the turn and river to move on', river: 'all five cards' }[S.street];
   return [
     { id: 'hole', label: 'Your hand', hint: '2 cards', arr: S.hole, limit: 2, need: 2 },
-    ...(S.peek ? [{ id: 'dealer', label: 'Dealer card', hint: 'optional', arr: S.dealer, limit: 1, need: 0 }] : []),
+    ...(S.peekDealer ? [{ id: 'dealer', label: 'Dealer card', hint: 'optional', arr: S.dealer, limit: 1, need: 0 }] : []),
     { id: 'board', label: 'Board', hint, arr: S.board, limit: 5, need: S.street === 'preflop' ? 0 : boardLimit(), wide: true },
     { id: 'dead', label: 'Other players\' cards', hint: 'optional · up to 12', arr: S.dead, open: true, wide: true, need: 0 },
   ];
@@ -832,7 +893,7 @@ function clearGroup(gid) { const arr = groupArr(gid); if (gid === 'dead') arr.le
 
 function renderOpts() {
   const sel = (key, label, options) => `<div class="opt"><label>${label}</label><select data-t="${key}">${options.map(([v, t]) => `<option value="${v}" ${S.tables[key] === v ? 'selected' : ''}>${t}</option>`).join('')}</select></div>`;
-  let h = `<div class="opt"><label>Before the flop</label><label class="chk"><input type="checkbox" id="peekIn" ${S.peek ? 'checked' : ''}> I can see the dealer's card and a flop card</label></div>`;
+  let h = `<div class="opt"><label>Before the flop I can see</label><label class="chk"><input type="checkbox" id="peekDealerIn" ${S.peekDealer ? 'checked' : ''}> the dealer's card</label><label class="chk"><input type="checkbox" id="peekFlopIn" ${S.peekFlop ? 'checked' : ''}> a flop card</label></div>`;
   h += `<div class="opt"><label>Ante (blank = show EV in antes)</label><input class="money" id="anteIn" inputmode="decimal" placeholder="e.g. 50" value="${S.ante || ''}"></div>`;
   if (S.game === 'uth') {
     h += sel('uthTrips', 'Trips pay table', Object.entries(E.GAMES.uth.trips).map(([k, t]) => [k, `${k} · FH ${t[6]} / Fl ${t[5]} / St ${t[4]}${t[7] !== 30 ? ' / Q ' + t[7] : ''}`]));
@@ -847,11 +908,9 @@ function renderOpts() {
   el.innerHTML = h;
   el.querySelectorAll('select[data-t]').forEach(s => s.onchange = () => { S.tables[s.dataset.t] = s.value; saveSettings(); renderSetSum(); onRulesChanged(); });
   el.querySelectorAll('input[data-r]').forEach(i => i.onchange = () => { S.wptRaises[i.dataset.r] = i.checked; saveSettings(); renderSetSum(); onRulesChanged(); });
-  document.getElementById('peekIn').onchange = e => {
-    S.peek = e.target.checked; saveSettings(); renderSetSum();
-    if (!S.peek && S.active === 'dealer') S.active = 'hole';
-    render(); onCardsChanged();
-  };
+  const peekChanged = () => { saveSettings(); renderSetSum(); if (!S.peekDealer && S.active === 'dealer') S.active = 'hole'; render(); onCardsChanged(); };
+  document.getElementById('peekDealerIn').onchange = e => { S.peekDealer = e.target.checked; peekChanged(); };
+  document.getElementById('peekFlopIn').onchange = e => { S.peekFlop = e.target.checked; peekChanged(); };
   document.getElementById('anteIn').oninput = e => {
     const v = parseFloat(String(e.target.value).replace(/[$,]/g, ''));
     S.ante = v > 0 ? v : 0; saveSettings(); renderSetSum(); renderResults(); renderChart(); renderMbar();
@@ -861,7 +920,8 @@ function renderOpts() {
 function renderSetSum() {
   const parts = S.game === 'uth' ? [`Trips ${S.tables.uthTrips}`] : [`Bad beat ${S.tables.badBeat}`, `Trips+ ${S.tables.wptTrips}`, `Pocket ${S.tables.pocket}`, `Raise ${[3, 2, 1].filter(m => S.wptRaises[m]).join('/')}x`];
   parts.push(S.ante ? `Ante $${S.ante}` : 'EV in antes');
-  if (!S.peek) parts.push('no dealer/flop peek');
+  if (!S.peekDealer) parts.push('no dealer card');
+  if (!S.peekFlop) parts.push('no early flop card');
   document.getElementById('setSum').textContent = parts.join(' · ');
 }
 
@@ -1400,6 +1460,144 @@ seedCache.list = (opts = {}) => {
 };
 window.seedCache = seedCache;
 
+// ── Quiz ──────────────────────────────────────────────────────────────────
+// Random situations (preflop / flop / river, plus a dealer card and/or an early flop card when
+// those settings are on). Each is solved exactly; the next one is prepared while you answer.
+const QZ = {
+  streets: Object.assign({ preflop: true, flop: true, river: true }, store.get('uth.qStreets', {})),
+  close: store.get('uth.qClose', false),
+  stats: Object.assign({ n: 0, right: 0, lost: 0, streak: 0, best: 0 }, store.get('uth.qStats', {})),
+  cur: null, next: null, seq: 0,
+};
+const saveQuiz = () => { store.set('uth.qStreets', QZ.streets); store.set('uth.qClose', QZ.close); store.set('uth.qStats', QZ.stats); };
+const quizKey = () => [S.game, variantKey(), S.peekDealer, S.peekFlop, QZ.close, Object.keys(QZ.streets).filter(k => QZ.streets[k]).join()].join('|');
+function quizActions(street, game) {
+  if (street === 'flop') return ['bet2', 'check'];
+  if (street === 'river') return ['bet1', 'fold'];
+  return game === 'uth' ? ['bet4', 'bet3', 'check'] : [...[3, 2, 1].filter(m => S.wptRaises[m]).map(m => 'bet' + m), 'check'];
+}
+function quizDeal() {
+  const deck = [...Array(52).keys()];
+  for (let i = 51; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
+  const streets = Object.keys(QZ.streets).filter(k => QZ.streets[k]);
+  const street = streets[Math.floor(Math.random() * streets.length)] || 'preflop';
+  const hole = [deck.pop(), deck.pop()];
+  const board = street === 'flop' ? [deck.pop(), deck.pop(), deck.pop()] : street === 'river' ? [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()]
+    : (S.peekFlop && Math.random() < 0.5 ? [deck.pop()] : []);
+  const dealer = S.peekDealer && Math.random() < 0.5 ? [deck.pop()] : [];
+  return { hole, board, dealer, dead: [], street };
+}
+async function quizSolve(sp) {
+  if (sp.street === 'preflop' && !sp.board.length && !sp.dealer.length && BASE) {
+    const b = BASE[handClass(sp.hole)]?.games[S.game === 'uth' ? 'uth' : 'wpt:' + S.tables.badBeat];
+    if (b) return Object.fromEntries(Object.entries(b.actions).map(([k, x]) => [k, x.total]));
+  }
+  const r = await runJob({ type: 'solve', spec: sp, game: S.game, opts: gameOpts() }, { prio: 2 });
+  return r.res.actions;
+}
+async function quizMake() {
+  const key = quizKey();
+  for (let tries = 0; ; tries++) {
+    const sp = quizDeal(), acts = await quizSolve(sp);
+    const order = quizActions(sp.street, S.game).map(k => acts[k]).sort((a, b) => b - a);
+    if (!QZ.close || order[0] - order[1] < 0.25 || tries >= 12) return { sp, acts, key };
+  }
+}
+function quizPrefetch() { QZ.next = quizMake().catch(() => null); }
+async function quizNew() {
+  const seq = ++QZ.seq;
+  if (!QZ.next) quizPrefetch();
+  QZ.cur = null; renderQuiz();
+  let q = await QZ.next;
+  if (seq !== QZ.seq) return;
+  if (!q || q.key !== quizKey()) { quizPrefetch(); q = await QZ.next; if (seq !== QZ.seq) return; } // settings changed since it was dealt
+  QZ.cur = { ...q, picked: null };
+  quizPrefetch(); // get the next one ready while this one is answered
+  renderQuiz();
+}
+function quizPick(k) {
+  const q = QZ.cur; if (!q || q.picked) return;
+  q.picked = k;
+  const acts = quizActions(q.sp.street, S.game), best = acts.reduce((a, x) => q.acts[x] > q.acts[a] ? x : a, acts[0]);
+  const loss = q.acts[best] - q.acts[k], ok = loss < 1e-9;
+  const st = QZ.stats; st.n++; st.lost += loss;
+  if (ok) { st.right++; st.streak++; st.best = Math.max(st.best, st.streak); } else st.streak = 0;
+  saveQuiz(); renderQuiz();
+}
+function quizToAnalyzer() {
+  const sp = QZ.cur.sp;
+  S.hole = sp.hole.slice(); S.board = [...sp.board, null, null, null, null, null].slice(0, 5); S.dealer = [sp.dealer[0] ?? null]; S.dead = [];
+  S.active = 'board'; setMode('analyze'); setStreet(sp.street); setTab('hand');
+}
+function renderQuizScore() {
+  const st = QZ.stats;
+  document.getElementById('qScore').innerHTML = st.n
+    ? `<span>Answered <b>${st.n}</b></span><span>Correct <b>${Math.round(st.right / st.n * 100)}%</b></span><span>Streak <b>${st.streak}</b> <small>(best ${st.best})</small></span>
+       <span>Avg EV lost <b>${money(st.lost / st.n).replace('+', '')}</b></span><button class="clear" id="qReset">reset</button>`
+    : `<span>Pick the play with the highest EV. Your score shows here.</span>`;
+  document.getElementById('qReset')?.addEventListener('click', () => { if (confirm('Reset your quiz score?')) { QZ.stats = { n: 0, right: 0, lost: 0, streak: 0, best: 0 }; saveQuiz(); renderQuizScore(); } });
+}
+function renderQuiz() {
+  renderQuizScore();
+  document.querySelectorAll('#quiz [data-qs]').forEach(c => c.checked = !!QZ.streets[c.dataset.qs]);
+  document.getElementById('qClose').checked = QZ.close;
+  const el = document.getElementById('qBody'), q = QZ.cur;
+  if (!q) { el.innerHTML = `<div class="empty"><div class="big">Dealing…</div>${QZ.close ? 'Looking for a close decision — this can take a few tries.' : ''}</div>`; return; }
+  const sp = q.sp, game = E.GAMES[S.game];
+  const street = { preflop: 'Preflop', flop: 'On the flop', river: 'On the river' }[sp.street];
+  const extra = [sp.street === 'preflop' && sp.board.length && 'you saw a flop card', sp.dealer.length && 'you saw a dealer card'].filter(Boolean);
+  const boardCards = sp.street === 'preflop'
+    ? [sp.board[0] ?? 'h', 'h', 'h', 'h', 'h'] : sp.street === 'flop' ? [...sp.board, 'h', 'h'] : sp.board;
+  const pcs = arr => arr.map(c => c === 'h' ? '<div class="pc hidden"></div>' : cardHTML(c)).join('');
+  let h = `<div class="qhead">${street}${extra.length ? `<small>${extra.join(' · ')}</small>` : ''}</div>
+    <div class="qtable">
+      <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs(sp.hole)}</div></div>
+      <div class="qgroup"><div class="k">Board</div><div class="cards">${pcs(boardCards.slice(0, 3))}<span class="slotcards"><span class="gap"></span></span>${pcs(boardCards.slice(3))}</div></div>
+      ${sp.dealer.length ? `<div class="qgroup"><div class="k">Dealer shows</div><div class="cards">${pcs([sp.dealer[0], 'h'])}</div></div>` : ''}
+    </div>`;
+  const acts = quizActions(sp.street, S.game);
+  const best = acts.reduce((a, x) => q.acts[x] > q.acts[a] ? x : a, acts[0]);
+  h += `<div class="qprompt">${q.picked ? '' : `What's your play? <span style="color:var(--faint)">(keys 1–${acts.length})</span>`}</div><div class="qacts">${acts.map((k, i) => {
+    const cl = q.picked ? (k === q.picked ? (k === best || q.acts[k] >= q.acts[best] - 1e-9 ? 'right' : 'wrong') : '') + (k === best ? ' best' : '') : '';
+    return `<button class="qact ${cl}" data-a="${k}" ${q.picked ? 'disabled' : ''}>${ACT_LABEL[k]}${q.picked ? `<small>EV ${money(q.acts[k])}</small>` : ''}</button>`;
+  }).join('')}</div>`;
+  if (q.picked) {
+    const loss = q.acts[best] - q.acts[q.picked], ok = loss < 1e-9;
+    const second = acts.filter(k => k !== best).reduce((a, x) => q.acts[x] > q.acts[a] ? x : a, acts.find(k => k !== best));
+    const gap = q.acts[best] - q.acts[second];
+    h += `<div class="qres ${ok ? 'ok' : 'no'}"><div class="big">${ok ? 'Correct' : 'Not quite'}</div>
+      <div class="why">${ok
+        ? `${ACT_LABEL[best]} is best, ahead of ${ACT_LABEL[second].toLowerCase()} by <b>${money(gap).replace('+', '')}</b>${unitWord()}${gap < 0.05 ? ' — a close one' : ''}.`
+        : `The best play was <b>${ACT_LABEL[best]}</b>. ${ACT_LABEL[q.picked]} costs <b>${money(loss).replace('+', '')}</b>${unitWord()} on average${loss < 0.05 ? ' — very close' : ''}.`}</div>
+      <div class="qnext"><button class="primary" id="qNext">Next hand ▸</button><button id="qAnalyze">Analyze this hand</button></div></div>`;
+  }
+  el.innerHTML = h;
+  el.querySelectorAll('.qact[data-a]').forEach(b => b.onclick = () => quizPick(b.dataset.a));
+  document.getElementById('qNext')?.addEventListener('click', quizNew);
+  document.getElementById('qAnalyze')?.addEventListener('click', quizToAnalyzer);
+  document.getElementById('qNote').textContent = `EV per ${units() ? '$' + S.ante + ' ante' : '1-unit ante'}, including the ${game.spot2} bet, with perfect play on later streets.`;
+}
+document.querySelectorAll('#quiz [data-qs]').forEach(c => c.onchange = () => {
+  QZ.streets[c.dataset.qs] = c.checked;
+  if (!Object.values(QZ.streets).some(Boolean)) { QZ.streets[c.dataset.qs] = true; c.checked = true; } // keep at least one
+  saveQuiz(); QZ.next = null; if (!QZ.cur?.picked) quizNew();
+});
+document.getElementById('qClose').onchange = e => { QZ.close = e.target.checked; saveQuiz(); QZ.next = null; if (!QZ.cur?.picked) quizNew(); };
+document.addEventListener('keydown', e => {
+  if (!document.body.classList.contains('quiz-mode') || e.target.matches('input, select, textarea')) return;
+  const q = QZ.cur; if (!q) return;
+  const acts = quizActions(q.sp.street, S.game);
+  if (!q.picked && /^[1-9]$/.test(e.key) && acts[+e.key - 1]) { e.preventDefault(); quizPick(acts[+e.key - 1]); }
+  else if (q.picked && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); quizNew(); }
+});
+let mode = store.get('uth.mode', 'analyze');
+function setMode(m) {
+  mode = m; store.set('uth.mode', m);
+  document.querySelectorAll('#modeSeg button').forEach(x => x.classList.toggle('on', x.dataset.m === m));
+  document.body.classList.toggle('quiz-mode', m === 'quiz');
+  if (m === 'quiz') { if (!QZ.cur || QZ.cur.key !== quizKey()) { QZ.next = null; quizNew(); } else renderQuiz(); }
+}
+
 // ── Wiring ────────────────────────────────────────────────────────────────
 let BASE = null;
 function render() { renderSlots(); }
@@ -1416,6 +1614,7 @@ function setGame(g) {
   S.game = g; saveSettings();
   document.querySelectorAll('#gameSeg button').forEach(x => x.classList.toggle('on', x.dataset.g === g));
   renderOpts(); onRulesChanged();
+  if (mode === 'quiz' && !QZ.cur?.picked) { QZ.next = null; quizNew(); }
 }
 function setStreet(s, quiet) {
   S.street = s; saveSettings();
@@ -1436,6 +1635,7 @@ function renderToken() {
 document.querySelectorAll('#gameSeg button').forEach(b => b.onclick = () => setGame(b.dataset.g));
 document.querySelectorAll('#streetSeg button').forEach(b => b.onclick = () => setStreet(b.dataset.s));
 document.querySelectorAll('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.t));
+document.querySelectorAll('#modeSeg button').forEach(b => b.onclick = () => setMode(b.dataset.m));
 document.getElementById('mbar').onclick = () => openSheet(true);
 document.getElementById('sheetClose').onclick = () => openSheet(false);
 document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.board = [null, null, null, null, null]; S.dealer = [null]; S.dead = []; S.active = 'hole'; render(); onCardsChanged(); };
@@ -1450,6 +1650,7 @@ document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.b
   setKvStatus(workerBase() ? `Shared cache: ${CFG.kv_prefix}` : 'Shared cache: off (no config.json)');
   try { const b = await fetch('baselines.json'); if (b.ok) BASE = await b.json(); } catch (_) {}
   CH = null; buildChart();
+  setMode(mode);
 })();
 </script>
 </body>
