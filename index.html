@@ -362,7 +362,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 11:29</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 11:36</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -1808,11 +1808,18 @@ async function quizMake() {
     // Tough spots: walk the best line street by street, solving only as far as needed, and keep the
     // hand once it passes a close call (then fill in the remaining streets). Several deals are tried
     // at once, one per worker, since hands with seen cards take a second or two each.
+    // A hand with other players' cards only counts if those cards matter at the tough spot: without them
+    // the decision flips, or moves by at least the tough-spot margin (so they're never just decoration).
+    const signed = (acts, st) => { const [a, b] = quizActions(st, S.game); return acts[a] - acts[b]; };
     const tryOne = async h => {
       h.acts = {};
       for (const st of QSTREETS) {
         h.acts[st] = await nodeSolve(nodeSpec(h, st));
-        if (qGap(h.acts[st], st) < toughLimit(st)) return h;
+        if (qGap(h.acts[st], st) < toughLimit(st)) {
+          if (!h.dead.length) return h;
+          const m1 = signed(h.acts[st], st), m0 = signed(await nodeSolve({ ...nodeSpec(h, st), dead: [] }), st);
+          return (m0 >= 0) !== (m1 >= 0) || Math.abs(m1 - m0) >= toughLimit(st) ? h : null;
+        }
         if (endsHand(qBest(h.acts[st], st), st)) return null;
       }
       return null;
