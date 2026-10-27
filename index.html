@@ -200,6 +200,16 @@
   .qact:hover:not(:disabled) { border-color: var(--gold); transform: translateY(-1px); }
   .qact small { display: block; font: 500 12px 'IBM Plex Sans'; color: var(--faint); margin-top: 3px; }
   .qact:disabled { cursor: default; }
+  .qhelp { text-transform: none; letter-spacing: 0; font-size: 12px; }
+  .qpath { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 4px; color: var(--dim); font-size: 14px; }
+  .qpath b { color: var(--ink); }
+  table.qgrade { margin-top: 12px; }
+  table.qgrade td { vertical-align: middle; }
+  table.qgrade tr.qevs td { padding-top: 0; font-size: 12px; color: var(--faint); border-top: none; }
+  table.qgrade tr.qevs td b { font-family: var(--mono); color: var(--dim); font-weight: 500; }
+  .qtough { font-size: 11px; color: var(--gold); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
+  .resetbtn { padding: 8px 14px; border-radius: 9px; border: 1px solid var(--bad); background: rgba(255,122,110,0.08); color: var(--bad); font-weight: 600; cursor: pointer; }
+  .linkbtn { background: none; border: none; color: var(--gold); cursor: pointer; font-size: 13px; padding: 0; text-decoration: underline; }
   .qact.right { border-color: var(--good); background: rgba(87,214,141,0.14); }
   .qact.wrong { border-color: var(--bad); background: rgba(255,122,110,0.12); }
   .qact.best { box-shadow: inset 0 0 0 2px var(--good); }
@@ -311,11 +321,8 @@
   <section class="panel quiz" id="quiz">
     <div class="qbar">
       <div class="qopts">
-        <span class="qlbl">Streets</span>
-        <label class="chk"><input type="checkbox" data-qs="preflop"> Preflop</label>
-        <label class="chk"><input type="checkbox" data-qs="flop"> Flop</label>
-        <label class="chk"><input type="checkbox" data-qs="river"> River</label>
-        <label class="chk"><input type="checkbox" id="qClose"> Close decisions only</label>
+        <label class="chk"><input type="checkbox" id="qTough"> Tough spots</label>
+        <span class="qlbl qhelp">every hand has a close call somewhere along the best line</span>
       </div>
       <div class="qscore" id="qScore"></div>
     </div>
@@ -329,7 +336,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 21:41</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 22:58</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -927,8 +934,13 @@ function renderOpts() {
     h += sel('pocket', 'Pocket Bonus', Object.entries(E.GAMES.wpt.pocket).map(([k, t]) => [k, `${k} · ${t.join('/')}`]));
     h += `<div class="opt"><label>Preflop raises allowed</label>${[3, 2, 1].map(m => `<label class="chk"><input type="checkbox" data-r="${m}" ${S.wptRaises[m] ? 'checked' : ''} ${m === 3 ? 'disabled' : ''}>${m}x</label>`).join('')}</div>`;
   }
+  h += `<div class="opt"><label>Quiz score</label><button class="resetbtn" id="qResetBtn">Reset quiz stats</button></div>`;
   const el = document.getElementById('opts');
   el.innerHTML = h;
+  document.getElementById('qResetBtn').onclick = () => {
+    if (!confirm('Reset your quiz stats (hands, perfect %, streaks, EV lost)?')) return;
+    QZ.stats = { n: 0, perfect: 0, lost: 0, streak: 0, best: 0 }; saveQuiz(); renderQuizScore();
+  };
   el.querySelectorAll('select[data-t]').forEach(s => s.onchange = () => { S.tables[s.dataset.t] = s.value; saveSettings(); renderSetSum(); onRulesChanged(); });
   el.querySelectorAll('input[data-r]').forEach(i => i.onchange = () => { S.wptRaises[i.dataset.r] = i.checked; saveSettings(); renderSetSum(); onRulesChanged(); });
   const peekChanged = () => { saveSettings(); renderSetSum(); if (!S.peekDealer && S.active === 'dealer') S.active = 'hole'; render(); onCardsChanged(); };
@@ -1532,47 +1544,63 @@ seedCache.list = (opts = {}) => {
 };
 window.seedCache = seedCache;
 
-// ── Quiz ──────────────────────────────────────────────────────────────────
-// Random situations (preflop / flop / river, plus a dealer card and/or an early flop card when
-// those settings are on). Each is solved exactly; the next one is prepared while you answer.
+// ── Quiz: play whole hands ────────────────────────────────────────────────
+// Every hand starts preflop and is played until you bet (or fold on the river). The cards are all
+// dealt up front and each decision point is solved exactly; at the end every decision you made is
+// graded against the best play at that point, and the EV you gave up is added up for the hand.
+// The dealer card / early flop card appear at random when those settings are on.
+const TOUGH = 0.15; // a "tough spot": best option ahead of the next one by less than this (antes)
 const QZ = {
-  streets: Object.assign({ preflop: true, flop: true, river: true }, store.get('uth.qStreets', {})),
-  close: store.get('uth.qClose', false),
-  stats: Object.assign({ n: 0, right: 0, lost: 0, streak: 0, best: 0 }, store.get('uth.qStats', {})),
+  tough: store.get('uth.qTough', false),
+  stats: Object.assign({ n: 0, perfect: 0, lost: 0, streak: 0, best: 0 }, store.get('uth.qStats2', {})),
   cur: null, next: null, seq: 0,
 };
-const saveQuiz = () => { store.set('uth.qStreets', QZ.streets); store.set('uth.qClose', QZ.close); store.set('uth.qStats', QZ.stats); };
-const quizKey = () => [S.game, variantKey(), S.peekDealer, S.peekFlop, QZ.close, Object.keys(QZ.streets).filter(k => QZ.streets[k]).join()].join('|');
+const saveQuiz = () => { store.set('uth.qTough', QZ.tough); store.set('uth.qStats2', QZ.stats); };
+const quizKey = () => [S.game, variantKey(), S.peekDealer, S.peekFlop, QZ.tough, S.game === 'wpt' ? JSON.stringify(S.wptRaises) : ''].join('|');
+const QSTREETS = ['preflop', 'flop', 'river'], QNAME = { preflop: 'Preflop', flop: 'Flop', river: 'River' };
 function quizActions(street, game) {
   if (street === 'flop') return ['bet2', 'check'];
   if (street === 'river') return ['bet1', 'fold'];
-  return game === 'uth' ? ['bet4', 'bet3', 'check'] : [...[3, 2, 1].filter(m => S.wptRaises[m]).map(m => 'bet' + m), 'check'];
+  return game === 'uth' ? ['bet4', 'bet3', 'check'] : [...[3, 2, 1].filter(m => S.wptRaises[m]), 'check'].map(x => typeof x === 'number' ? 'bet' + x : x);
 }
+const qBest = (acts, st) => quizActions(st, S.game).reduce((a, k) => acts[k] > acts[a] ? k : a);
+const qGap = (acts, st) => { const v = quizActions(st, S.game).map(k => acts[k]).sort((x, y) => y - x); return v[0] - v[1]; };
+const endsHand = (k, st) => k !== 'check' || st === 'river';
 function quizDeal() {
   const deck = [...Array(52).keys()];
   for (let i = 51; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
-  const streets = Object.keys(QZ.streets).filter(k => QZ.streets[k]);
-  const street = streets[Math.floor(Math.random() * streets.length)] || 'preflop';
-  const hole = [deck.pop(), deck.pop()];
-  const board = street === 'flop' ? [deck.pop(), deck.pop(), deck.pop()] : street === 'river' ? [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()]
-    : (S.peekFlop && Math.random() < 0.5 ? [deck.pop()] : []);
-  const dealer = S.peekDealer && Math.random() < 0.5 ? [deck.pop()] : [];
-  return { hole, board, dealer, dead: [], street };
+  const hole = [deck.pop(), deck.pop()], board = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
+  return { hole, board, dealer: S.peekDealer && Math.random() < 0.5 ? [deck.pop()] : [], peekF: S.peekFlop && Math.random() < 0.5 };
 }
-async function quizSolve(sp) {
+const nodeSpec = (h, st) => ({ hole: h.hole, board: st === 'preflop' ? (h.peekF ? [h.board[0]] : []) : st === 'flop' ? h.board.slice(0, 3) : h.board.slice(), dealer: h.dealer, dead: [], street: st });
+async function nodeSolve(sp) {
   if (sp.street === 'preflop' && !sp.board.length && !sp.dealer.length && BASE) {
     const b = BASE[handClass(sp.hole)]?.games[S.game === 'uth' ? 'uth' : 'wpt:' + S.tables.badBeat];
     if (b) return Object.fromEntries(Object.entries(b.actions).map(([k, x]) => [k, x.total]));
   }
-  const r = await runJob({ type: 'solve', spec: sp, game: S.game, opts: gameOpts() }, { prio: 2 });
-  return r.res.actions;
+  return (await runJob({ type: 'solve', spec: sp, game: S.game, opts: gameOpts() }, { prio: 2 })).res.actions;
 }
 async function quizMake() {
   const key = quizKey();
   for (let tries = 0; ; tries++) {
-    const sp = quizDeal(), acts = await quizSolve(sp);
-    const order = quizActions(sp.street, S.game).map(k => acts[k]).sort((a, b) => b - a);
-    if (!QZ.close || order[0] - order[1] < 0.25 || tries >= 12) return { sp, acts, key };
+    const h = quizDeal();
+    if (!QZ.tough || tries >= 15) {
+      const solved = await Promise.all(QSTREETS.map(st => nodeSolve(nodeSpec(h, st))));
+      h.acts = Object.fromEntries(QSTREETS.map((st, i) => [st, solved[i]]));
+      return { h, key };
+    }
+    // Tough spots: walk the best line street by street, solving only as far as needed, and keep
+    // the hand once it passes a close call (then fill in the remaining streets).
+    h.acts = {}; let found = false;
+    for (const st of QSTREETS) {
+      h.acts[st] = await nodeSolve(nodeSpec(h, st));
+      if (qGap(h.acts[st], st) < TOUGH) { found = true; break; }
+      if (endsHand(qBest(h.acts[st], st), st)) break;
+    }
+    if (!found) continue;
+    const rest = QSTREETS.filter(st => !h.acts[st]), solved = await Promise.all(rest.map(st => nodeSolve(nodeSpec(h, st))));
+    rest.forEach((st, i) => h.acts[st] = solved[i]);
+    return { h, key };
   }
 }
 function quizPrefetch() { QZ.next = quizMake().catch(() => null); }
@@ -1583,84 +1611,98 @@ async function quizNew() {
   let q = await QZ.next;
   if (seq !== QZ.seq) return;
   if (!q || q.key !== quizKey()) { quizPrefetch(); q = await QZ.next; if (seq !== QZ.seq) return; } // settings changed since it was dealt
-  QZ.cur = { ...q, picked: null };
-  quizPrefetch(); // get the next one ready while this one is answered
+  QZ.cur = { ...q, stage: 'preflop', picks: [], done: false };
+  quizPrefetch(); // the next hand gets dealt and solved while this one is played
   renderQuiz();
 }
-function quizPick(k) {
-  const q = QZ.cur; if (!q || q.picked) return;
-  q.picked = k;
-  const acts = quizActions(q.sp.street, S.game), best = acts.reduce((a, x) => q.acts[x] > q.acts[a] ? x : a, acts[0]);
-  const loss = q.acts[best] - q.acts[k], ok = loss < 1e-9;
-  const st = QZ.stats; st.n++; st.lost += loss;
-  if (ok) { st.right++; st.streak++; st.best = Math.max(st.best, st.streak); } else st.streak = 0;
-  saveQuiz(); renderQuiz();
+function quizGrade(q) {
+  const rows = q.picks.map(p => {
+    const acts = q.h.acts[p.st], best = qBest(acts, p.st);
+    return { ...p, acts, best, loss: Math.max(0, acts[best] - acts[p.k]), tough: qGap(acts, p.st) < TOUGH };
+  });
+  const lost = rows.reduce((a, r) => a + r.loss, 0);
+  // where would the best line have ended?
+  let bestEnd = null;
+  for (const st of QSTREETS) { const b = qBest(q.h.acts[st], st); if (endsHand(b, st)) { bestEnd = { st, k: b }; break; } }
+  return { rows, lost, bestEnd };
 }
-function quizToAnalyzer() {
-  const sp = QZ.cur.sp;
+function quizPick(k) {
+  const q = QZ.cur; if (!q || q.done || !quizActions(q.stage, S.game).includes(k)) return;
+  q.picks.push({ st: q.stage, k });
+  if (endsHand(k, q.stage)) {
+    q.done = true; q.grade = quizGrade(q);
+    const st = QZ.stats, lost = q.grade.lost, perfect = lost < 1e-9;
+    st.n++; st.lost += lost;
+    if (perfect) { st.perfect++; st.streak++; st.best = Math.max(st.best, st.streak); } else st.streak = 0;
+    saveQuiz();
+  } else q.stage = QSTREETS[QSTREETS.indexOf(q.stage) + 1];
+  renderQuiz();
+}
+function quizToAnalyzer(st) {
+  const sp = nodeSpec(QZ.cur.h, st);
   S.hole = sp.hole.slice(); S.board = [...sp.board, null, null, null, null, null].slice(0, 5); S.dealer = [sp.dealer[0] ?? null]; S.dead = [];
-  S.active = 'board'; setMode('analyze'); setStreet(sp.street); setTab('hand');
+  S.active = 'board'; setMode('analyze'); setStreet(st); setTab('hand');
 }
 function renderQuizScore() {
   const st = QZ.stats;
   document.getElementById('qScore').innerHTML = st.n
-    ? `<span>Answered <b>${st.n}</b></span><span>Correct <b>${Math.round(st.right / st.n * 100)}%</b></span><span>Streak <b>${st.streak}</b> <small>(best ${st.best})</small></span>
-       <span>Avg EV lost <b>${money(st.lost / st.n).replace('+', '')}</b></span><button class="clear" id="qReset">reset</button>`
-    : `<span>Pick the play with the highest EV. Your score shows here.</span>`;
-  document.getElementById('qReset')?.addEventListener('click', () => { if (confirm('Reset your quiz score?')) { QZ.stats = { n: 0, right: 0, lost: 0, streak: 0, best: 0 }; saveQuiz(); renderQuizScore(); } });
+    ? `<span>Hands <b>${st.n}</b></span><span>Perfect <b>${Math.round(st.perfect / st.n * 100)}%</b></span><span>Streak <b>${st.streak}</b> <small>(best ${st.best})</small></span>
+       <span>EV lost / hand <b>${money(st.lost / st.n).replace('+', '')}</b></span>`
+    : `<span>Play each hand to the end. You're graded on every decision.</span>`;
+}
+function gradeWord(lost) {
+  if (lost < 1e-9) return ['Perfect hand', 'ok'];
+  if (lost < 0.25) return ['Small leak', 'no'];
+  return ['Costly mistake', 'no'];
 }
 function renderQuiz() {
   renderQuizScore();
-  document.querySelectorAll('#quiz [data-qs]').forEach(c => c.checked = !!QZ.streets[c.dataset.qs]);
-  document.getElementById('qClose').checked = QZ.close;
+  document.getElementById('qTough').checked = QZ.tough;
   const el = document.getElementById('qBody'), q = QZ.cur;
-  if (!q) { el.innerHTML = `<div class="empty"><div class="big">Dealing…</div>${QZ.close ? 'Looking for a close decision — this can take a few tries.' : ''}</div>`; return; }
-  const sp = q.sp, game = E.GAMES[S.game];
-  const street = { preflop: 'Preflop', flop: 'On the flop', river: 'On the river' }[sp.street];
-  const extra = [sp.street === 'preflop' && sp.board.length && 'you saw a flop card', sp.dealer.length && 'you saw a dealer card'].filter(Boolean);
-  const boardCards = sp.street === 'preflop'
-    ? [sp.board[0] ?? 'h', 'h', 'h', 'h', 'h'] : sp.street === 'flop' ? [...sp.board, 'h', 'h'] : sp.board;
+  document.getElementById('qNote').textContent = `EV per ${units() ? '$' + S.ante + ' ante' : '1-unit ante'}, including the ${E.GAMES[S.game].spot2} bet. Each decision is graded against the best play at that point, assuming perfect play afterwards.`;
+  if (!q) { el.innerHTML = `<div class="empty"><div class="big">Dealing…</div>${QZ.tough ? 'Looking for a hand with a tough spot — this can take a few tries.' : ''}</div>`; return; }
+  const h = q.h, shown = q.done ? q.picks[q.picks.length - 1].st : q.stage;
+  const nBoard = shown === 'preflop' ? (h.peekF ? 1 : 0) : shown === 'flop' ? 3 : 5;
+  const board = h.board.map((c, i) => i < nBoard ? c : 'h');
   const pcs = arr => arr.map(c => c === 'h' ? '<div class="pc hidden"></div>' : cardHTML(c)).join('');
-  let h = `<div class="qhead">${street}${extra.length ? `<small>${extra.join(' · ')}</small>` : ''}</div>
+  const extra = [h.peekF && 'you saw a flop card', h.dealer.length && 'you saw a dealer card'].filter(Boolean);
+  let x = `<div class="qhead">${q.done ? 'Hand over' : QNAME[q.stage]}${extra.length ? `<small>${extra.join(' · ')}</small>` : ''}</div>
     <div class="qtable">
-      <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs(sp.hole)}</div></div>
-      <div class="qgroup"><div class="k">Board</div><div class="cards">${pcs(boardCards.slice(0, 3))}<span class="slotcards"><span class="gap"></span></span>${pcs(boardCards.slice(3))}</div></div>
-      ${sp.dealer.length ? `<div class="qgroup"><div class="k">Dealer shows</div><div class="cards">${pcs([sp.dealer[0], 'h'])}</div></div>` : ''}
+      <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs(h.hole)}</div></div>
+      <div class="qgroup"><div class="k">Board</div><div class="cards">${pcs(board.slice(0, 3))}<span class="slotcards"><span class="gap"></span></span>${pcs(board.slice(3))}</div></div>
+      ${h.dealer.length ? `<div class="qgroup"><div class="k">Dealer shows</div><div class="cards">${pcs([h.dealer[0], 'h'])}</div></div>` : ''}
     </div>`;
-  const acts = quizActions(sp.street, S.game);
-  const best = acts.reduce((a, x) => q.acts[x] > q.acts[a] ? x : a, acts[0]);
-  h += `<div class="qprompt">${q.picked ? '' : `What's your play? <span style="color:var(--faint)">(keys 1–${acts.length})</span>`}</div><div class="qacts">${acts.map((k, i) => {
-    const cl = q.picked ? (k === q.picked ? (k === best || q.acts[k] >= q.acts[best] - 1e-9 ? 'right' : 'wrong') : '') + (k === best ? ' best' : '') : '';
-    return `<button class="qact ${cl}" data-a="${k}" ${q.picked ? 'disabled' : ''}>${ACT_LABEL[k]}${q.picked ? `<small>EV ${money(q.acts[k])}</small>` : ''}</button>`;
-  }).join('')}</div>`;
-  if (q.picked) {
-    const loss = q.acts[best] - q.acts[q.picked], ok = loss < 1e-9;
-    const second = acts.filter(k => k !== best).reduce((a, x) => q.acts[x] > q.acts[a] ? x : a, acts.find(k => k !== best));
-    const gap = q.acts[best] - q.acts[second];
-    h += `<div class="qres ${ok ? 'ok' : 'no'}"><div class="big">${ok ? 'Correct' : 'Not quite'}</div>
-      <div class="why">${ok
-        ? `${ACT_LABEL[best]} is best, ahead of ${ACT_LABEL[second].toLowerCase()} by <b>${money(gap).replace('+', '')}</b>${unitWord()}${gap < 0.05 ? ' — a close one' : ''}.`
-        : `The best play was <b>${ACT_LABEL[best]}</b>. ${ACT_LABEL[q.picked]} costs <b>${money(loss).replace('+', '')}</b>${unitWord()} on average${loss < 0.05 ? ' — very close' : ''}.`}</div>
-      <div class="qnext"><button class="primary" id="qNext">Next hand ▸</button><button id="qAnalyze">Analyze this hand</button></div></div>`;
+  if (q.picks.length && !q.done) x += `<div class="qpath">${q.picks.map(p => `<span>${QNAME[p.st]}: <b>${ACT_LABEL[p.k]}</b></span>`).join('')}</div>`;
+  if (!q.done) {
+    const acts = quizActions(q.stage, S.game);
+    x += `<div class="qprompt">What's your play? <span style="color:var(--faint)">(keys 1–${acts.length})</span></div>
+      <div class="qacts">${acts.map(k => `<button class="qact" data-a="${k}">${ACT_LABEL[k]}</button>`).join('')}</div>`;
+  } else {
+    const g = q.grade, [word, tone] = gradeWord(g.lost);
+    const offLine = g.rows.find(r => r.k === 'check' && r.best !== 'check');
+    x += `<div class="qres ${tone}"><div class="big">${word}</div>
+      <div class="why">${g.lost < 1e-9 ? 'Every decision matched the best play.' : `You gave up <b>${money(g.lost).replace('+', '')}</b>${unitWord()} of EV this hand.`}
+      ${offLine && g.bestEnd ? ` With best play you'd have made your bet ${g.bestEnd.st === 'preflop' ? 'preflop' : 'on the flop'} (<b>${ACT_LABEL[g.bestEnd.k]}</b>), before ${g.bestEnd.st === 'preflop' ? 'the flop came' : 'the turn and river came'}.` : ''}</div>
+      <table class="qgrade"><thead><tr><th>Street</th><th>You</th><th>Best</th><th>EV lost</th><th></th></tr></thead><tbody>
+      ${g.rows.map(r => `<tr><td>${QNAME[r.st]}${r.tough ? ' <span class="qtough">tough spot</span>' : ''}</td>
+        <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${ACT_LABEL[r.k]} ${r.loss < 1e-9 ? '✓' : '✗'}</td><td>${ACT_LABEL[r.best]}</td>
+        <td class="${r.loss < 1e-9 ? 'zero' : 'neg'}">${r.loss < 1e-9 ? '—' : money(r.loss).replace('+', '')}</td>
+        <td><button class="linkbtn" data-an="${r.st}">Analyze</button></td></tr>
+        <tr class="qevs"><td colspan="5">${quizActions(r.st, S.game).map(k => `${ACT_LABEL[k]} <b>${money(r.acts[k])}</b>`).join(' · ')}</td></tr>`).join('')}
+      </tbody></table>
+      <div class="qnext"><button class="primary" id="qNext">Next hand ▸</button></div></div>`;
   }
-  el.innerHTML = h;
+  el.innerHTML = x;
   el.querySelectorAll('.qact[data-a]').forEach(b => b.onclick = () => quizPick(b.dataset.a));
+  el.querySelectorAll('[data-an]').forEach(b => b.onclick = () => quizToAnalyzer(b.dataset.an));
   document.getElementById('qNext')?.addEventListener('click', quizNew);
-  document.getElementById('qAnalyze')?.addEventListener('click', quizToAnalyzer);
-  document.getElementById('qNote').textContent = `EV per ${units() ? '$' + S.ante + ' ante' : '1-unit ante'}, including the ${game.spot2} bet, with perfect play on later streets.`;
 }
-document.querySelectorAll('#quiz [data-qs]').forEach(c => c.onchange = () => {
-  QZ.streets[c.dataset.qs] = c.checked;
-  if (!Object.values(QZ.streets).some(Boolean)) { QZ.streets[c.dataset.qs] = true; c.checked = true; } // keep at least one
-  saveQuiz(); QZ.next = null; if (!QZ.cur?.picked) quizNew();
-});
-document.getElementById('qClose').onchange = e => { QZ.close = e.target.checked; saveQuiz(); QZ.next = null; if (!QZ.cur?.picked) quizNew(); };
+document.getElementById('qTough').onchange = e => { QZ.tough = e.target.checked; saveQuiz(); QZ.next = null; if (!QZ.cur?.picks.length || QZ.cur?.done) quizNew(); };
 document.addEventListener('keydown', e => {
-  if (!document.body.classList.contains('quiz-mode') || e.target.matches('input, select, textarea')) return;
+  if (!document.body.classList.contains('quiz-mode') || e.target.matches('input:not([type=checkbox]), select, textarea')) return;
   const q = QZ.cur; if (!q) return;
-  const acts = quizActions(q.sp.street, S.game);
-  if (!q.picked && /^[1-9]$/.test(e.key) && acts[+e.key - 1]) { e.preventDefault(); quizPick(acts[+e.key - 1]); }
-  else if (q.picked && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); quizNew(); }
+  if (!q.done) { const acts = quizActions(q.stage, S.game); if (/^[1-9]$/.test(e.key) && acts[+e.key - 1]) { e.preventDefault(); quizPick(acts[+e.key - 1]); } }
+  else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); quizNew(); }
 });
 let mode = store.get('uth.mode', 'analyze');
 function setMode(m) {
@@ -1686,7 +1728,7 @@ function setGame(g) {
   S.game = g; saveSettings();
   document.querySelectorAll('#gameSeg button').forEach(x => x.classList.toggle('on', x.dataset.g === g));
   renderOpts(); onRulesChanged();
-  if (mode === 'quiz' && !QZ.cur?.picked) { QZ.next = null; quizNew(); }
+  if (mode === 'quiz' && (!QZ.cur?.picks.length || QZ.cur?.done)) { QZ.next = null; quizNew(); }
 }
 function setStreet(s, quiet) {
   S.street = s; saveSettings();
