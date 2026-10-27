@@ -338,7 +338,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 23:54</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 09:43</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -1200,7 +1200,8 @@ function explainLogic() {
   if (sp.street !== 'preflop') {
     const cat = E.pcatOf(E.eval7([...sp.hole, ...sp.board]));
     const plays = sp.street === 'river' && E.eval7([...sp.hole, ...sp.board]) === E.eval7(sp.board);
-    out.push(`You have ${HAND_NAMES[cat]}${plays ? ` — but it's all on the board, so your hole cards don't play. The best you can do is tie: any dealer card that plays beats you` : ''}.`);
+    const boardPairOnly = cat === 1 && E.pcatOf(E.eval7(sp.board)) === 1;
+    out.push(`You have ${HAND_NAMES[cat]}${plays ? ` — but it's all on the board, so your hole cards don't play. The best you can do is tie: any dealer card that plays beats you` : boardPairOnly ? ' — the board’s pair, which the dealer has too' : ''}.`);
   }
   if (sp.street === 'river') {
     const R = riverGroups(sp), { G, N } = R, who = sp.dealer.length ? "the dealer's other card is" : null;
@@ -1239,6 +1240,45 @@ function explainLogic() {
   const foldTxt = dFold > 0.0005 ? ` Folding also hands over your ante and ${sp2} on those hands — checking gives up ${amt(dFold)} there that raising keeps.` : '';
   out.push(`<b>The trade-off:</b> raising now earns ${dPlay >= 0 ? amt(dPlay) + ' more' : amt(dPlay) + ' less'} on the play bet than waiting.${foldTxt} `
     + `Net: ${margin >= 0 ? `raising is ${amt(margin)} better` : `checking is ${amt(margin)} better`}${margin < 0 ? ` — checking's smaller, better-timed bets earn more than a bigger bet made before you know how the hand runs out` : ` — you're far enough ahead now that the bigger bet is worth more than waiting to see more cards`}.`);
+  if (sp.street === 'flop') out.push(...flopKicker(sp));
+  return out;
+}
+// Flop with nothing paired from your hand (high card, or only the board's pair): the call usually comes
+// down to your second card. Re-solve the same flop with every other rank in its place and say where the
+// line is. On a paired board, spell out that it's a kicker battle against a dealer who always qualifies.
+function flopKicker(sp) {
+  const out = [], br = sp.board.map(c => c >> 2), [a, b] = sp.hole;
+  if ((a >> 2) === (b >> 2) || br.includes(a >> 2) || br.includes(b >> 2)) return out; // you've paired something
+  const hi = (a >> 2) > (b >> 2) ? a : b, lo = hi === a ? b : a, hr = hi >> 2;
+  const pr = br.find((r, i) => br.indexOf(r) !== i);
+  if (pr !== undefined && new Set(br).size === 2) {
+    const odd = br.find(r => r !== pr), higher = [...Array(13).keys()].filter(r => r > hr && r !== odd);
+    out.push(`<b>Paired board:</b> the ${RANK_TXT(pr)}s are the dealer's pair too, so every dealer qualifies and your ante is always in play. `
+      + `You're really holding ${RANK_TXT(pr)}s with ${RANK_TXT(hr)}-${RANK_TXT(lo >> 2)} as kickers, so it's a kicker battle: the dealer beats you with any card that pairs`
+      + `${higher.length ? `, any ${listJoin(higher.reverse().map(RANK_TXT))}` : ''}, or a ${RANK_TXT(hr)} with a better second card. `
+      + `A higher second card wins more of those ${RANK_TXT(hr)}-vs-${RANK_TXT(hr)} matchups, and when it pairs on the turn or river it makes a higher two pair.`);
+  }
+  const used = new Set([...sp.board, ...sp.dealer, ...sp.dead, hi]), res = [];
+  for (let r = 0; r < 13; r++) {
+    if (r >= hr || br.includes(r)) continue; // kickers below your high card that don't pair the board
+    let c = r * 4 + (lo & 3);
+    if (used.has(c)) c = [0, 1, 2, 3].map(su => r * 4 + su).find(x => !used.has(x));
+    if (c === undefined) continue;
+    const A = E.solve({ ...sp, hole: [hi, c] }, S.game, gameOpts()).actions;
+    res.push({ r, m: A.bet2.total - A.check.total });
+  }
+  const bet = res.filter(x => x.m >= 0).map(x => x.r).sort((x, y) => y - x), chk = res.filter(x => x.m < 0).map(x => x.r).sort((x, y) => y - x);
+  const mine = res.find(x => x.r === (lo >> 2));
+  if (!bet.length || !chk.length) {
+    out.push(`<b>What decides it:</b> with the ${cardTxt(hi)} on this flop you'd ${bet.length ? 'bet 2x' : 'check'} whatever your second card was — it's the ${RANK_TXT(hr)} and the board that decide this one.`);
+    return out;
+  }
+  const close = res.filter(x => Math.abs(x.m) < 0.01).map(x => RANK_TXT(x.r));
+  const bumpy = bet.some(r => chk.some(q => q > r));
+  out.push(`<b>What decides it — your second card:</b> with the ${cardTxt(hi)} on this flop, bet 2x if your other card is ${listJoin(bet.map(RANK_TXT))}; check with ${listJoin(chk.map(RANK_TXT))}. `
+    + `Your ${RANK_TXT(lo >> 2)} is ${mine && mine.m >= 0 ? 'on the betting side' : 'on the checking side'}${mine && Math.abs(mine.m) < 0.01 ? ' — but only just' : ''}.`
+    + (close.length ? ` (${listJoin(close)} ${close.length === 1 ? 'is' : 'are'} within 0.01 antes either way.)` : '')
+    + (bumpy ? ' Some lower cards beat higher ones because they add a straight or flush draw.' : ''));
   return out;
 }
 function explainKnown() {
