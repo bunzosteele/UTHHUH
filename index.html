@@ -101,6 +101,8 @@
   .explain .k { font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
   .explain p { margin: 0 0 6px; } .explain p:last-child { margin: 0; }
   .explain b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
+  .explain ul { margin: 6px 0 0; padding-left: 18px; } .explain li { margin-bottom: 4px; }
+  .explain p > b:first-child, .explain li > b:first-child { font-family: inherit; }
 
   h3 { font-family: var(--serif); font-weight: 600; font-size: 15px; margin: 18px 0 2px; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
@@ -336,7 +338,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 22:58</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 23:11</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -1088,7 +1090,12 @@ function maxBetKey(acts) { // largest allowed bet at this street
   const bets = Object.keys(acts).filter(k => /^bet\d$/.test(k) && allowedAction(k)).sort((a, b) => +b.slice(3) - +a.slice(3));
   return bets[0];
 }
-function allowedAction(k) { return !(S.game === 'wpt' && S.street === 'preflop' && /^bet[12]$/.test(k) && !S.wptRaises[k.slice(3)]); }
+// Only the largest preflop raise is ever worth considering. With B = the average play-bet result
+// (wins − losses) if you bet now: raising m× is worth ante + blind + m·B. If B > 0 the biggest m wins;
+// if B ≤ 0, checking is at least as good, because one way to play after checking — bet 2x on every
+// flop — is already worth ante + blind + 2·B. (UTH 4x/3x, WPT 3x/2x/1x; the flop bet is 2x in both.)
+const maxPreflopRaise = () => S.game === 'uth' ? 4 : [3, 2, 1].find(m => S.wptRaises[m]);
+function allowedAction(k) { return !(S.street === 'preflop' && /^bet\d$/.test(k) && +k.slice(3) !== maxPreflopRaise()); }
 const totalOf = a => typeof a === 'number' ? a : a.total;
 function summarize(acts) { // acts: {bet4: total|{total}, check: …}
   const keys = Object.keys(acts).filter(allowedAction);
@@ -1121,39 +1128,114 @@ async function computeImpact(seq, sp, res) {
 // ── Plain-language explanation when the known cards change the usual play ──
 // Compares the spot with no extra cards against the spot as entered: the max bet's EV, the
 // showdown odds if you bet now, and how often checking lets you fold later.
-function explainSpot() {
+// ── "Why": the reasoning behind the verdict ──────────────────────────────
+// River: every possible dealer hand is sorted into win / tie / lose (dealer qualifies or not), and
+// each group is compared with folding (which always costs the ante and the Blind/Odds bet).
+// Preflop & flop: raising now vs checking is split into the play bet (size × how often you're ahead)
+// and the ante + Blind/Odds money that checking gives up on the hands you later fold.
+// Then, if the known cards changed the usual play, what they changed.
+const HAND_NAMES = ['high card', 'a pair', 'two pair', 'three of a kind', 'a straight', 'a flush', 'a full house', 'four of a kind', 'a straight flush', 'a royal flush'];
+function sideResult(win, lose, cat) { // Blind / Odds bet result for one finished hand (matches the engine)
+  if (S.game === 'uth') return win ? E.GAMES.uth.blind[cat] : lose ? -1 : 0;
+  const bb = E.GAMES.wpt.badBeat[S.tables.badBeat];
+  return win ? E.GAMES.wpt.odds[cat] : lose ? (cat >= 4 ? bb[cat] : -1) : 0;
+}
+function riverGroups(sp) {
+  const seen = new Set([...sp.hole, ...sp.board, ...sp.dealer, ...sp.dead]);
+  const unseen = [...Array(52).keys()].filter(c => !seen.has(c));
+  const pv = E.eval7([...sp.hole, ...sp.board]), cat = E.pcatOf(pv);
+  const G = {}; for (const g of ['win', 'tie', 'loseNQ', 'loseQ']) G[g] = { n: 0, v: 0, cards: [] };
+  const one = d => {
+    const dv = E.eval7([...sp.board, ...d]), q = dv >= E.B16, w = pv > dv, l = pv < dv;
+    const v = (q ? (w ? 1 : l ? -1 : 0) : 0) + (w ? 1 : l ? -1 : 0) + sideResult(w, l, cat);
+    const g = w ? 'win' : l ? (q ? 'loseQ' : 'loseNQ') : 'tie'; G[g].n++; G[g].v += v; return g;
+  };
+  if (sp.dealer.length) for (const x of unseen) G[one([sp.dealer[0], x])].cards.push(x);
+  else for (let i = 0; i < unseen.length; i++) for (let j = i + 1; j < unseen.length; j++) one([unseen[i], unseen[j]]);
+  const N = Object.values(G).reduce((t, g) => t + g.n, 0);
+  return { G, N, unseen, cat, boardPlays: pv === E.eval7(sp.board) };
+}
+const listJoin = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' or ' + a[a.length - 1];
+function ranksIn(cards, unseen) { // "2, 3 or 4" (whole ranks) / "some 9s" (only part of a rank)
+  const out = [];
+  for (let r = 12; r >= 0; r--) {
+    const k = cards.filter(c => c >> 2 === r).length; if (!k) continue;
+    const tot = unseen.filter(c => c >> 2 === r).length;
+    out.push(k === tot ? RANK_TXT(r) : `some ${RANK_TXT(r)}s`);
+  }
+  return listJoin(out);
+}
+function explainLogic() {
+  const sp = RES.sp, A = RES.res.actions, g = E.GAMES[S.game], sp2 = g.spot2;
+  const amt = x => `<b>${money(Math.abs(x)).replace(/[+−]/, '')}</b>${unitWord()}`, sg = x => `<b>${money(x)}</b>`;
+  const out = [];
+  if (sp.street !== 'preflop') {
+    const cat = E.pcatOf(E.eval7([...sp.hole, ...sp.board]));
+    const plays = sp.street === 'river' && E.eval7([...sp.hole, ...sp.board]) === E.eval7(sp.board);
+    out.push(`You have ${HAND_NAMES[cat]}${plays ? ` — but it's all on the board, so your hole cards don't play. The best you can do is tie: any dealer card that plays beats you` : ''}.`);
+  }
+  if (sp.street === 'river') {
+    const R = riverGroups(sp), { G, N } = R, who = sp.dealer.length ? "the dealer's other card is" : null;
+    const rk = grp => who && G[grp].cards.length ? ` — ${who} ${ranksIn(G[grp].cards, R.unseen)}` : '';
+    const avg = grp => G[grp].v / G[grp].n, vsFold = grp => avg(grp) + 2;
+    const cmp = d => Math.abs(d) < 1e-9 ? 'the same as folding' : d > 0 ? `${amt(d)} better than folding` : `${amt(d)} worse than folding`;
+    const items = [];
+    if (G.win.n) items.push(`<b>Win</b> ${pct(G.win.n / N)}${rk('win')}: worth ${sg(avg('win'))} on average, ${cmp(vsFold('win'))}.`);
+    if (G.tie.n) items.push(`<b>Tie</b> ${pct(G.tie.n / N)}${rk('tie')}: everything pushes, ${cmp(vsFold('tie'))}.`);
+    if (G.loseNQ.n) items.push(`<b>Lose, dealer doesn't qualify</b> ${pct(G.loseNQ.n / N)}${rk('loseNQ')}: your ante pushes, so you lose ${amt(avg('loseNQ'))} — ${cmp(vsFold('loseNQ'))}.`);
+    if (G.loseQ.n) items.push(`<b>Lose to a qualifying dealer</b> ${pct(G.loseQ.n / N)}${rk('loseQ')}: you lose ${amt(avg('loseQ'))}, ${cmp(vsFold('loseQ'))}.`);
+    out.push(`Folding gives up your ante and ${sp2} bet: ${amt(2)}. If you bet 1x instead:<ul>${items.map(x => `<li>${x}</li>`).join('')}</ul>`);
+    const parts = ['win', 'tie', 'loseNQ', 'loseQ'].filter(k => G[k].n && Math.abs(vsFold(k)) > 1e-9).map(k => ({ k, c: G[k].n / N * vsFold(k) }));
+    const net = parts.reduce((t, x) => t + x.c, 0), name = { win: 'wins', tie: 'ties', loseNQ: 'non-qualifying losses', loseQ: 'qualifying losses' };
+    out.push(`Adding it up: ${parts.map(x => `${name[x.k]} ${sg(x.c)}`).join(', ')} → betting is ${amt(net)} ${net >= 0 ? 'better' : 'worse'} than folding.`);
+    return out;
+  }
+  // preflop / flop: raise now vs check
+  const mb = maxBetKey(A), m = +mb.slice(3), bet = A[mb], chk = A.check, o = RES.res.outcome, c = RES.res.check || {};
+  const B = o.win - o.lose, later = sp.street === 'preflop' ? 'the flop and river' : 'the river';
+  out.push(`<b>${ACT_LABEL[mb]} now:</b> against every dealer hand and runout you'd win ${pct(o.win)}, tie ${pct(o.tie)} and lose ${pct(o.lose)}, so each unit on the play bet earns ${sg(B)} — at ${m}x that's ${sg(bet.play)}. You never fold, so your ante and ${sp2} always ride to showdown.`);
+  const plan = sp.street === 'preflop'
+    ? `bet 2x on the flop ${pct(c.flopBetPct)} of the time, 1x on the river ${pct(c.riverBetPct)}, and fold ${pct(c.riverFoldPct)}`
+    : `bet 1x on the river ${pct(c.riverBetPct)} of the time and fold ${pct(c.riverFoldPct)}`;
+  out.push(`<b>Checking:</b> you see ${later} first, then ${plan}. Those smaller bets go in only when the cards help, and are worth ${sg(chk.play)} on the play bet.`);
+  const dPlay = bet.play - chk.play, dFold = (bet.ante + bet.side) - (chk.ante + chk.side), margin = dPlay + dFold;
+  const foldTxt = dFold > 0.0005 ? ` Folding also hands over your ante and ${sp2} on those hands — checking gives up ${amt(dFold)} there that raising keeps.` : '';
+  out.push(`<b>The trade-off:</b> raising now earns ${dPlay >= 0 ? amt(dPlay) + ' more' : amt(dPlay) + ' less'} on the play bet than waiting.${foldTxt} `
+    + `Net: ${margin >= 0 ? `raising is ${amt(margin)} better` : `checking is ${amt(margin)} better`}${margin < 0 ? ` — checking's smaller, better-timed bets earn more than a bigger bet made before you know how the hand runs out` : ` — you're far enough ahead now that the bigger bet is worth more than waiting to see more cards`}.`);
+  return out;
+}
+function explainKnown() {
   const imp = RES?.impact, b = imp?.[0];
-  if (!imp || imp.length < 2 || !b?.full) return '';
+  if (!imp || imp.length < 2 || !b?.full) return [];
   const sp = RES.sp, A0 = b.full.actions, A1 = RES.res.actions;
   const s0 = summarize(A0), s1 = summarize(A1), mb = s1.mb, pas = s1.passive;
   const flipped = (s0.margin >= 0) !== (s1.margin >= 0), shift = s1.margin - s0.margin;
-  if (!flipped && Math.abs(shift) < 0.15) return '';
+  if (!flipped && Math.abs(shift) < 0.15) return [];
   const amt = x => `<b>${money(Math.abs(x)).replace(/[+−]/, '')}</b>${unitWord()}`;
   const known = [];
   if (sp.dealer.length) known.push(`the dealer's ${cardTxt(sp.dealer[0])}`);
   if (sp.street === 'preflop' && sp.board.length) known.push(`the ${cardTxt(sp.board[0])} on the flop`);
   if (sp.dead.length) known.push(`${sp.dead.map(cardTxt).join(' ')} in other hands`);
   const kn = known.join(' and ');
-  const hand = sp.street === 'preflop' ? sp.hole.map(cardTxt).join('') : sp.street === 'flop' ? 'this hand on this flop' : 'this hand on this board';
   const verb = k => k === 'check' ? 'checking' : k === 'fold' ? 'folding' : ACT_LABEL[k].toLowerCase().replace('bet ', 'betting ');
-  const out = [];
-  out.push(`Without ${kn}, ${hand} is a ${s0.margin >= 0 ? `${s0.mb.slice(3)}x ${S.street === 'preflop' ? 'raise' : 'bet'}` : pas}, ${amt(s0.margin)} better than ${s0.margin >= 0 ? verb(pas) : verb(s0.mb)}. `
-    + (flipped ? `Seeing ${kn} flips that.` : `Seeing ${kn} ${shift * Math.sign(s0.margin) < 0 ? 'shrinks' : 'grows'} the edge to ${amt(s1.margin)}.`));
-  const dB = totalOf(A1[mb]) - totalOf(A0[mb]), o0 = b.full.outcome, o1 = RES.res.outcome;
-  out.push(`${ACT_LABEL[mb]} now is worth ${amt(dB)} ${dB < 0 ? 'less' : 'more'}: if you bet now you win ${pct(o1.win)} and lose ${pct(o1.lose)} of showdowns, against ${pct(o0.win)} and ${pct(o0.lose)} without it.`);
-  if (pas === 'check') {
-    const dC = totalOf(A1.check) - totalOf(A0.check), c0 = b.full.check, c1 = RES.res.check;
-    const towardCheck = s1.margin < s0.margin;
-    let t = `Checking ${dC >= 0 ? `gains ${amt(dC)}` : `${towardCheck ? 'drops only' : 'drops'} ${amt(dC)}`}`;
-    if (c0 && c1 && Math.abs(c1.riverFoldPct - c0.riverFoldPct) >= 0.02)
-      t += `: waiting lets you play the ${sp.street === 'preflop' ? 'flop and river' : 'river'} knowing about ${kn.replace(/ in other hands$/, '')}, and you'd fold ${pct(c1.riverFoldPct)} of the time instead of ${pct(c0.riverFoldPct)}`;
-    out.push(t + '.');
-    if (flipped && s1.margin < 0) {
-      const m = +mb.slice(3), later = sp.street === 'preflop' ? 2 : 1, d = m - later;
-      out.push(`Checking means betting at most ${later}x later instead of ${m}x now${d === 1 ? ' — only one unit less' : ''}, and here what you learn by waiting is worth more than ${d === 1 ? 'that unit' : `those ${d} units`}.`);
-    }
+  const out = [`<b>What seeing ${kn} changed:</b> without it this is a ${s0.margin >= 0 ? `${s0.mb.slice(3)}x ${S.street === 'preflop' ? 'raise' : 'bet'}` : pas}, ${amt(s0.margin)} better than ${s0.margin >= 0 ? verb(pas) : verb(s0.mb)}; `
+    + (flipped ? 'seeing it flips the decision.' : `seeing it ${shift * Math.sign(s0.margin) < 0 ? 'shrinks' : 'grows'} the edge to ${amt(s1.margin)}.`)];
+  const o0 = b.full.outcome, o1 = RES.res.outcome;
+  let t = `If you bet now you'd win ${pct(o1.win)} / tie ${pct(o1.tie)} / lose ${pct(o1.lose)}, against ${pct(o0.win)} / ${pct(o0.tie)} / ${pct(o0.lose)} without it`;
+  const c0 = b.full.check, c1 = RES.res.check;
+  if (pas === 'check' && c0 && c1 && Math.abs(c1.riverFoldPct - c0.riverFoldPct) >= 0.02)
+    t += `; after checking you'd fold ${pct(c1.riverFoldPct)} of the time instead of ${pct(c0.riverFoldPct)}, because you know about ${kn.replace(/ in other hands$/, '')} when you decide`;
+  out.push(t + '.');
+  if (flipped && s1.margin < 0 && pas === 'check') {
+    const m = +mb.slice(3), later = sp.street === 'preflop' ? 2 : 1, d = m - later;
+    out.push(`Checking means betting at most ${later}x later instead of ${m}x now${d === 1 ? ' — only one unit less' : ''}, and here what you learn by waiting is worth more than ${d === 1 ? 'that unit' : `those ${d} units`}.`);
   }
-  return `<div class="explain"><div class="k">Why</div>${out.map(x => `<p>${x}</p>`).join('')}</div>`;
+  return out;
+}
+function explainSpot() {
+  if (!RES?.res?.outcome) return '';
+  const paras = [...explainLogic(), ...explainKnown()];
+  return `<div class="explain"><div class="k">Why</div>${paras.map(x => `<p>${x}</p>`).join('')}</div>`;
 }
 
 // ── Rendering: results ────────────────────────────────────────────────────
@@ -1561,7 +1643,7 @@ const QSTREETS = ['preflop', 'flop', 'river'], QNAME = { preflop: 'Preflop', flo
 function quizActions(street, game) {
   if (street === 'flop') return ['bet2', 'check'];
   if (street === 'river') return ['bet1', 'fold'];
-  return game === 'uth' ? ['bet4', 'bet3', 'check'] : [...[3, 2, 1].filter(m => S.wptRaises[m]), 'check'].map(x => typeof x === 'number' ? 'bet' + x : x);
+  return ['bet' + (game === 'uth' ? 4 : [3, 2, 1].find(m => S.wptRaises[m])), 'check']; // smaller raises are never best (see allowedAction)
 }
 const qBest = (acts, st) => quizActions(st, S.game).reduce((a, k) => acts[k] > acts[a] ? k : a);
 const qGap = (acts, st) => { const v = quizActions(st, S.game).map(k => acts[k]).sort((x, y) => y - x); return v[0] - v[1]; };
@@ -1618,7 +1700,7 @@ async function quizNew() {
 function quizGrade(q) {
   const rows = q.picks.map(p => {
     const acts = q.h.acts[p.st], best = qBest(acts, p.st);
-    return { ...p, acts, best, loss: Math.max(0, acts[best] - acts[p.k]), tough: qGap(acts, p.st) < TOUGH };
+    return { ...p, acts, best, loss: Math.max(0, acts[best] - acts[p.k]), gain: qGap(acts, p.st), tough: qGap(acts, p.st) < TOUGH };
   });
   const lost = rows.reduce((a, r) => a + r.loss, 0);
   // where would the best line have ended?
@@ -1683,10 +1765,10 @@ function renderQuiz() {
     x += `<div class="qres ${tone}"><div class="big">${word}</div>
       <div class="why">${g.lost < 1e-9 ? 'Every decision matched the best play.' : `You gave up <b>${money(g.lost).replace('+', '')}</b>${unitWord()} of EV this hand.`}
       ${offLine && g.bestEnd ? ` With best play you'd have made your bet ${g.bestEnd.st === 'preflop' ? 'preflop' : 'on the flop'} (<b>${ACT_LABEL[g.bestEnd.k]}</b>), before ${g.bestEnd.st === 'preflop' ? 'the flop came' : 'the turn and river came'}.` : ''}</div>
-      <table class="qgrade"><thead><tr><th>Street</th><th>You</th><th>Best</th><th>EV lost</th><th></th></tr></thead><tbody>
+      <table class="qgrade"><thead><tr><th>Street</th><th>You</th><th>Best</th><th>EV vs other play</th><th></th></tr></thead><tbody>
       ${g.rows.map(r => `<tr><td>${QNAME[r.st]}${r.tough ? ' <span class="qtough">tough spot</span>' : ''}</td>
         <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${ACT_LABEL[r.k]} ${r.loss < 1e-9 ? '✓' : '✗'}</td><td>${ACT_LABEL[r.best]}</td>
-        <td class="${r.loss < 1e-9 ? 'zero' : 'neg'}">${r.loss < 1e-9 ? '—' : money(r.loss).replace('+', '')}</td>
+        <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${r.loss < 1e-9 ? '+' + money(r.gain).replace(/[+−]/, '') : '−' + money(r.loss).replace(/[+−]/, '')}</td>
         <td><button class="linkbtn" data-an="${r.st}">Analyze</button></td></tr>
         <tr class="qevs"><td colspan="5">${quizActions(r.st, S.game).map(k => `${ACT_LABEL[k]} <b>${money(r.acts[k])}</b>`).join(' · ')}</td></tr>`).join('')}
       </tbody></table>
