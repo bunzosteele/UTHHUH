@@ -206,6 +206,8 @@
   .qact:hover:not(:disabled) { border-color: var(--gold); transform: translateY(-1px); }
   .qact small { display: block; font: 500 12px 'IBM Plex Sans'; color: var(--faint); margin-top: 3px; }
   .qact:disabled { cursor: default; }
+  .seg.qmode button { padding: 6px 12px; font-size: 13px; }
+  .qbests { font-size: 13px; color: var(--dim); margin-bottom: 8px; } .qbests b { color: var(--ink); font-family: var(--mono); }
   .qhelp { text-transform: none; letter-spacing: 0; font-size: 12px; }
   .qpath { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 4px; color: var(--dim); font-size: 14px; }
   .qpath b { color: var(--ink); }
@@ -345,7 +347,7 @@
   <section class="panel quiz" id="quiz">
     <div class="qbar">
       <div class="qopts">
-        <label class="chk"><input type="checkbox" id="qTough"> Tough spots</label>
+        <div class="seg qmode" id="qToughSeg"><button data-t="0">All hands</button><button data-t="1">Tough spots</button></div>
         <span class="qlbl qhelp">every hand has a close call somewhere along the best line</span>
       </div>
       <div class="qscore" id="qScore"></div>
@@ -360,7 +362,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 10:30</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 11:02</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -835,7 +837,7 @@ async function kvPut(key, data) {
 const S = {
   game: store.get('uth.game', 'uth'), street: store.get('uth.street', 'preflop'), tab: store.get('uth.tab', 'hand'),
   tables: Object.assign({ uthTrips: 'UTH-01', badBeat: 'BB-1', wptTrips: 'TP-1', pocket: 'PB-1' }, store.get('uthTables', {})),
-  wptRaises: Object.assign({ 3: true, 2: false, 1: false }, store.get('uthRaises', {})),
+  wptRaises: { 3: true, 2: false, 1: false }, // WPT preflop: 3x is always allowed, and smaller raises are never best
   ante: store.get('uth.ante', 0),
   // What you can see before the flop (each optional): the dealer's card, and one flop card
   peekDealer: store.get('uth.peekDealer', store.get('uth.peek', true)), peekFlop: store.get('uth.peekFlop', store.get('uth.peek', true)),
@@ -844,7 +846,7 @@ const S = {
 };
 function saveSettings() {
   store.set('uth.game', S.game); store.set('uth.street', S.street); store.set('uth.tab', S.tab); store.set('uthTables', S.tables);
-  store.set('uthRaises', S.wptRaises); store.set('uth.ante', S.ante); store.set('uth.peekDealer', S.peekDealer); store.set('uth.peekFlop', S.peekFlop);
+  store.set('uth.ante', S.ante); store.set('uth.peekDealer', S.peekDealer); store.set('uth.peekFlop', S.peekFlop);
 }
 
 // The board is always five slots. Preflop uses the first (a flop card you've seen), the flop
@@ -956,17 +958,16 @@ function renderOpts() {
     h += sel('badBeat', 'Bad beat pay table', Object.entries(E.GAMES.wpt.badBeat).map(([k, t]) => [k, `${k} · ${[8, 7, 6, 5, 4].map(i => t[i]).join('/')}`]));
     h += sel('wptTrips', 'Trips Plus', Object.entries(E.GAMES.wpt.trips).map(([k, t]) => [k, `${k} · FH ${t[6]} / Fl ${t[5]} / St ${t[4]}`]));
     h += sel('pocket', 'Pocket Bonus', Object.entries(E.GAMES.wpt.pocket).map(([k, t]) => [k, `${k} · ${t.join('/')}`]));
-    h += `<div class="opt"><label>Preflop raises allowed</label>${[3, 2, 1].map(m => `<label class="chk"><input type="checkbox" data-r="${m}" ${S.wptRaises[m] ? 'checked' : ''} ${m === 3 ? 'disabled' : ''}>${m}x</label>`).join('')}</div>`;
   }
-  h += `<div class="opt"><label>Quiz score</label><button class="resetbtn" id="qResetBtn">Reset quiz stats</button></div>`;
+  h += `<div class="opt"><label>Quiz score</label><div class="qbests" id="qBests"></div><button class="resetbtn" id="qResetBtn">Reset quiz stats</button></div>`;
   const el = document.getElementById('opts');
   el.innerHTML = h;
+  if (typeof QZ !== 'undefined') renderQuizBests();
   document.getElementById('qResetBtn').onclick = () => {
-    if (!confirm('Reset your quiz stats (hands, perfect %, streaks, EV lost)?')) return;
-    QZ.stats = { n: 0, perfect: 0, lost: 0, streak: 0, best: 0 }; saveQuiz(); renderQuizScore();
+    if (!confirm('Reset your quiz stats for both modes (hands, perfect %, streaks, EV lost)?')) return;
+    QZ.statsBy = { normal: newStats(), tough: newStats() }; saveQuiz(); renderQuizScore();
   };
   el.querySelectorAll('select[data-t]').forEach(s => s.onchange = () => { S.tables[s.dataset.t] = s.value; saveSettings(); renderSetSum(); onRulesChanged(); });
-  el.querySelectorAll('input[data-r]').forEach(i => i.onchange = () => { S.wptRaises[i.dataset.r] = i.checked; saveSettings(); renderSetSum(); onRulesChanged(); });
   const peekChanged = () => { saveSettings(); renderSetSum(); if (!S.peekDealer && S.active === 'dealer') S.active = 'hole'; render(); onCardsChanged(); };
   document.getElementById('peekDealerIn').onchange = e => { S.peekDealer = e.target.checked; peekChanged(); };
   document.getElementById('peekFlopIn').onchange = e => { S.peekFlop = e.target.checked; peekChanged(); };
@@ -977,7 +978,7 @@ function renderOpts() {
   renderSetSum();
 }
 function renderSetSum() {
-  const parts = S.game === 'uth' ? [`Trips ${S.tables.uthTrips}`] : [`Bad beat ${S.tables.badBeat}`, `Trips+ ${S.tables.wptTrips}`, `Pocket ${S.tables.pocket}`, `Raise ${[3, 2, 1].filter(m => S.wptRaises[m]).join('/')}x`];
+  const parts = S.game === 'uth' ? [`Trips ${S.tables.uthTrips}`] : [`Bad beat ${S.tables.badBeat}`, `Trips+ ${S.tables.wptTrips}`, `Pocket ${S.tables.pocket}`];
   parts.push(S.ante ? `Ante $${S.ante}` : 'EV in antes');
   if (!S.peekDealer) parts.push('no dealer card');
   if (!S.peekFlop) parts.push('no early flop card');
@@ -1193,7 +1194,7 @@ function outsRule(R, bestIsBet) {
   const ruleBet = n <= RULE_OUTS, agrees = ruleBet === bestIsBet;
   const andJoin = a => a.length < 2 ? a.join('') : a.length === 2 ? a.join(' and ') : a.slice(0, -1).join('; ') + '; and ' + a[a.length - 1];
   const all = cats.flatMap(c => R.outs[c]);
-  return `<b>Rule of thumb</b> (bet if ${RULE_OUTS} or fewer single dealer cards beat you): ${n ? `${n} do — ${ranksIn(all, R.unseen, [all, R.unseen.filter(x => !all.includes(x))])}` : 'none do'}. `
+  return `<b>Rule of thumb</b> (bet if ≤ ${RULE_OUTS} cards beat you): ${n ? `${n} do — ${ranksIn(all, R.unseen, [all, R.unseen.filter(x => !all.includes(x))])}` : 'none do'}. `
     + `Rule says ${ruleBet ? 'bet' : 'fold'}${agrees ? ' ✓' : ` — it's right about 98% of the time, but wrong here: ${ruleMissReason(R, ruleBet)}`}.`;
 }
 // Why the card count misleads in this spot. Counting cards treats every win and loss alike; what it
@@ -1203,7 +1204,7 @@ function ruleMissReason(R, ruleBet) {
   const { G, N } = R, f = x => pct(x);
   if (ruleBet) { // rule says bet, folding is right
     const nq = G.win.n ? (G.win.n - G.win.q) / G.win.n : 0;
-    if (nq >= 0.5) return `${f(nq)} of your wins are against a dealer who doesn't qualify, so they only pay the 1x play, while every loss to a qualifying dealer costs 3`;
+    if (nq >= 0.5) return `${nq > 0.995 ? 'all' : f(nq)} of your wins are against a dealer who doesn't qualify, so they only pay the 1x play, while every loss to a qualifying dealer costs 3`;
     return `the dealer's two cards together beat you ${f((G.loseQ.n + G.loseNQ.n) / N)} of the time — more than the single-card count suggests`;
   }
   const tie = G.tie.n / N, lnq = (G.loseQ.n + G.loseNQ.n) ? G.loseNQ.n / (G.loseQ.n + G.loseNQ.n) : 0;
@@ -1226,7 +1227,7 @@ function ranksIn(cards, unseen, groups) {
   }
   const suitTxt = mine.map(su => `any ${SUIT_WORD[E.SUITS[su]]}`).join(' or ');
   const other = blocks.filter(su => !mine.includes(su)).map(su => SUIT_WORD[E.SUITS[su]]);
-  const art = other.length ? 'a' : /^(A|8)/.test(rk[0] || '') ? 'an' : 'a';
+  const art = 'any';
   const rankTxt = rk.length ? `${art} ${other.length ? 'non-' + other.join('/non-') + ' ' : ''}${listJoin(rk)}` : '';
   return suitTxt && rankTxt ? `${suitTxt}, or ${rankTxt}` : suitTxt || rankTxt;
 }
@@ -1259,8 +1260,9 @@ function explainLogic() {
     out.push(`Adding it up: ${parts.map(x => `${name[x.k]} ${sg(x.c)}`).join(', ')} → betting is ${amt(net)} ${net >= 0 ? 'better' : 'worse'} than folding.`);
     if (net < 0 && R.cat >= 1 && G.win.n) {
       const nq = (G.win.n - G.win.q) / G.win.n, lq = G.loseQ.n / Math.max(1, G.loseQ.n + G.loseNQ.n);
-      out.push(`<b>Why fold ${HAND_NAMES[R.cat]}?</b> ${pct(nq)} of the hands you beat are dealers who missed completely — they don't qualify, so your ante pushes and you win only the 1x play (+1). Almost every hand that beats you has paired up, so ${pct(lq)} of your losses are to a qualifying dealer and cost 3. `
-        + `A pair is only worth betting when it also beats a decent share of qualifying hands; ${HAND_NAMES[R.cat] === 'a pair' ? 'a small pair on a connected board beats almost none' : 'this one beats too few'}.`);
+      const lossTxt = lq > 0.995 ? 'every loss costs the full 3' : `${pct(lq)} of losses cost the full 3`;
+      const boardOnly = E.pcatOf(E.eval7(sp.board)) === R.cat; // your made hand is all on the board
+      out.push(`<b>Why fold ${boardOnly ? `the board's ${HAND_NAMES[R.cat].replace(/^an? /, '')}` : HAND_NAMES[R.cat]}?</b> ${boardOnly ? `The dealer has it too, so you're really playing your high cards against theirs. ` : ''}You win only ${pct(G.win.n / N)}${nq >= 0.3 ? `, and ${nq > 0.995 ? 'all' : pct(nq)} of those wins are against a dealer who doesn't qualify, so they pay just +1` : ''}; ${lossTxt}.`);
     }
     if (!sp.dealer.length) out.push(outsRule(R, net >= 0));
     return out;
@@ -1753,10 +1755,14 @@ const TOUGH = 0.15;
 const toughLimit = st => st === 'preflop' ? 0.015 * maxPreflopRaise() : TOUGH;
 const QZ = {
   tough: store.get('uth.qTough', false),
-  stats: Object.assign({ n: 0, perfect: 0, lost: 0, streak: 0, best: 0 }, store.get('uth.qStats2', {})),
+  // stats are kept separately for "All hands" and "Tough spots" (older single stats count as All hands)
+  statsBy: (() => { const v = store.get('uth.qStats3', null); return v ? { normal: Object.assign(newStats(), v.normal), tough: Object.assign(newStats(), v.tough) }
+    : { normal: Object.assign(newStats(), store.get('uth.qStats2', {})), tough: newStats() }; })(),
   cur: null, next: null, seq: 0,
 };
-const saveQuiz = () => { store.set('uth.qTough', QZ.tough); store.set('uth.qStats2', QZ.stats); };
+function newStats() { return { n: 0, perfect: 0, lost: 0, streak: 0, best: 0 }; }
+const statsFor = tough => QZ.statsBy[tough ? 'tough' : 'normal'];
+const saveQuiz = () => { store.set('uth.qTough', QZ.tough); store.set('uth.qStats3', QZ.statsBy); };
 const quizKey = () => [S.game, variantKey(), S.peekDealer, S.peekFlop, QZ.tough, S.game === 'wpt' ? JSON.stringify(S.wptRaises) : ''].join('|');
 const QSTREETS = ['preflop', 'flop', 'river'], QNAME = { preflop: 'Preflop', flop: 'Flop', river: 'River' };
 function quizActions(street, game) {
@@ -1782,13 +1788,13 @@ async function nodeSolve(sp) {
   return (await runJob({ type: 'solve', spec: sp, game: S.game, opts: gameOpts() }, { prio: 2 })).res.actions;
 }
 async function quizMake() {
-  const key = quizKey();
+  const key = quizKey(), tough = QZ.tough;
   for (let tries = 0; ; tries++) {
     const h = quizDeal();
     if (!QZ.tough || tries >= 30) {
       const solved = await Promise.all(QSTREETS.map(st => nodeSolve(nodeSpec(h, st))));
       h.acts = Object.fromEntries(QSTREETS.map((st, i) => [st, solved[i]]));
-      return { h, key };
+      return { h, key, tough };
     }
     // Tough spots: walk the best line street by street, solving only as far as needed, and keep
     // the hand once it passes a close call (then fill in the remaining streets).
@@ -1801,7 +1807,7 @@ async function quizMake() {
     if (!found) continue;
     const rest = QSTREETS.filter(st => !h.acts[st]), solved = await Promise.all(rest.map(st => nodeSolve(nodeSpec(h, st))));
     rest.forEach((st, i) => h.acts[st] = solved[i]);
-    return { h, key };
+    return { h, key, tough };
   }
 }
 function quizPrefetch() { QZ.next = quizMake().catch(() => null); }
@@ -1832,7 +1838,7 @@ function quizPick(k) {
   q.picks.push({ st: q.stage, k });
   if (endsHand(k, q.stage)) {
     q.done = true; q.grade = quizGrade(q);
-    const st = QZ.stats, lost = q.grade.lost, perfect = lost < 1e-9;
+    const st = statsFor(q.tough), lost = q.grade.lost, perfect = lost < 1e-9; // counted in the mode the hand was dealt in
     st.n++; st.lost += lost;
     let newBest = false;
     if (perfect) { st.perfect++; st.streak++; newBest = st.streak > st.best; st.best = Math.max(st.best, st.streak); } else st.streak = 0;
@@ -1846,8 +1852,13 @@ function quizToAnalyzer(st) {
   S.hole = sp.hole.slice(); S.board = [...sp.board, null, null, null, null, null].slice(0, 5); S.dealer = [sp.dealer[0] ?? null]; S.dead = [];
   S.active = 'board'; setMode('analyze'); setStreet(st); setTab('hand');
 }
+function renderQuizBests() {
+  const el = document.getElementById('qBests');
+  if (el) el.innerHTML = `Best streak<br><b>${QZ.statsBy.normal.best}</b> all hands · <b>${QZ.statsBy.tough.best}</b> tough spots`;
+}
 function renderQuizScore() {
-  const st = QZ.stats;
+  const st = statsFor(QZ.tough);
+  renderQuizBests();
   document.getElementById('qScore').innerHTML = st.n
     ? `<span>Hands <b>${st.n}</b></span><span>Perfect <b>${Math.round(st.perfect / st.n * 100)}%</b></span><span>Streak <b>${st.streak}</b> <small>(best ${st.best})</small></span>
        <span>EV lost / hand <b>${money(st.lost / st.n).replace('+', '')}</b></span>`
@@ -1860,7 +1871,8 @@ function gradeWord(lost) {
 }
 function renderQuiz() {
   renderQuizScore();
-  document.getElementById('qTough').checked = QZ.tough;
+  document.querySelectorAll('#qToughSeg button').forEach(b => b.classList.toggle('on', (b.dataset.t === '1') === QZ.tough));
+  document.querySelector('#quiz .qhelp').style.display = QZ.tough ? '' : 'none';
   const el = document.getElementById('qBody'), q = QZ.cur;
   document.getElementById('qNote').textContent = `EV per ${units() ? '$' + S.ante + ' ante' : '1-unit ante'}, including the ${E.GAMES[S.game].spot2} bet. Each decision is graded against the best play at that point, assuming perfect play afterwards.`;
   if (!q) { el.innerHTML = `<div class="empty"><div class="big">Dealing…</div>${QZ.tough ? 'Looking for a hand with a tough spot — this can take a few tries.' : ''}</div>`; return; }
@@ -1900,7 +1912,11 @@ function renderQuiz() {
   el.querySelectorAll('[data-an]').forEach(b => b.onclick = () => quizToAnalyzer(b.dataset.an));
   document.getElementById('qNext')?.addEventListener('click', quizNew);
 }
-document.getElementById('qTough').onchange = e => { QZ.tough = e.target.checked; saveQuiz(); QZ.next = null; if (!QZ.cur?.picks.length || QZ.cur?.done) quizNew(); };
+document.querySelectorAll('#qToughSeg button').forEach(b => b.onclick = () => {
+  const t = b.dataset.t === '1'; if (t === QZ.tough) return;
+  QZ.tough = t; saveQuiz(); QZ.next = null;
+  if (!QZ.cur?.picks.length || QZ.cur?.done) quizNew(); else renderQuiz(); // a hand in progress finishes in the mode it was dealt in
+});
 document.addEventListener('keydown', e => {
   if (!document.body.classList.contains('quiz-mode') || e.target.matches('input:not([type=checkbox]), select, textarea')) return;
   const q = QZ.cur; if (!q) return;
