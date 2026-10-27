@@ -342,7 +342,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 09:59</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 10:27</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -1173,10 +1173,25 @@ function outsRule(R, bestIsBet) {
   const what = c => c === 1 ? 'a pair' + (R.cat === 1 ? ' bigger than yours' : '') : c === R.cat ? `a better ${HAND_NAMES[c].replace(/^an? /, '')}` : HAND_NAMES[c];
   const parts = cats.map(c => `${R.outs[c].length} make ${what(c)} (${ranksIn(R.outs[c], R.unseen, groups)})`);
   const ruleBet = n <= RULE_OUTS, agrees = ruleBet === bestIsBet;
-  const andJoin = a => a.length < 2 ? a.join('') : a.slice(0, -1).join('; ') + '; and ' + a[a.length - 1];
-  return `<b>Rule of thumb:</b> counting single dealer cards that beat you on their own (with the board), ${n ? `there are ${n}: ${andJoin(parts)}` : 'there are none — the dealer needs both cards to beat you'}. `
-    + `The common rule is to bet with ${RULE_OUTS} or fewer and fold with more, so it says <b>${ruleBet ? 'bet' : 'fold'}</b> — ${agrees ? 'it agrees here' : 'here it’s wrong'}. `
-    + (agrees ? '' : `It matches the exact answer about 98% of the time; its misses all come at 19–21 cards, where what decides it is how many qualifying dealer hands you still beat. `);
+  const andJoin = a => a.length < 2 ? a.join('') : a.length === 2 ? a.join(' and ') : a.slice(0, -1).join('; ') + '; and ' + a[a.length - 1];
+  const all = cats.flatMap(c => R.outs[c]);
+  return `<b>Rule of thumb</b> (bet if ${RULE_OUTS} or fewer single dealer cards beat you): ${n ? `${n} do — ${ranksIn(all, R.unseen, [all, R.unseen.filter(x => !all.includes(x))])}` : 'none do'}. `
+    + `Rule says ${ruleBet ? 'bet' : 'fold'}${agrees ? ' ✓' : ` — it's right about 98% of the time, but wrong here: ${ruleMissReason(R, ruleBet)}`}.`;
+}
+// Why the card count misleads in this spot. Counting cards treats every win and loss alike; what it
+// misses is how much each one is worth against folding (−2): wins vs a non-qualifying dealer pay only +1
+// over the push, ties save the whole 2 units, and losses to a non-qualifying dealer cost nothing extra.
+function ruleMissReason(R, ruleBet) {
+  const { G, N } = R, f = x => pct(x);
+  if (ruleBet) { // rule says bet, folding is right
+    const nq = G.win.n ? (G.win.n - G.win.q) / G.win.n : 0;
+    if (nq >= 0.5) return `${f(nq)} of your wins are against a dealer who doesn't qualify, so they only pay the 1x play, while every loss to a qualifying dealer costs 3`;
+    return `the dealer's two cards together beat you ${f((G.loseQ.n + G.loseNQ.n) / N)} of the time — more than the single-card count suggests`;
+  }
+  const tie = G.tie.n / N, lnq = (G.loseQ.n + G.loseNQ.n) ? G.loseNQ.n / (G.loseQ.n + G.loseNQ.n) : 0;
+  if (tie >= 0.1) return `${f(tie)} of hands push, and each push saves the 2 units folding would lose`;
+  if (lnq >= 0.3) return `${f(lnq)} of your losses are to a dealer who doesn't qualify, which costs no more than folding`;
+  return `your wins are worth enough (${money(G.win.v / G.win.n)} on average) to cover the losses`;
 }
 const listJoin = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' or ' + a[a.length - 1];
 const SUIT_WORD = { s: 'spade', h: 'heart', d: 'diamond', c: 'club' };
@@ -1234,16 +1249,18 @@ function explainLogic() {
   }
   // preflop / flop: raise now vs check
   const mb = maxBetKey(A), m = +mb.slice(3), bet = A[mb], chk = A.check, o = RES.res.outcome, c = RES.res.check || {};
-  const B = o.win - o.lose, later = sp.street === 'preflop' ? 'the flop and river' : 'the river';
-  out.push(`<b>${ACT_LABEL[mb]} now:</b> against every dealer hand and runout you'd win ${pct(o.win)}, tie ${pct(o.tie)} and lose ${pct(o.lose)}, so each unit on the play bet earns ${sg(B)} — at ${m}x that's ${sg(bet.play)}. You never fold, so your ante and ${sp2} always ride to showdown.`);
+  const B = o.win - o.lose;
+  out.push(`<b>${ACT_LABEL[mb]} now:</b> you'd win ${pct(o.win)}, tie ${pct(o.tie)} and lose ${pct(o.lose)}, so the play bet is worth ${m} units × ${sg(B)} = ${sg(bet.play)}.`);
   const plan = sp.street === 'preflop'
-    ? `bet 2x on the flop ${pct(c.flopBetPct)} of the time, 1x on the river ${pct(c.riverBetPct)}, and fold ${pct(c.riverFoldPct)}`
-    : `bet 1x on the river ${pct(c.riverBetPct)} of the time and fold ${pct(c.riverFoldPct)}`;
-  out.push(`<b>Checking:</b> you see ${later} first, then ${plan}. Those smaller bets go in only when the cards help, and are worth ${sg(chk.play)} on the play bet.`);
+    ? `you'd bet 2x on the flop ${pct(c.flopBetPct)} of the time, 1x on the river ${pct(c.riverBetPct)}, and fold ${pct(c.riverFoldPct)}`
+    : `you'd bet 1x on the river ${pct(c.riverBetPct)} of the time and fold ${pct(c.riverFoldPct)}`;
+  out.push(`<b>Check:</b> ${plan}. Those play bets are worth ${sg(chk.play)}.`);
   const dPlay = bet.play - chk.play, dFold = (bet.ante + bet.side) - (chk.ante + chk.side), margin = dPlay + dFold;
-  const foldTxt = dFold > 0.0005 ? ` Folding also hands over your ante and ${sp2} on those hands — checking gives up ${amt(dFold)} there that raising keeps.` : '';
-  out.push(`<b>The trade-off:</b> raising now earns ${dPlay >= 0 ? amt(dPlay) + ' more' : amt(dPlay) + ' less'} on the play bet than waiting.${foldTxt} `
-    + `Net: ${margin >= 0 ? `raising is ${amt(margin)} better` : `checking is ${amt(margin)} better`}${margin < 0 ? ` — checking's smaller, better-timed bets earn more than a bigger bet made before you know how the hand runs out` : ` — you're far enough ahead now that the bigger bet is worth more than waiting to see more cards`}.`);
+  const win = margin >= 0 ? `${ACT_LABEL[mb].toLowerCase()} wins by ${amt(margin)}` : `checking wins by ${amt(margin)}`;
+  // Folding only costs something when some of the hands you'd fold would have won or pushed the ante/Blind.
+  out.push(dFold > 0.0005
+    ? `<b>Bottom line:</b> folding ${pct(c.riverFoldPct)} of the time also gives up ${amt(dFold)} of ante and ${sp2} that ${ACT_LABEL[mb].toLowerCase()} keeps. Play bet ${sg(bet.play)} vs ${sg(chk.play)}, folding ${sg(-dFold)} → ${win}.`
+    : `<b>Bottom line:</b> ${c.riverFoldPct > 0.02 ? `the hands you'd fold lose the ante and ${sp2} anyway, so ` : ''}it comes down to the play bet: ${sg(bet.play)} vs ${sg(chk.play)} → ${win}.`);
   if (sp.street === 'flop') out.push(...flopKicker(sp));
   return out;
 }
@@ -1302,14 +1319,14 @@ function explainKnown() {
   const out = [`<b>What seeing ${kn} changed:</b> without it this is a ${s0.margin >= 0 ? `${s0.mb.slice(3)}x ${S.street === 'preflop' ? 'raise' : 'bet'}` : pas}, ${amt(s0.margin)} better than ${s0.margin >= 0 ? verb(pas) : verb(s0.mb)}; `
     + (flipped ? 'seeing it flips the decision.' : `seeing it ${shift * Math.sign(s0.margin) < 0 ? 'shrinks' : 'grows'} the edge to ${amt(s1.margin)}.`)];
   const o0 = b.full.outcome, o1 = RES.res.outcome;
-  let t = `If you bet now you'd win ${pct(o1.win)} / tie ${pct(o1.tie)} / lose ${pct(o1.lose)}, against ${pct(o0.win)} / ${pct(o0.tie)} / ${pct(o0.lose)} without it`;
+  let t = `Without it, betting now would win ${pct(o0.win)}, tie ${pct(o0.tie)} and lose ${pct(o0.lose)}`;
   const c0 = b.full.check, c1 = RES.res.check;
   if (pas === 'check' && c0 && c1 && Math.abs(c1.riverFoldPct - c0.riverFoldPct) >= 0.02)
-    t += `; after checking you'd fold ${pct(c1.riverFoldPct)} of the time instead of ${pct(c0.riverFoldPct)}, because you know about ${kn.replace(/ in other hands$/, '')} when you decide`;
+    t += `, and after checking you'd fold ${pct(c0.riverFoldPct)} of the time (${pct(c1.riverFoldPct)} with it)`;
   out.push(t + '.');
   if (flipped && s1.margin < 0 && pas === 'check') {
     const m = +mb.slice(3), later = sp.street === 'preflop' ? 2 : 1, d = m - later;
-    out.push(`Checking means betting at most ${later}x later instead of ${m}x now${d === 1 ? ' — only one unit less' : ''}, and here what you learn by waiting is worth more than ${d === 1 ? 'that unit' : `those ${d} units`}.`);
+    out.push(`Waiting only drops your bet from ${m}x to ${later}x, so the extra information doesn't have to be worth much to win out.`);
   }
   return out;
 }
@@ -1834,7 +1851,7 @@ function renderQuiz() {
   const extra = [h.peekF && 'you saw a flop card', h.dealer.length && 'you saw a dealer card'].filter(Boolean);
   let x = `<div class="qhead">${q.done ? 'Hand over' : QNAME[q.stage]}${extra.length ? `<small>${extra.join(' · ')}</small>` : ''}</div>
     <div class="qtable">
-      <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs(h.hole)}</div></div>
+      <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs([...h.hole].sort((x, y) => y - x))}</div></div>
       <div class="qgroup"><div class="k">Board</div><div class="cards">${pcs(board.slice(0, 3))}<span class="slotcards"><span class="gap"></span></span>${pcs(board.slice(3))}</div></div>
       ${h.dealer.length ? `<div class="qgroup"><div class="k">Dealer shows</div><div class="cards">${pcs([h.dealer[0], 'h'])}</div></div>` : ''}
     </div>`;
