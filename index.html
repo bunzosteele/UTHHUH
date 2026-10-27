@@ -184,6 +184,10 @@
   .drawer .opt .chk { display: flex; margin: 4px 0; }
   .ptdesc { font-size: 12.5px; color: var(--dim); margin-top: 6px; line-height: 1.5; } .ptdesc b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
   .ptnote { font-size: 12.5px; color: var(--faint); }
+  .drawer table.ptab { width: auto; min-width: 230px; margin: 6px 0 6px; }
+  .drawer table.ptab td { padding: 3px 14px 3px 0; font-size: 13px; } .drawer table.ptab td.r { text-align: right; }
+  .drawer table.ptab th { font-size: 11px; padding: 3px 0; }
+  .bamt { margin: 4px 0 0 24px; font-size: 13px; color: var(--dim); } .bamt input { width: 90px; margin-left: 4px; }
   .settings { margin-top: 18px; }
   .settings > summary { list-style: none; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
   .settings > summary::-webkit-details-marker { display: none; }
@@ -465,7 +469,7 @@
 
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 16:15</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 16:33</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -951,12 +955,14 @@ const S = {
   // What you can see before the flop (each optional): the dealer's card, and one flop card
   peekDealer: store.get('uth.peekDealer', store.get('uth.peek', false)), peekFlop: store.get('uth.peekFlop', store.get('uth.peek', false)),
   seeOthers: store.get('uth.seeOthers', true),
+  bonusInc: Object.assign({ trips: false, pocket: false }, store.get('uth.bonusInc', {})), // include this bonus bet in the house edge?
+  bonusAmt: Object.assign({ trips: 5, pocket: 5 }, store.get('uth.bonusAmt', {})),         // its size in dollars
   hole: [null, null], board: [null, null, null, null, null], dealer: [null], dead: [],
   active: 'hole', kpRank: null,
 };
 function saveSettings() {
   store.set('uth.game', S.game); store.set('uth.street', S.street); store.set('uth.tab', S.tab); store.set('uthTables', S.tables);
-  store.set('uth.ante', S.ante); store.set('uth.peekDealer', S.peekDealer); store.set('uth.peekFlop', S.peekFlop); store.set('uth.seeOthers', S.seeOthers);
+  store.set('uth.ante', S.ante); store.set('uth.peekDealer', S.peekDealer); store.set('uth.peekFlop', S.peekFlop); store.set('uth.seeOthers', S.seeOthers); store.set('uth.bonusInc', S.bonusInc); store.set('uth.bonusAmt', S.bonusAmt);
 }
 
 // The board is always five slots. Preflop uses the first (a flop card you've seen), the flop
@@ -1058,16 +1064,19 @@ function addCard(c) {
 function removeCard(gid, i) { const arr = groupArr(gid); if (gid === 'dead') arr.splice(i, 1); else arr[i] = null; S.active = gid; if (gid === 'board') followBoard(); render(); onCardsChanged(); }
 function clearGroup(gid) { const arr = groupArr(gid); if (gid === 'dead') arr.length = 0; else arr.fill(null); S.active = gid; if (gid === 'board') followBoard(); render(); onCardsChanged(); }
 
-// Pay-table pickers: buttons for each table plus a plain-language line saying what the selected one pays.
-const PT_NAMES = ['High card', 'Pair', 'Two pair', 'Trips', 'Straight', 'Flush', 'Full house', 'Quads', 'Straight flush', 'Royal'];
-function ptLine(key, t) {
-  if (key === 'badBeat') return `Pays when you <b>lose</b> with: ${[8, 7, 6, 5, 4].map(i => `${PT_NAMES[i]} <b>${t[i]}</b>`).join(' · ')}`;
-  if (key === 'pocket') return `AA <b>${t[0]}</b> · A-K/Q/J suited <b>${t[1]}</b> · offsuit <b>${t[2]}</b> · other pairs <b>${t[3]}</b> &nbsp;— edge ${pctE(pocketEdge(t))}`;
-  return `${[9, 8, 7, 6, 5, 4, 3].map(i => `${PT_NAMES[i]} <b>${t[i]}</b>`).join(' · ')} &nbsp;— edge ${pctE(sideEdge(t))}`;
+// Pay-table pickers: a button per table, then the selected table laid out like the Guide's.
+function ptTable(key, t) {
+  if (key === 'badBeat') return `<table class="ptab"><thead><tr><th>You lose with</th><th class="r"></th></tr></thead><tbody>${payRows(t, 4).replace(/<tr><td>Royal flush<\/td><td class="r">[^<]*<\/td><\/tr>/, '')}</tbody></table>`;
+  if (key === 'pocket') return `<table class="ptab"><tbody>${['Pair of aces', 'Ace + K, Q or J, suited', 'Ace + K, Q or J, offsuit', 'Any other pair'].map((n, i) => `<tr><td>${n}</td><td class="r">${t[i]} to 1</td></tr>`).join('')}<tr><td>Anything else</td><td class="r">Loses</td></tr></tbody></table>`;
+  return `<table class="ptab"><tbody>${payRows(t, 3)}<tr><td>Anything less</td><td class="r">Loses</td></tr></tbody></table>`;
 }
 function renderOpts() {
-  const pick = (key, label, tabs, help) => `<div class="opt wide"><label>${label}</label><div class="ptpick">${Object.keys(tabs).map(k => `<button class="${S.tables[key] === k ? 'on' : ''}" data-pt="${key}" data-v="${k}">${k}</button>`).join('')}</div>
-    <div class="ptdesc">${help ? help + ' ' : ''}${ptLine(key, tabs[S.tables[key]])}</div></div>`;
+  // bonus: 'trips' / 'pocket' adds the "include in house edge" box and its bet size
+  const pick = (key, label, tabs, help, bonus, edge) => `<div class="opt wide"><label>${label}</label><div class="ptpick">${Object.keys(tabs).map(k => `<button class="${S.tables[key] === k ? 'on' : ''}" data-pt="${key}" data-v="${k}">${k}</button>`).join('')}</div>
+    ${help ? `<div class="ptdesc">${help}</div>` : ''}${ptTable(key, tabs[S.tables[key]])}
+    ${bonus ? `<div class="ptdesc">House edge on this bet: <b>${pctE(edge(tabs[S.tables[key]]))}</b></div>
+      <label class="chk"><input type="checkbox" data-binc="${bonus}" ${S.bonusInc[bonus] ? 'checked' : ''}> Include in the house edge above</label>
+      ${S.bonusInc[bonus] ? `<div class="bamt">Bet size $<input class="money" data-bamt="${bonus}" inputmode="decimal" value="${S.bonusAmt[bonus] || ''}"></div>` : ''}` : ''}</div>`;
   let h = `<div class="opt wide"><label>Before the flop I can see</label>
       <label class="chk"><input type="checkbox" id="seeOthersIn" ${S.seeOthers ? 'checked' : ''}> other players' cards</label>
       <label class="chk"><input type="checkbox" id="peekDealerIn" ${S.peekDealer ? 'checked' : ''}> the dealer's card</label>
@@ -1075,12 +1084,12 @@ function renderOpts() {
   h += `<div class="opt wide"><label>Ante (blank = show EV in antes)</label><input class="money" id="anteIn" inputmode="decimal" placeholder="e.g. 50" value="${S.ante || ''}"></div>`;
   h += `<div class="opt wide"><div class="ptnote">Pay tables vary by casino — match the one printed on your table.</div></div>`;
   if (S.game === 'uth') {
-    h += pick('uthTrips', 'Trips bonus', E.GAMES.uth.trips, 'Pays on your final hand:');
-    h += `<div class="opt wide"><label>Blind</label><div class="ptdesc">Pays when you <b>win</b> with: Royal <b>500</b> · Straight flush <b>50</b> · Quads <b>10</b> · Full house <b>3</b> · Flush <b>3:2</b> · Straight <b>1</b> (same at every casino)</div></div>`;
+    h += pick('uthTrips', 'Trips bonus', E.GAMES.uth.trips, 'Pays on your final hand, whatever the dealer has:', 'trips', sideEdge);
+    h += `<div class="opt wide"><label>Blind</label><div class="ptdesc">The same at every casino. Pays when you win with:</div><table class="ptab"><tbody>${payRows(E.GAMES.uth.blind, 4)}<tr><td>Anything less</td><td class="r">Push</td></tr></tbody></table></div>`;
   } else {
-    h += pick('badBeat', 'Bad Beat (on the Odds bet)', E.GAMES.wpt.badBeat, '');
-    h += pick('wptTrips', 'Trips Plus bonus', E.GAMES.wpt.trips, 'Pays on your final hand:');
-    h += pick('pocket', 'Pocket Bonus', E.GAMES.wpt.pocket, 'Pays on your two cards:');
+    h += pick('badBeat', 'Bad Beat (on the Odds bet)', E.GAMES.wpt.badBeat, 'Your Odds bet pays this when you lose with a straight or better:');
+    h += pick('wptTrips', 'Trips Plus bonus', E.GAMES.wpt.trips, 'Pays on your final hand, whatever the dealer has:', 'trips', sideEdge);
+    h += pick('pocket', 'Pocket Bonus', E.GAMES.wpt.pocket, 'Pays on your two starting cards:', 'pocket', pocketEdge);
   }
   h += `<div class="opt wide"><label>Quiz score</label><div class="qbests" id="qBests"></div><button class="resetbtn" id="qResetBtn">Reset quiz stats</button></div>`;
   const el = document.getElementById('opts');
@@ -1091,13 +1100,15 @@ function renderOpts() {
     QZ.statsBy = emptyStatsBy(); saveQuiz(); renderQuizScore();
   };
   el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); });
+  el.querySelectorAll('[data-binc]').forEach(c => c.onchange = () => { S.bonusInc[c.dataset.binc] = c.checked; saveSettings(); renderOpts(); });
+  el.querySelectorAll('[data-bamt]').forEach(i => i.oninput = () => { const v = parseFloat(String(i.value).replace(/[$,]/g, '')); S.bonusAmt[i.dataset.bamt] = v > 0 ? v : 0; saveSettings(); renderEdgeCard(); });
   const peekChanged = () => { saveSettings(); renderSetSum(); if ((!S.peekDealer && S.active === 'dealer') || (!S.seeOthers && S.active === 'dead')) S.active = 'hole'; render(); onCardsChanged(); };
   document.getElementById('peekDealerIn').onchange = e => { S.peekDealer = e.target.checked; peekChanged(); };
   document.getElementById('peekFlopIn').onchange = e => { S.peekFlop = e.target.checked; peekChanged(); };
   document.getElementById('seeOthersIn').onchange = e => { S.seeOthers = e.target.checked; peekChanged(); };
   document.getElementById('anteIn').oninput = e => {
     const v = parseFloat(String(e.target.value).replace(/[$,]/g, ''));
-    S.ante = v > 0 ? v : 0; saveSettings(); renderSetSum(); renderResults(); renderChart(); renderMbar();
+    S.ante = v > 0 ? v : 0; saveSettings(); renderSetSum(); renderResults(); renderChart(); renderMbar(); renderEdgeCard();
   };
   renderSetSum();
 }
@@ -1107,24 +1118,39 @@ function renderOpts() {
 const INFO_EV = { uth: { none: -0.021850, flop: 0.045213, dealer: 0.135922, both: 0.223286 }, wpt: { none: -0.030573, flop: 0.006824, dealer: 0.119026, both: 0.164774 } };
 // Each other player's hand you see (2 cards), no dealer/flop card: estimated by sampling (deadfx.js).
 const DEAD_GAIN = { uth: null, wpt: null };
+// Money wagered per hand (in antes): Ante + Blind + the Play bet with perfect play. Exact with no extra
+// cards; with a dealer/flop card we know how often you raise preflop (edge.js), and use the no-information
+// rate of later betting for the hands you check — close, but marked approximate.
+const RAISE_SHARE = { uth: { dealer: 0.3458, flop: 0.3854, both: 0.4027 }, wpt: { dealer: 0.2239, flop: 0.3432, both: 0.3118 } };
+const LATER_PLAY = { uth: 1.0338, wpt: 1.0619 }; // average Play bet (antes) after checking preflop, no extra info
 function renderEdgeCard() {
   const el = document.getElementById('setEdge'); if (!el) return;
   const kind = S.peekDealer && S.peekFlop ? 'both' : S.peekDealer ? 'dealer' : S.peekFlop ? 'flop' : 'none';
-  let ev = INFO_EV[S.game][kind], approx = false;
-  if (S.game === 'wpt' && S.tables.badBeat !== 'BB-2' && typeof BASE !== 'undefined' && BASE) {
-    const now = mainEdge(), bb2 = (() => { const keep = S.tables.badBeat; S.tables.badBeat = 'BB-2'; const r = mainEdge(); S.tables.badBeat = keep; return r; })();
-    ev += bb2.edge - now.edge; approx = kind !== 'none';
+  let ev = INFO_EV[S.game][kind], approx = kind !== 'none';
+  const me = typeof BASE !== 'undefined' && BASE ? mainEdge() : null;
+  if (S.game === 'wpt' && S.tables.badBeat !== 'BB-2' && me) {
+    const keep = S.tables.badBeat; S.tables.badBeat = 'BB-2'; const bb2 = mainEdge(); S.tables.badBeat = keep;
+    ev += bb2.edge - me.edge;
   }
+  const m = S.game === 'uth' ? 4 : 3, rs = RAISE_SHARE[S.game][kind];
+  const avg = kind === 'none' ? (me ? me.avg : 4) : 2 + m * rs + (1 - rs) * LATER_PLAY[S.game];
+  // optional bonus bets, in dollars (needs an ante to compare against)
+  const bon = (S.game === 'uth' ? [['trips', 'Trips', sideEdge(E.GAMES.uth.trips[S.tables.uthTrips])]]
+    : [['trips', 'Trips Plus', sideEdge(E.GAMES.wpt.trips[S.tables.wptTrips])], ['pocket', 'Pocket Bonus', pocketEdge(E.GAMES.wpt.pocket[S.tables.pocket])]])
+    .filter(([k]) => S.bonusInc[k] && S.bonusAmt[k] > 0);
+  const useBonus = bon.length && S.ante > 0;
+  let evMoney = ev * (S.ante || 1), wager = avg * (S.ante || 1);
+  if (useBonus) for (const [k, , e] of bon) { evMoney -= e * S.bonusAmt[k]; wager += S.bonusAmt[k]; }
+  const edge = -evMoney / wager; // share of all money wagered
   const seen = kind === 'both' ? "the dealer's card and a flop card" : kind === 'dealer' ? "the dealer's card" : kind === 'flop' ? 'a flop card' : null;
   const pl = S.game === 'uth' ? 'Blind + Play' : 'Odds + Raise';
-  const side = S.game === 'uth' ? [['Trips', sideEdge(E.GAMES.uth.trips[S.tables.uthTrips])]]
-    : [['Trips Plus', sideEdge(E.GAMES.wpt.trips[S.tables.wptTrips])], ['Pocket Bonus', pocketEdge(E.GAMES.wpt.pocket[S.tables.pocket])]];
   const dg = DEAD_GAIN[S.game];
-  el.innerHTML = `<div class="ek">${ev < 0 ? 'House edge' : 'Player edge'}${approx ? ' (approx.)' : ''}</div>
-    <div class="ev ${ev < 0 ? 'neg' : 'pos'}">${ev < 0 ? '' : '+'}${(Math.abs(ev) * 100).toFixed(2)}%</div>
-    <div class="ed">Ante + ${pl} with perfect play${seen ? `, seeing ${seen} every hand` : ', no extra cards seen'} — per ante.</div>
-    <div class="ed">Bonus bets: ${side.map(([n, e]) => `${n} ${pctE(e)}`).join(' · ')}</div>
-    ${S.seeOthers ? `<div class="ed foot">${dg != null ? `Each other player's hand you see adds about <b>+${(dg * 100).toFixed(2)}%</b> for you (estimate, with no dealer or flop card).` : "Seeing other players' hands helps a little more; that estimate is still being worked out."}</div>` : ''}`;
+  el.innerHTML = `<div class="ek">${edge > 0 ? 'House edge' : 'Player edge'}${approx ? ' (approx.)' : ''}</div>
+    <div class="ev ${edge > 0 ? 'neg' : 'pos'}">${edge > 0 ? '' : '+'}${(Math.abs(edge) * 100).toFixed(2)}%</div>
+    <div class="ed">of all money wagered — Ante + ${pl}${useBonus ? ` + ${bon.map(b => b[1]).join(' + ')}` : ''}, perfect play${seen ? `, seeing ${seen} every hand` : ''}.</div>
+    <div class="ed">You ${evMoney < 0 ? 'lose' : 'win'} about ${S.ante ? `<b>$${Math.abs(evMoney).toFixed(2)}</b> per hand at a $${S.ante} ante` : `<b>${Math.abs(ev * 100).toFixed(2)}%</b> of an ante per hand`}, with about ${(wager / (S.ante || 1)).toFixed(2)} antes wagered per hand${useBonus ? ' (bonus bets included)' : ''}.</div>
+    ${bon.length && !S.ante ? '<div class="ed foot">Set an ante below to include your bonus bets.</div>' : ''}
+    ${S.seeOthers ? `<div class="ed foot">${dg != null ? `Each other player's hand you see adds about <b>${(dg / avg * 100).toFixed(2)}%</b> of money wagered in your favour (estimate, with no dealer or flop card).` : "Seeing other players' hands helps a little more; that estimate is still being worked out."}</div>` : ''}`;
 }
 function renderSetSum() {
   if (typeof mode !== 'undefined' && mode === 'guide') renderGuide();
@@ -1572,7 +1598,7 @@ function renderResults() {
   h += `</div>`;
 
   const names = ['High card', 'Pair', 'Two pair', 'Trips', 'Straight', 'Flush', 'Full house', 'Quads', 'Straight flush', 'Royal flush'];
-  h += `<details><summary>How often you make each hand</summary><table><tbody>${res.catHist.map((p, i) => p > 0 ? `<tr><td>${names[i]}</td><td>${(p * 100).toFixed(p < 0.001 ? 4 : 2)}%</td></tr>` : '').join('')}</tbody></table></details>`;
+  if (S.street !== 'river') h += `<details><summary>How often you make each hand</summary><table><tbody>${res.catHist.map((p, i) => p > 0 ? `<tr><td>${names[i]}</td><td>${(p * 100).toFixed(p < 0.001 ? 4 : 2)}%</td></tr>` : '').join('')}</tbody></table></details>`;
   h += `<div class="note">${res.boards.toLocaleString()} board completions × ${res.N} dealer hands${cached ? ' · from the shared cache' : res.ms !== undefined ? ` · ${(res.ms / 1000).toFixed(1)} s` : ''}</div>`;
   el.innerHTML = h;
 }
@@ -2318,8 +2344,8 @@ function renderGuide() {
       <b>River</b><span>Count the individual cards the dealer could have that would beat you. Bet 1x if <b>21 or fewer</b>; otherwise fold.</span>
     </div>
     <h4>House edge with perfect play</h4>
-    ${me ? `<div class="key">Ante + ${s2} + ${play}: <b>${(me.edge * 100).toFixed(3)}%</b> of the Ante per hand</div>
-    <p>That's about ${money(me.edge).replace(/[+−]/, '')}${unitWord()} lost per hand${S.ante ? ` at a $${S.ante} ante` : ''}. An average hand puts ${me.avg.toFixed(2)} antes in play counting the ${play} bet, so it's <b>${(me.edge / me.avg * 100).toFixed(3)}%</b> of the money wagered.${uth ? '' : ` (Bad Beat table ${S.tables.badBeat}.)`} Bonus bets have their own edge, shown with each bet above.</p>`
+    ${me ? `<div class="key">Ante + ${s2} + ${play}: <b>${(me.edge / me.avg * 100).toFixed(2)}%</b> of the money wagered</div>
+    <p>An average hand puts ${me.avg.toFixed(2)} antes in play counting the ${play} bet, and you lose ${(me.edge * 100).toFixed(2)}% of an ante per hand — about ${money(me.edge).replace(/[+−]/, '')}${unitWord()}${S.ante ? ` at a $${S.ante} ante` : ''}.${uth ? '' : ` (Bad Beat table ${S.tables.badBeat}.)`} Bonus bets have their own edge, shown with each bet above.</p>`
     : '<p>Loading…</p>'}`;
   el.innerHTML = h;
   el.querySelectorAll('[data-bet]').forEach(b => b.onclick = () => { guideBet = b.dataset.bet; renderGuide(); });
