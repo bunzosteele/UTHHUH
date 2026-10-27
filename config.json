@@ -1,4 +1,4 @@
 {
-  "cf_worker_url": "",
+  "cf_worker_url": "https://dbs-lc.steelead24.workers.dev",
   "kv_prefix": "uth/"
 }
