@@ -81,7 +81,9 @@
   .kp.on { background: var(--gold); color: #1c1606; border-color: var(--gold); }
   .kp:disabled { opacity: 0.25; cursor: default; }
   .kp-suits .kp { background: var(--card); border-color: var(--card-line); font-size: 24px; height: 50px; }
-  .kp-suits .kp:disabled { opacity: 0.35; }
+  .kp-suits .kp:disabled { opacity: 0.45; }
+  .kp-suits .kp.s { color: var(--s); } .kp-suits .kp.h { color: var(--h); } .kp-suits .kp.d { color: var(--d); } .kp-suits .kp.c { color: var(--c); }
+  .kp-suits .kp { font-size: 28px; line-height: 1; }
   .pickhint { font-size: 13px; color: var(--dim); margin-top: 10px; }
   .pickhint b { color: var(--gold); font-weight: 600; }
 
@@ -95,6 +97,10 @@
   .verdict .why b, .mono { color: var(--ink); font-family: var(--mono); font-weight: 600; }
   .close { color: var(--warn); }
   .flip { color: var(--gold); font-weight: 600; }
+  .explain { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); font-size: 14px; line-height: 1.5; color: var(--dim); }
+  .explain .k { font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .explain p { margin: 0 0 6px; } .explain p:last-child { margin: 0; }
+  .explain b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
 
   h3 { font-family: var(--serif); font-weight: 600; font-size: 15px; margin: 18px 0 2px; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
@@ -245,6 +251,23 @@
 </style>
 </head>
 <body>
+<script>
+// A phone set to "Desktop site" ignores the viewport tag and lays the page out ~980px wide, so the
+// two-column desktop view shows up shrunk. Spot that (layout wider than the screen's longest side)
+// and apply the phone styles anyway, zoomed so text is a normal size.
+(() => {
+  const sw = screen.width, sh = screen.height, long = Math.max(sw, sh);
+  if (!(innerWidth >= 940 && long < innerWidth * 0.97)) return;
+  window.__forceMobile = true;
+  const cur = innerWidth > innerHeight ? long : Math.min(sw, sh);
+  let css = '';
+  for (const sheet of document.styleSheets) {
+    try { for (const r of sheet.cssRules) if (r.media && /860px/.test(r.media.mediaText)) for (const x of r.cssRules) css += x.cssText + '\n'; } catch (e) {}
+  }
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+  document.documentElement.style.zoom = (innerWidth / cur).toFixed(3);
+})();
+</script>
 <div class="wrap">
   <header>
     <h1>Hold'em <span>EV</span></h1>
@@ -306,7 +329,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 21:19</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 21:41</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -868,7 +891,7 @@ function renderSlots() {
   kp.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { const c = S.kpRank * 4 + +b.dataset.s; S.kpRank = null; addCard(c); });
 
   const g = groups().find(x => x.id === S.active);
-  const mobile = matchMedia('(max-width: 860px)').matches;
+  const mobile = isMobile();
   document.getElementById('pickhint').innerHTML = g ? `Adding to <b>${g.label}</b>. ${mobile ? 'Pick a rank, then a suit.' : 'Click a card in a slot to remove it.'}` : '';
 }
 function groupArr(id) { return S[id]; }
@@ -926,6 +949,7 @@ function renderSetSum() {
 }
 
 // ── Worker pool (priority queue) ──────────────────────────────────────────
+const isMobile = () => !!window.__forceMobile || matchMedia('(max-width: 860px)').matches;
 const NW = Math.max(1, Math.min(8, navigator.hardwareConcurrency || 4));
 const pool = { workers: [], idle: [], queue: [], seq: 0 };
 function initWorkers() {
@@ -939,6 +963,10 @@ function initWorkers() {
           self.postMessage({ id: m.id, part: p }, [p.W.buffer, p.L.buffer, p.Wq.buffer, p.Lq.buffer, p.cat.buffer]);
         } else if (m.type === 'decide') {
           const ctx = E.setup(m.spec), r = E.decide(m.spec, ctx, m.st, m.game, m.opts);
+          delete r.flopEVs;
+          self.postMessage({ id: m.id, res: r });
+        } else if (m.type === 'full') { // full breakdown for one spec on one worker (explanations)
+          const ctx = E.setup(m.spec), r = E.decide(m.spec, ctx, E.boardStats(m.spec, ctx), m.game, m.opts);
           delete r.flopEVs;
           self.postMessage({ id: m.id, res: r });
         } else { // whole solve on one worker (impact steps, range chart)
@@ -1040,7 +1068,7 @@ async function solve() {
   RES = { sp, res, cached, impact: null };
   renderResults();
   computeImpact(seq, sp, res);
-  if (matchMedia('(max-width: 860px)').matches && !RES.seenOnce) { /* the bar shows the verdict; the sheet opens on tap */ }
+  if (isMobile() && !RES.seenOnce) { /* the bar shows the verdict; the sheet opens on tap */ }
 }
 
 // ── Impact of each known card: no info → +flop card → +dealer → +others ──
@@ -1071,10 +1099,49 @@ async function computeImpact(seq, sp, res) {
   if (steps.length < 2) { RES.impact = []; renderResults(); return; }
   steps[steps.length - 1].acts = res.actions;
   // no-info preflop step comes from the shipped baselines when available
-  if (S.street === 'preflop' && BASE) { const b = BASE[handClass(sp.hole)]?.games[S.game === 'uth' ? 'uth' : 'wpt:' + S.tables.badBeat]; if (b) steps[0].acts = b.actions; }
+  if (S.street === 'preflop' && BASE) { const b = BASE[handClass(sp.hole)]?.games[S.game === 'uth' ? 'uth' : 'wpt:' + S.tables.badBeat]; if (b) { steps[0].acts = b.actions; steps[0].full = b; } }
   RES.impact = steps; renderResults();
-  await Promise.all(steps.filter(s => !s.acts).map(s => runJob({ type: 'solve', spec: s.spec, game: S.game, opts: gameOpts() }, { prio: 2, stale: () => seq !== solveSeq })
-    .then(r => { if (seq === solveSeq) { s.acts = r.res.actions; renderResults(); } }).catch(() => {})));
+  // the no-info step is solved in full (outcomes, fold rates) so the explanation can compare against it
+  await Promise.all(steps.filter(s => !s.acts).map((s, i) => runJob({ type: s === steps[0] ? 'full' : 'solve', spec: s.spec, game: S.game, opts: gameOpts() }, { prio: 2, stale: () => seq !== solveSeq })
+    .then(r => { if (seq === solveSeq) { s.acts = r.res.actions; if (s === steps[0]) s.full = r.res; renderResults(); } }).catch(() => {})));
+}
+
+// ── Plain-language explanation when the known cards change the usual play ──
+// Compares the spot with no extra cards against the spot as entered: the max bet's EV, the
+// showdown odds if you bet now, and how often checking lets you fold later.
+function explainSpot() {
+  const imp = RES?.impact, b = imp?.[0];
+  if (!imp || imp.length < 2 || !b?.full) return '';
+  const sp = RES.sp, A0 = b.full.actions, A1 = RES.res.actions;
+  const s0 = summarize(A0), s1 = summarize(A1), mb = s1.mb, pas = s1.passive;
+  const flipped = (s0.margin >= 0) !== (s1.margin >= 0), shift = s1.margin - s0.margin;
+  if (!flipped && Math.abs(shift) < 0.15) return '';
+  const amt = x => `<b>${money(Math.abs(x)).replace(/[+−]/, '')}</b>${unitWord()}`;
+  const known = [];
+  if (sp.dealer.length) known.push(`the dealer's ${cardTxt(sp.dealer[0])}`);
+  if (sp.street === 'preflop' && sp.board.length) known.push(`the ${cardTxt(sp.board[0])} on the flop`);
+  if (sp.dead.length) known.push(`${sp.dead.map(cardTxt).join(' ')} in other hands`);
+  const kn = known.join(' and ');
+  const hand = sp.street === 'preflop' ? sp.hole.map(cardTxt).join('') : sp.street === 'flop' ? 'this hand on this flop' : 'this hand on this board';
+  const verb = k => k === 'check' ? 'checking' : k === 'fold' ? 'folding' : ACT_LABEL[k].toLowerCase().replace('bet ', 'betting ');
+  const out = [];
+  out.push(`Without ${kn}, ${hand} is a ${s0.margin >= 0 ? `${s0.mb.slice(3)}x ${S.street === 'preflop' ? 'raise' : 'bet'}` : pas}, ${amt(s0.margin)} better than ${s0.margin >= 0 ? verb(pas) : verb(s0.mb)}. `
+    + (flipped ? `Seeing ${kn} flips that.` : `Seeing ${kn} ${shift * Math.sign(s0.margin) < 0 ? 'shrinks' : 'grows'} the edge to ${amt(s1.margin)}.`));
+  const dB = totalOf(A1[mb]) - totalOf(A0[mb]), o0 = b.full.outcome, o1 = RES.res.outcome;
+  out.push(`${ACT_LABEL[mb]} now is worth ${amt(dB)} ${dB < 0 ? 'less' : 'more'}: if you bet now you win ${pct(o1.win)} and lose ${pct(o1.lose)} of showdowns, against ${pct(o0.win)} and ${pct(o0.lose)} without it.`);
+  if (pas === 'check') {
+    const dC = totalOf(A1.check) - totalOf(A0.check), c0 = b.full.check, c1 = RES.res.check;
+    const towardCheck = s1.margin < s0.margin;
+    let t = `Checking ${dC >= 0 ? `gains ${amt(dC)}` : `${towardCheck ? 'drops only' : 'drops'} ${amt(dC)}`}`;
+    if (c0 && c1 && Math.abs(c1.riverFoldPct - c0.riverFoldPct) >= 0.02)
+      t += `: waiting lets you play the ${sp.street === 'preflop' ? 'flop and river' : 'river'} knowing about ${kn.replace(/ in other hands$/, '')}, and you'd fold ${pct(c1.riverFoldPct)} of the time instead of ${pct(c0.riverFoldPct)}`;
+    out.push(t + '.');
+    if (flipped && s1.margin < 0) {
+      const m = +mb.slice(3), later = sp.street === 'preflop' ? 2 : 1, d = m - later;
+      out.push(`Checking means betting at most ${later}x later instead of ${m}x now${d === 1 ? ' — only one unit less' : ''}, and here what you learn by waiting is worth more than ${d === 1 ? 'that unit' : `those ${d} units`}.`);
+    }
+  }
+  return `<div class="explain"><div class="k">Why</div>${out.map(x => `<p>${x}</p>`).join('')}</div>`;
 }
 
 // ── Rendering: results ────────────────────────────────────────────────────
@@ -1100,6 +1167,7 @@ function renderResults() {
       ? `Beats ${sm.passive}ing by <b>${money(sm.margin).replace('+', '')}</b>${unitWord()}`
       : `${ACT_LABEL[sm.mb]} would cost <b>${money(-sm.margin).replace('+', '')}</b>${unitWord()} more than ${sm.passive}ing`}
       · EV <b>${money(A[best].total)}</b>${closeCall ? ' · <span class="close">close call</span>' : ''}</div></div>`;
+  h += explainSpot();
 
   // Impact of the known cards
   if (RES.impact && RES.impact.length) {
@@ -1402,6 +1470,8 @@ function pickClass(k) {
 // seedCache({ kinds: ['dead1', 'dead2'] })     → charts for 1 or 2 seen player cards (dead2 is an overnight job)
 // seedCache({ kinds: ['dead2'], part: [1, 2] }) on one device and part: [2, 2] on another → split the work
 // seedCache.list()  → what would be done      seedCache.stop() → stop after the current chart
+// Each new chart is one KV write. Cloudflare's free plan allows 1,000 writes a day for the whole account
+// (the Loot Dashboard shares it), so a run stops after `max` saves (default 600) or when saving keeps failing.
 // Charts already in the cache are skipped (so runs can be stopped, resumed or split). Needs the write token.
 function seedScenarios(kinds) {
   const out = [], seen = new Set();
@@ -1425,7 +1495,7 @@ function seedScenarios(kinds) {
 }
 let seedStop = false;
 // part: [i, n] takes every n-th chart starting at i (1-based), to split a long run across devices.
-async function seedCache({ kinds = ['dealer', 'flop', 'flop+dealer'], variants = [variantKey()], part = [1, 1] } = {}) {
+async function seedCache({ kinds = ['dealer', 'flop', 'flop+dealer'], variants = [variantKey()], part = [1, 1], max = 600 } = {}) {
   if (!workerBase()) return console.warn('No cf_worker_url in config.json — nothing to seed into.');
   if (!writeToken) return console.warn('Save the write token first (bottom of the page).');
   seedStop = false;
@@ -1433,9 +1503,11 @@ async function seedCache({ kinds = ['dealer', 'flop', 'flop+dealer'], variants =
   jobs = jobs.filter((_, i) => i % part[1] === part[0] - 1);
   let wake = null; try { wake = await navigator.wakeLock?.request('screen'); } catch (_) {} // keep the screen (and the run) awake
   console.log(`Seeding up to ${jobs.length} charts (${kinds.join(', ')} × ${variants.join(', ')}${part[1] > 1 ? `, part ${part[0]} of ${part[1]}` : ''}). seedCache.stop() to stop. Keep this tab open.`);
-  const t0 = performance.now(); let made = 0, skipped = 0, failed = 0, timeMade = 0;
+  const t0 = performance.now(); let made = 0, skipped = 0, failed = 0, timeMade = 0, failRun = 0;
   for (let i = 0; i < jobs.length; i++) {
     if (seedStop) { console.log('Stopped.'); break; }
+    if (made >= max) { console.log(`Reached ${max} saves for this run (KV write budget). Run seedCache() again tomorrow to carry on — finished charts are skipped.`); break; }
+    if (failRun >= 3) { console.warn('Saving failed 3 times in a row — probably the daily KV write limit. Stopping; run it again after the daily reset (midnight UTC).'); break; }
     const [v, kn] = jobs[i], key = chartKvKey(v, kn);
     const label = `${v} ${kn.board.length ? 'flop ' + E.cardStr(kn.board[0]) : ''} ${kn.dealer.length ? 'dealer ' + E.cardStr(kn.dealer[0]) : ''} ${kn.dead.length ? 'seen ' + kn.dead.map(E.cardStr).join(' ') : ''}`.replace(/\s+/g, ' ').trim();
     if (await kvGet(key)) { skipped++; continue; }
@@ -1444,10 +1516,10 @@ async function seedCache({ kinds = ['dealer', 'flop', 'flop+dealer'], variants =
       const data = await computeChart(kn, v, { prio: 0 });
       const ok = await kvPut(key, data); if (!ok) throw new Error('save failed');
       chartMem.set(`${v}|${chartKnownKey(kn)}`, { key, street: 'preflop', data, base: baselineChart(v), complete: true });
-      made++; timeMade += performance.now() - t;
+      made++; failRun = 0; timeMade += performance.now() - t;
       const left = jobs.length - i - 1, eta = timeMade / made * left / 60000;
       console.log(`✓ ${label} — ${((performance.now() - t) / 1000).toFixed(0)} s · ${i + 1}/${jobs.length} · up to ~${eta.toFixed(0)} min left`);
-    } catch (e) { failed++; console.warn(`✗ ${label}: ${e.message}`); }
+    } catch (e) { failed++; if (e.message === 'save failed') failRun++; console.warn(`✗ ${label}: ${e.message}`); }
   }
   console.log(`Done: ${made} computed, ${skipped} already cached, ${failed} failed, ${((performance.now() - t0) / 60000).toFixed(1)} min.`);
   try { await wake?.release(); } catch (_) {}
