@@ -1430,4 +1430,27 @@ function renderToken() {
   el.innerHTML = writeToken
     ? `Write token saved — slow results are shared to the cache <button id="tokOut">Forget</button>`
     : `<input id="tokIn" type="password" placeholder="Write token (optional)"> <button id="tokSave">Save</button>`;
-  document.getElementById('tokOut')?.addEventListener('click', () => { writeToken = ''; try { localStorage.remove
+  document.getElementById('tokOut')?.addEventListener('click', () => { writeToken = ''; try { localStorage.removeItem('writeToken'); } catch (_) {} renderToken(); });
+  document.getElementById('tokSave')?.addEventListener('click', () => { writeToken = document.getElementById('tokIn').value.trim(); try { localStorage.setItem('writeToken', writeToken); } catch (_) {} renderToken(); });
+}
+document.querySelectorAll('#gameSeg button').forEach(b => b.onclick = () => setGame(b.dataset.g));
+document.querySelectorAll('#streetSeg button').forEach(b => b.onclick = () => setStreet(b.dataset.s));
+document.querySelectorAll('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.t));
+document.getElementById('mbar').onclick = () => openSheet(true);
+document.getElementById('sheetClose').onclick = () => openSheet(false);
+document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.board = [null, null, null, null, null]; S.dealer = [null]; S.dead = []; S.active = 'hole'; render(); onCardsChanged(); };
+
+(async () => {
+  initWorkers();
+  document.querySelectorAll('#gameSeg button').forEach(x => x.classList.toggle('on', x.dataset.g === S.game));
+  document.querySelectorAll('#streetSeg button').forEach(x => x.classList.toggle('on', x.dataset.s === S.street));
+  renderOpts(); render(); renderToken(); renderResults(); setTab(S.tab);
+  try { const c = await fetch('config.json?t=' + Date.now()); if (c.ok) Object.assign(CFG, await c.json()); } catch (_) {}
+  if (CFG.kv_prefix && !CFG.kv_prefix.endsWith('/')) CFG.kv_prefix += '/';
+  setKvStatus(workerBase() ? `Shared cache: ${CFG.kv_prefix}` : 'Shared cache: off (no config.json)');
+  try { const b = await fetch('baselines.json'); if (b.ok) BASE = await b.json(); } catch (_) {}
+  CH = null; buildChart();
+})();
+</script>
+</body>
+</html>
