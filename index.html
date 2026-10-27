@@ -338,7 +338,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 23:11</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 23:32</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -1631,7 +1631,10 @@ window.seedCache = seedCache;
 // dealt up front and each decision point is solved exactly; at the end every decision you made is
 // graded against the best play at that point, and the EV you gave up is added up for the hand.
 // The dealer card / early flop card appear at random when those settings are on.
-const TOUGH = 0.15; // a "tough spot": best option ahead of the next one by less than this (antes)
+// A "tough spot": the best option is ahead of the other by less than this (antes). Preflop it's kept to
+// hands right at the edge of the raising range: 0.015 per unit of the max raise (UTH 0.06, WPT 0.045).
+const TOUGH = 0.15;
+const toughLimit = st => st === 'preflop' ? 0.015 * maxPreflopRaise() : TOUGH;
 const QZ = {
   tough: store.get('uth.qTough', false),
   stats: Object.assign({ n: 0, perfect: 0, lost: 0, streak: 0, best: 0 }, store.get('uth.qStats2', {})),
@@ -1666,7 +1669,7 @@ async function quizMake() {
   const key = quizKey();
   for (let tries = 0; ; tries++) {
     const h = quizDeal();
-    if (!QZ.tough || tries >= 15) {
+    if (!QZ.tough || tries >= 30) {
       const solved = await Promise.all(QSTREETS.map(st => nodeSolve(nodeSpec(h, st))));
       h.acts = Object.fromEntries(QSTREETS.map((st, i) => [st, solved[i]]));
       return { h, key };
@@ -1676,7 +1679,7 @@ async function quizMake() {
     h.acts = {}; let found = false;
     for (const st of QSTREETS) {
       h.acts[st] = await nodeSolve(nodeSpec(h, st));
-      if (qGap(h.acts[st], st) < TOUGH) { found = true; break; }
+      if (qGap(h.acts[st], st) < toughLimit(st)) { found = true; break; }
       if (endsHand(qBest(h.acts[st], st), st)) break;
     }
     if (!found) continue;
@@ -1700,7 +1703,7 @@ async function quizNew() {
 function quizGrade(q) {
   const rows = q.picks.map(p => {
     const acts = q.h.acts[p.st], best = qBest(acts, p.st);
-    return { ...p, acts, best, loss: Math.max(0, acts[best] - acts[p.k]), gain: qGap(acts, p.st), tough: qGap(acts, p.st) < TOUGH };
+    return { ...p, acts, best, loss: Math.max(0, acts[best] - acts[p.k]), gain: qGap(acts, p.st), tough: qGap(acts, p.st) < toughLimit(p.st) };
   });
   const lost = rows.reduce((a, r) => a + r.loss, 0);
   // where would the best line have ended?
