@@ -247,7 +247,7 @@
   </details>
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 20:24</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-26 20:39</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -697,7 +697,7 @@
 'use strict';
 const E = HoldemEngine;
 const SUIT_SYM = { s: '♠', h: '♥', d: '♦', c: '♣' };
-const RANK_TXT = r => E.RANKS[r] === 'T' ? '10' : E.RANKS[r];
+const RANK_TXT = r => E.RANKS[r]; // T for tens everywhere, matching the chart's hand names
 const cardTxt = c => `<span class="t${E.SUITS[c & 3]}">${RANK_TXT(c >> 2)}${SUIT_SYM[E.SUITS[c & 3]]}</span>`; // card in running text, on the dark background
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (_) { return d; } },
@@ -723,29 +723,34 @@ const S = {
   game: store.get('uth.game', 'uth'), street: store.get('uth.street', 'preflop'), tab: store.get('uth.tab', 'hand'),
   tables: Object.assign({ uthTrips: 'UTH-01', badBeat: 'BB-1', wptTrips: 'TP-1', pocket: 'PB-1' }, store.get('uthTables', {})),
   wptRaises: Object.assign({ 3: true, 2: false, 1: false }, store.get('uthRaises', {})),
-  ante: store.get('uth.ante', 0),
+  ante: store.get('uth.ante', 0), peek: store.get('uth.peek', true), // peek: you can see the dealer's card and a flop card before the flop
   hole: [null, null], board: [null, null, null, null, null], dealer: [null], dead: [],
   active: 'hole', kpRank: null,
 };
 function saveSettings() {
   store.set('uth.game', S.game); store.set('uth.street', S.street); store.set('uth.tab', S.tab); store.set('uthTables', S.tables);
-  store.set('uthRaises', S.wptRaises); store.set('uth.ante', S.ante);
+  store.set('uthRaises', S.wptRaises); store.set('uth.ante', S.ante); store.set('uth.peek', S.peek);
 }
 
 // The board is always five slots. Preflop uses the first (a flop card you've seen), the flop
 // the first three, the river all five; the rest stay visible but dimmed, so the layout never moves.
-const boardLimit = () => S.street === 'preflop' ? 1 : S.street === 'flop' ? 3 : 5;
+// Entering board cards moves the street along: 0–2 cards → preflop, 3 → flop, 4–5 → river.
+const boardLimit = () => S.street === 'preflop' ? (S.peek ? 1 : 0) : S.street === 'flop' ? 3 : 5;
 function boardSlots() { return S.board.slice(0, boardLimit()); }
+const dealerCards = () => S.peek ? S.dealer.filter(c => c !== null) : []; // hidden (and ignored) when the setting is off
 function groups() {
-  const hint = { preflop: 'optional · a flop card you saw', flop: 'the three flop cards', river: 'all five cards' }[S.street];
+  const hint = { preflop: S.peek ? 'a flop card you saw, or enter the flop' : 'enter the flop to move on', flop: 'add the turn and river to move on', river: 'all five cards' }[S.street];
   return [
     { id: 'hole', label: 'Your hand', hint: '2 cards', arr: S.hole, limit: 2, need: 2 },
-    { id: 'dealer', label: 'Dealer card', hint: 'optional', arr: S.dealer, limit: 1, need: 0 },
-    { id: 'board', label: 'Board', hint, arr: S.board, limit: boardLimit(), need: S.street === 'preflop' ? 0 : boardLimit(), wide: true },
+    ...(S.peek ? [{ id: 'dealer', label: 'Dealer card', hint: 'optional', arr: S.dealer, limit: 1, need: 0 }] : []),
+    { id: 'board', label: 'Board', hint, arr: S.board, limit: 5, need: S.street === 'preflop' ? 0 : boardLimit(), wide: true },
     { id: 'dead', label: 'Other players\' cards', hint: 'optional · up to 12', arr: S.dead, open: true, wide: true, need: 0 },
   ];
 }
-function allUsed() { return new Set([...S.hole, ...S.board, ...S.dealer, ...S.dead].filter(c => c !== null)); }
+function allUsed() { return new Set([...S.hole, ...S.board, ...dealerCards(), ...S.dead].filter(c => c !== null)); }
+function streetForBoard() { const n = S.board.filter(c => c !== null).length; return n >= 4 ? 'river' : n === 3 ? 'flop' : 'preflop'; }
+// After a board change: follow the cards to the matching street (manual street buttons still work).
+function followBoard() { const st = streetForBoard(); if (st !== S.street) setStreet(st, true); }
 
 // ── Money ─────────────────────────────────────────────────────────────────
 // EVs are computed per 1-unit ante. With an ante set, everything shows in dollars.
@@ -769,7 +774,7 @@ function renderSlots() {
   const el = document.getElementById('slots');
   el.innerHTML = groups().map(g => {
     let cards = g.arr.map((c, i) => {
-      const off = g.id === 'board' && i >= g.limit;
+      const off = g.id === 'board' && i >= boardLimit(); // entered but not used at this street
       return (g.id === 'board' && i === 3 ? '<span class="gap"></span>' : '') + cardHTML(c, `data-g="${g.id}" data-i="${i}" ${off ? 'data-off="1"' : ''}`).replace('class="pc', `class="pc${off ? ' off' : ''}`);
     }).join('');
     if (g.open && g.arr.length < 12) cards += cardHTML(null, `data-g="${g.id}" data-i="${g.arr.length}"`);
@@ -813,19 +818,22 @@ function addCard(c) {
     const i = arr.findIndex((x, k) => x === null && k < g.limit);
     if (i < 0) return;
     arr[i] = c;
+    if (gid === 'board') { followBoard(); if (S.board.includes(null)) { render(); onCardsChanged(); return; } }
     if (!arr.slice(0, g.limit).includes(null)) { // group full → move on to the next group still missing a required card
       const next = groups().find(gg => gg.need && gg.arr.slice(0, gg.need).includes(null));
       if (next) S.active = next.id;
+      else if (gid === 'hole') S.active = 'board'; // hand done → the board is what comes next
     }
   }
   render(); onCardsChanged();
 }
-function removeCard(gid, i) { const arr = groupArr(gid); if (gid === 'dead') arr.splice(i, 1); else arr[i] = null; S.active = gid; render(); onCardsChanged(); }
-function clearGroup(gid) { const arr = groupArr(gid); if (gid === 'dead') arr.length = 0; else arr.fill(null); S.active = gid; render(); onCardsChanged(); }
+function removeCard(gid, i) { const arr = groupArr(gid); if (gid === 'dead') arr.splice(i, 1); else arr[i] = null; S.active = gid; if (gid === 'board') followBoard(); render(); onCardsChanged(); }
+function clearGroup(gid) { const arr = groupArr(gid); if (gid === 'dead') arr.length = 0; else arr.fill(null); S.active = gid; if (gid === 'board') followBoard(); render(); onCardsChanged(); }
 
 function renderOpts() {
   const sel = (key, label, options) => `<div class="opt"><label>${label}</label><select data-t="${key}">${options.map(([v, t]) => `<option value="${v}" ${S.tables[key] === v ? 'selected' : ''}>${t}</option>`).join('')}</select></div>`;
-  let h = `<div class="opt"><label>Ante (blank = show EV in antes)</label><input class="money" id="anteIn" inputmode="decimal" placeholder="e.g. 50" value="${S.ante || ''}"></div>`;
+  let h = `<div class="opt"><label>Before the flop</label><label class="chk"><input type="checkbox" id="peekIn" ${S.peek ? 'checked' : ''}> I can see the dealer's card and a flop card</label></div>`;
+  h += `<div class="opt"><label>Ante (blank = show EV in antes)</label><input class="money" id="anteIn" inputmode="decimal" placeholder="e.g. 50" value="${S.ante || ''}"></div>`;
   if (S.game === 'uth') {
     h += sel('uthTrips', 'Trips pay table', Object.entries(E.GAMES.uth.trips).map(([k, t]) => [k, `${k} · FH ${t[6]} / Fl ${t[5]} / St ${t[4]}${t[7] !== 30 ? ' / Q ' + t[7] : ''}`]));
     h += `<div class="opt"><label>Blind pays</label><select disabled><option>500 / 50 / 10 / 3 / 3:2 / 1</option></select></div>`;
@@ -839,6 +847,11 @@ function renderOpts() {
   el.innerHTML = h;
   el.querySelectorAll('select[data-t]').forEach(s => s.onchange = () => { S.tables[s.dataset.t] = s.value; saveSettings(); renderSetSum(); onRulesChanged(); });
   el.querySelectorAll('input[data-r]').forEach(i => i.onchange = () => { S.wptRaises[i.dataset.r] = i.checked; saveSettings(); renderSetSum(); onRulesChanged(); });
+  document.getElementById('peekIn').onchange = e => {
+    S.peek = e.target.checked; saveSettings(); renderSetSum();
+    if (!S.peek && S.active === 'dealer') S.active = 'hole';
+    render(); onCardsChanged();
+  };
   document.getElementById('anteIn').oninput = e => {
     const v = parseFloat(String(e.target.value).replace(/[$,]/g, ''));
     S.ante = v > 0 ? v : 0; saveSettings(); renderSetSum(); renderResults(); renderChart(); renderMbar();
@@ -848,6 +861,7 @@ function renderOpts() {
 function renderSetSum() {
   const parts = S.game === 'uth' ? [`Trips ${S.tables.uthTrips}`] : [`Bad beat ${S.tables.badBeat}`, `Trips+ ${S.tables.wptTrips}`, `Pocket ${S.tables.pocket}`, `Raise ${[3, 2, 1].filter(m => S.wptRaises[m]).join('/')}x`];
   parts.push(S.ante ? `Ante $${S.ante}` : 'EV in antes');
+  if (!S.peek) parts.push('no dealer/flop peek');
   document.getElementById('setSum').textContent = parts.join(' · ');
 }
 
@@ -896,12 +910,12 @@ function runJob(msg, { prio = 0, transfer, stale } = {}) {
 
 // ── Solving the current hand ──────────────────────────────────────────────
 function currentSpec() {
-  return { hole: S.hole.slice(), board: boardSlots().filter(c => c !== null), dealer: S.dealer.filter(c => c !== null), dead: S.dead.slice(), street: S.street };
+  return { hole: S.hole.slice(), board: boardSlots().filter(c => c !== null), dealer: dealerCards(), dead: S.dead.slice(), street: S.street };
 }
 function specReady(sp) {
   if (sp.hole.some(c => c === null)) return 'Pick your two cards';
   if (S.street === 'flop' && sp.board.length !== 3) return 'Pick the three flop cards';
-  if (S.street === 'river' && sp.board.length !== 5) return 'Pick all five board cards';
+  if (S.street === 'river' && sp.board.length !== 5) return sp.board.length === 4 ? 'Pick the river card' : 'Pick all five board cards';
   return null;
 }
 const gameOpts = () => S.game === 'uth' ? { trips: S.tables.uthTrips } : { badBeat: S.tables.badBeat, trips: S.tables.wptTrips, pocket: S.tables.pocket };
@@ -1101,7 +1115,7 @@ const CLASSES = (() => {
   }
   return out;
 })();
-const knownForChart = () => ({ street: S.street, board: boardSlots().filter(c => c !== null), dealer: S.dealer.filter(c => c !== null), dead: S.dead.slice() });
+const knownForChart = () => ({ street: S.street, board: boardSlots().filter(c => c !== null), dealer: dealerCards(), dead: S.dead.slice() });
 const VARIANTS = { uth: { game: 'uth', opts: {} }, 'wpt-bb-1': { game: 'wpt', opts: { badBeat: 'BB-1' } }, 'wpt-bb-2': { game: 'wpt', opts: { badBeat: 'BB-2' } },
   'wpt-bb-3': { game: 'wpt', opts: { badBeat: 'BB-3' } }, 'wpt-bb-4': { game: 'wpt', opts: { badBeat: 'BB-4' } } };
 const chartKnownKey = kn => `${kn.street}-` + (canonKey({ hole: [], board: kn.board, dealer: kn.dealer, dead: kn.dead }).replace(/[^a-z0-9_-]/g, '') || 'none');
@@ -1317,7 +1331,7 @@ const cls_ = x => cls(x);
 function openCombo(h) { S.hole = [h[0], h[1]]; S.active = 'board'; setTab('hand'); render(); scheduleSolve(); }
 function pickClass(k) {
   const c = CLASSES.find(x => x.key === k);
-  const used = new Set([...S.board, ...S.dealer, ...S.dead].filter(x => x !== null));
+  const used = new Set([...S.board, ...dealerCards(), ...S.dead].filter(x => x !== null));
   const h = c.combos.find(x => !used.has(x[0]) && !used.has(x[1]));
   if (h) openCombo(h);
 }
@@ -1403,9 +1417,10 @@ function setGame(g) {
   document.querySelectorAll('#gameSeg button').forEach(x => x.classList.toggle('on', x.dataset.g === g));
   renderOpts(); onRulesChanged();
 }
-function setStreet(s) {
+function setStreet(s, quiet) {
   S.street = s; saveSettings();
   document.querySelectorAll('#streetSeg button').forEach(x => x.classList.toggle('on', x.dataset.s === s));
+  if (quiet) return; // called while a card is being added/removed; that path re-renders
   if (s !== 'preflop' && S.hole.every(c => c !== null)) S.active = 'board';
   render(); scheduleSolve(); scheduleChart();
 }
@@ -1415,27 +1430,4 @@ function renderToken() {
   el.innerHTML = writeToken
     ? `Write token saved — slow results are shared to the cache <button id="tokOut">Forget</button>`
     : `<input id="tokIn" type="password" placeholder="Write token (optional)"> <button id="tokSave">Save</button>`;
-  document.getElementById('tokOut')?.addEventListener('click', () => { writeToken = ''; try { localStorage.removeItem('writeToken'); } catch (_) {} renderToken(); });
-  document.getElementById('tokSave')?.addEventListener('click', () => { writeToken = document.getElementById('tokIn').value.trim(); try { localStorage.setItem('writeToken', writeToken); } catch (_) {} renderToken(); });
-}
-document.querySelectorAll('#gameSeg button').forEach(b => b.onclick = () => setGame(b.dataset.g));
-document.querySelectorAll('#streetSeg button').forEach(b => b.onclick = () => setStreet(b.dataset.s));
-document.querySelectorAll('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.t));
-document.getElementById('mbar').onclick = () => openSheet(true);
-document.getElementById('sheetClose').onclick = () => openSheet(false);
-document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.board = [null, null, null, null, null]; S.dealer = [null]; S.dead = []; S.active = 'hole'; render(); onCardsChanged(); };
-
-(async () => {
-  initWorkers();
-  document.querySelectorAll('#gameSeg button').forEach(x => x.classList.toggle('on', x.dataset.g === S.game));
-  document.querySelectorAll('#streetSeg button').forEach(x => x.classList.toggle('on', x.dataset.s === S.street));
-  renderOpts(); render(); renderToken(); renderResults(); setTab(S.tab);
-  try { const c = await fetch('config.json?t=' + Date.now()); if (c.ok) Object.assign(CFG, await c.json()); } catch (_) {}
-  if (CFG.kv_prefix && !CFG.kv_prefix.endsWith('/')) CFG.kv_prefix += '/';
-  setKvStatus(workerBase() ? `Shared cache: ${CFG.kv_prefix}` : 'Shared cache: off (no config.json)');
-  try { const b = await fetch('baselines.json'); if (b.ok) BASE = await b.json(); } catch (_) {}
-  CH = null; buildChart();
-})();
-</script>
-</body>
-</html>
+  document.getElementById('tokOut')?.addEventListener('click', () => { writeToken = ''; try { localStorage.remove
