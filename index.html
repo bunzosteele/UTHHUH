@@ -70,6 +70,10 @@
   .pc.off { opacity: 0.28; }
   .pc.empty.off { border-style: dotted; }
   .slotcards .gap { width: 8px; flex: none; }
+  /* other players' cards: 5 hands on one line; cards shrink a little rather than wrap */
+  .slotcards.deadrow { flex-wrap: nowrap; gap: 3px; }
+  .slotcards.deadrow .gap { width: 7px; }
+  .slotcards.deadrow .pc { flex: 0 1 40px; min-width: 0; height: auto; aspect-ratio: 40 / 56; }
 
   /* Desktop picker: the whole deck */
   .picker { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 4px; margin-top: 14px; }
@@ -145,6 +149,12 @@
   .rc { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font: 600 11px var(--mono); color: #fff; border-radius: 3px; cursor: pointer; position: relative; user-select: none; }
   .rc { text-shadow: 0 1px 2px rgba(0,0,0,.55); }
   .rc.wait { background: #1b2b25 !important; color: var(--faint); text-shadow: none; }
+  .rwrap { position: relative; }
+  .rwrap.gated .rgrid { opacity: .45; filter: grayscale(1); pointer-events: none; }
+  .rgate { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 12px; }
+  .rgate-box { max-width: 330px; text-align: center; background: rgba(10,22,17,.94); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; box-shadow: 0 8px 28px rgba(0,0,0,.45); }
+  .rgate-box p { margin: 0 0 12px; font-size: 14px; line-height: 1.45; }
+  .rgate-box .qact { min-width: 160px; padding: 12px 18px; font-size: 16px; background: var(--gold); border-color: var(--gold); color: #13261e; }
   .rc.blocked { background: #0f1a16; color: #33473f; cursor: default; text-shadow: none; }
   .legend small { color: var(--faint); font-size: 12px; }
   .rc.chg::after { content: ''; position: absolute; inset: 0; border: 2px solid var(--gold); border-radius: 3px; }
@@ -388,6 +398,7 @@
     .slotgroup:not(.wide) { flex: 1 1 0; padding: 8px 9px; }
     .slotgroup:not(.wide) .slothead span { display: none; }
     .slotcards { min-height: 52px; }
+    .slotcards.deadrow .pc { flex-basis: 38px; aspect-ratio: 38 / 52; }
     .pane { position: fixed; left: 0; right: 0; bottom: var(--ad-h, 0px); top: 7vh; z-index: 50; border-radius: 18px 18px 0 0; overflow-y: auto; padding: 0 14px 30px;
             transform: translateY(105%); transition: transform .25s ease; background: #0b1f18; border: 1px solid var(--line); -webkit-overflow-scrolling: touch; }
     .pane.open { transform: none; box-shadow: 0 -10px 40px rgba(0,0,0,.6); }
@@ -487,7 +498,7 @@
 
 
   <footer>
-    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-27 18:16</span>
+    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-27 18:42</span>
     <span class="disclaim">Strategy trainer only — no real-money play. Not affiliated with or endorsed by Light &amp; Wonder or the World Poker Tour.</span>
   </footer>
 </div>
@@ -1078,7 +1089,7 @@ function renderSlots() {
     const any = g.arr.some(c => c !== null);
     return `<div class="slotgroup ${g.wide ? 'wide' : ''} ${S.active === g.id ? 'active' : ''}" data-group="${g.id}">
       <div class="slothead"><b>${g.label}</b><span>${any ? `<button class="clear" data-clear="${g.id}">clear</button>` : g.hint}</span></div>
-      <div class="slotcards">${cards}</div></div>`;
+      <div class="slotcards ${g.id === 'dead' ? 'deadrow' : ''}">${cards}</div></div>`;
   }).join('');
   el.querySelectorAll('.slotgroup').forEach(g => g.onclick = () => { S.active = g.dataset.group; render(); });
   el.querySelectorAll('.pc:not(.empty)').forEach(c => c.onclick = e => { e.stopPropagation(); removeCard(c.dataset.g, +c.dataset.i); });
@@ -1749,10 +1760,13 @@ async function buildChart() {
   if (none && BASE) { CH = { key, street: 'preflop', data: baselineChart(variant), none: true, complete: true }; renderChart(); return; }
   if (chartMem.has(key)) { CH = chartMem.get(key); renderChart(); return; }
   if (S.tab !== 'chart') { CH = { key, pendingTab: true }; return; } // only spend CPU while the chart is on screen
-  CH = { key, street: kn.street, loading: true }; renderChart();
+  CH = { key, street: kn.street, loading: true, data: {}, base: kn.street === 'preflop' ? baselineChart(variant) : null }; renderChart();
   const kvKey = chartKvKey(variant, kn);
   const cached = kn.street === 'preflop' ? await cacheGet(kvKey) : null; // postflop charts take seconds; not worth storing
   if (stale()) return;
+  // Preflop with 2+ other players' hands takes minutes: wait for the button (the empty grid stays, greyed, under it)
+  const gated = !cached && kn.street === 'preflop' && kn.dead.length > 2;
+  if (gated && !chartGo.has(key)) { CH = { key, street: kn.street, data: {}, gate: true, base: baselineChart(variant) }; renderChart(); return; }
   // what to compare against: preflop → the no-info chart; postflop → the same board without the dealer/others' cards
   const baseKn = { ...kn, dealer: [], dead: [] };
   const needBase = kn.street !== 'preflop' && (kn.dealer.length || kn.dead.length);
@@ -1765,7 +1779,7 @@ async function buildChart() {
         if (stale()) return; CH.data = d; CH.done = done; CH.total = total;
         if (performance.now() - last > 250 || done === total) { renderChart(); last = performance.now(); } } });
       if (stale()) return;
-      if (kn.street === 'preflop' && performance.now() - CH.startedAt > 3000) cachePut(kvKey, CH.data);
+      if (kn.street === 'preflop' && (gated || performance.now() - CH.startedAt > 3000)) cachePut(kvKey, CH.data);
     }
     if (needBase) { CH.base = await computeChart(baseKn, variant, { stale }); if (stale()) return; }
   } catch (_) { return; }
@@ -1849,6 +1863,7 @@ function classView(cls, list, street, betLbl, pasLbl) {
   return v;
 }
 let chartSel = null; // class whose details are open under the chart
+const chartGo = new Set(); // slow charts the user asked to calculate
 function renderChart() {
   const el = document.getElementById('tabChart');
   if (S.tab !== 'chart') return;
@@ -1860,12 +1875,12 @@ function renderChart() {
   const what = { preflop: 'Best preflop play', flop: 'Best play on this flop', river: 'Best play on this river' }[street];
   let h = `<div class="chart-head">${what} for every hand${known.length ? ` — <b>${known.join('</b>, <b>')}</b>` : ', nothing else known'}.</div>`;
   if (CH?.needBoard) h += `<div class="empty" style="padding:20px">Enter the ${street === 'flop' ? 'three flop cards' : 'five board cards'} to see which hands should ${street === 'flop' ? 'bet 2x' : 'bet 1x'}.</div>`;
-  else if (!CH || CH.pendingTab || CH.loading) h += `<div class="empty" style="padding:20px">Loading…</div>`;
+  else if (!CH || CH.pendingTab) h += `<div class="empty" style="padding:20px">Loading…</div>`;
   else {
     const holeCls = S.hole.every(c => c !== null) ? handClass(S.hole) : null;
     if (chartSel && CH.complete && !CH.data?.[chartSel]?.length) chartSel = null; // keep a selection made while the chart is still filling in
     const stripTags = x => x.replace(/<[^>]+>/g, '');
-    h += `<div class="rgrid">`;
+    h += `<div class="rwrap ${CH.gate ? 'gated' : ''}"><div class="rgrid">`;
     for (const c of CLASSES) {
       const list = CH.data?.[c.key];
       if (!list) { h += `<div class="rc wait" data-k="${c.key}">${c.key}</div>`; continue; }
@@ -1878,17 +1893,22 @@ function renderChart() {
       h += `<div class="rc ${chg ? 'chg' : ''} ${selCls}" style="background:${v.bg}" data-k="${c.key}" title="${tip}">${c.key}${badge}</div>`;
     }
     h += `</div>`;
+    if (CH.gate) h += `<div class="rgate"><div class="rgate-box">
+      <p>Range charts with several other players' hands are hard to calculate and take a while (a few minutes on a phone). Every chart you calculate is saved on this device.</p>
+      <button class="qact" id="chartGoBtn">Calculate chart</button></div></div>`;
+    h += `</div>`;
     if (CH.total && !CH.complete && CH.done < CH.total) {
       const secs = (performance.now() - CH.startedAt) / 1000, eta = CH.done ? secs / CH.done * (CH.total - CH.done) : 0;
-      h += `<div class="progress"><span style="width:${CH.done / CH.total * 100}%"></span></div><div class="note">${CH.done} of ${CH.total} distinct hands solved${CH.done > 3 ? ` · about ${Math.ceil(eta)} s left` : ''}</div>`;
-    }
+      const left = eta >= 90 ? `about ${Math.ceil(eta / 60)} min left` : `about ${Math.ceil(eta)} s left`;
+      h += `<div class="progress"><span style="width:${CH.done / CH.total * 100}%"></span></div><div class="note">${CH.done} of ${CH.total} distinct hands solved${CH.done > 3 ? ` · ${left}` : ''}</div>`;
+    } else if (CH.gate || CH.loading || (!CH.complete && !CH.total)) h += `<div class="progress" style="visibility:hidden"><span></span></div><div class="note" style="visibility:hidden">&nbsp;</div>`; // same space as the progress bar, so starting doesn't shift anything
     if (chartSel && CH.data?.[chartSel]?.length) h += chartInfoHtml(chartSel, CH.data[chartSel], street, betLbl, pasLbl);
     const cmp = street === 'preflop' ? 'from no info' : 'by the dealer/others\' cards';
     h += `<div class="legend"><span><i style="background:rgba(52,178,104,1)"></i>${betLbl} <small>(brighter = bigger edge)</small></span>
       <span><i style="background:rgba(150,160,156,0.3)"></i>${pasLbl} <small>(darker = clearer)</small></span>
       <span><i class="lg-b" style="background:rgba(150,160,156,0.3)"><b style="background:rgba(52,178,104,1)">♥</b></i>Badge = the exception: green → ${betLbl.toLowerCase()} only with that suit/card, dark → ${pasLbl.toLowerCase()} with it</span>
       ${CH.none || (!CH.base && street !== 'preflop') ? '' : `<span><i style="border:2px solid var(--gold)"></i>Changed ${cmp}</span>`}</div>`;
-    h += `<div class="note">${chartSel ? '' : 'Tap a hand for the details of every suit combo. '}${CH.cached ? 'From the shared cache.' : ''}</div>`;
+    h += `<div class="note">${chartSel ? '' : 'Tap a hand for the details of every suit combo. '}${CH.cached ? 'Saved result.' : ''}</div>`;
   }
   el.innerHTML = h;
   el.querySelectorAll('.rc[data-k]:not(.wait)').forEach(d => d.onclick = () => {
@@ -1897,6 +1917,7 @@ function renderChart() {
   });
   el.querySelectorAll('[data-h]').forEach(b => b.onclick = () => openCombo(b.dataset.h.split(',').map(Number)));
   el.querySelector('#cinfoClose')?.addEventListener('click', () => { chartSel = null; renderChart(); });
+  el.querySelector('#chartGoBtn')?.addEventListener('click', () => { chartGo.add(CH.key); buildChart(); });
 }
 // Details under the chart: one row per group of combos that play the same way.
 function chartInfoHtml(cls, list, street, betLbl, pasLbl) {
