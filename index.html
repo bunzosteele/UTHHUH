@@ -174,6 +174,9 @@
   .chk { gap: 8px; }
 
   /* Settings */
+  body { padding-bottom: var(--ad-h, 0px); }
+  footer .disclaim { flex-basis: 100%; font-size: 11px; color: var(--faint); }
+  #adsOpt .ptdesc { margin-bottom: 8px; } #adsOpt button.buy { background: var(--gold); color: #1c1606; border: 0; border-radius: 9px; padding: 9px 14px; font: 700 14px var(--sans); cursor: pointer; }
   .gear { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--gold); font-size: 19px; cursor: pointer; display: grid; place-items: center; }
   .gear:hover { border-color: var(--gold-dim); }
   /* Game badges: plain flag-stripe and chip shapes with the name in plain type (deliberately not the games' logos) */
@@ -385,7 +388,7 @@
     .slotgroup:not(.wide) { flex: 1 1 0; padding: 8px 9px; }
     .slotgroup:not(.wide) .slothead span { display: none; }
     .slotcards { min-height: 52px; }
-    .pane { position: fixed; left: 0; right: 0; bottom: 0; top: 7vh; z-index: 50; border-radius: 18px 18px 0 0; overflow-y: auto; padding: 0 14px 30px;
+    .pane { position: fixed; left: 0; right: 0; bottom: var(--ad-h, 0px); top: 7vh; z-index: 50; border-radius: 18px 18px 0 0; overflow-y: auto; padding: 0 14px 30px;
             transform: translateY(105%); transition: transform .25s ease; background: #0b1f18; border: 1px solid var(--line); -webkit-overflow-scrolling: touch; }
     .pane.open { transform: none; box-shadow: 0 -10px 40px rgba(0,0,0,.6); }
     .sheet-head { display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #0b1f18; padding: 10px 0 10px; z-index: 2; }
@@ -395,7 +398,7 @@
     .qgroup .pc { width: 40px; height: 56px; font-size: 18px; }
     .qhead { font-size: 19px; }
     .guide .street { grid-template-columns: 64px 1fr; gap: 6px 10px; }
-    .mbar { display: flex; position: fixed; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 40; align-items: center; gap: 12px;
+    .mbar { display: flex; position: fixed; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom) + var(--ad-h, 0px)); z-index: 40; align-items: center; gap: 12px;
             background: #0f2a20; border: 1px solid var(--gold-dim); border-radius: 14px; padding: 11px 14px; box-shadow: 0 8px 30px rgba(0,0,0,.55); cursor: pointer; }
     .mbar .mact { font-family: var(--sans); font-weight: 700; font-size: 20px; letter-spacing: -0.02em; }
     .mbar .mtxt { flex: 1; font-size: 13px; color: var(--dim); line-height: 1.3; min-width: 0; }
@@ -484,9 +487,8 @@
 
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 17:48</span>
-    <span style="flex:1"></span>
-    <span id="tokenArea"></span>
+    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-27 18:16</span>
+    <span class="disclaim">Strategy trainer only — no real-money play. Not affiliated with or endorsed by Light &amp; Wonder or the World Poker Tour.</span>
   </footer>
 </div>
 <div class="mbar" id="mbar"></div>
@@ -949,17 +951,60 @@ const store = {
 
 // ── Config / KV ───────────────────────────────────────────────────────────
 let CFG = { cf_worker_url: '', kv_prefix: 'uth/' };
-let writeToken = (() => { try { return localStorage.getItem('writeToken') || ''; } catch (_) { return ''; } })();
 const ENGINE_VERSION = 'v1';
 const workerBase = () => { let b = (CFG.cf_worker_url || '').trim().replace(/\/+$/, ''); return b && !/^https?:/.test(b) ? 'https://' + b : b; };
 async function kvGet(key) {
   if (!workerBase()) return null;
   try { const r = await fetch(`${workerBase()}/${CFG.kv_prefix}${key}`, { cache: 'no-store' }); return r.ok ? await r.json() : null; } catch (_) { return null; }
 }
-async function kvPut(key, data) {
-  if (!workerBase() || !writeToken) return false;
-  try { const r = await fetch(`${workerBase()}/${CFG.kv_prefix}${key}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Token': writeToken }, body: JSON.stringify(data) }); return r.ok; } catch (_) { return false; }
+// ── Result storage ────────────────────────────────────────────────────────
+// Every phone / browser keeps its own results in IndexedDB. Read order: memory → this device →
+// pre-calculations bundled with the app (pre/<variant>.json, loaded per variant on first use).
+// The old Cloudflare KV is only used by importFromKV(), to pull charts you already seeded.
+const IDB = (() => {
+  let dbp = null;
+  const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('holdem-trainer', 1); r.onupgradeneeded = () => r.result.createObjectStore('c'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const tx = async (mode, fn) => { try { const db = await open(); return await new Promise(res => { const t = db.transaction('c', mode), q = fn(t.objectStore('c')); t.oncomplete = () => res(q ? q.result : true); t.onerror = t.onabort = () => res(null); }); } catch (_) { return null; } };
+  return { get: k => tx('readonly', st => st.get(k)), put: (k, v) => tx('readwrite', st => st.put(v, k)), keys: () => tx('readonly', st => st.getAllKeys()), count: () => tx('readonly', st => st.count()), clear: () => tx('readwrite', st => st.clear()) };
+})();
+const PRE = new Map(); // variant → Promise<{ key: data } | null>
+const keyVariant = key => { const p = key.split('/'); return p[1] === 'chart' ? p[2] : p[1]; };
+function prePack(variant) {
+  if (!PRE.has(variant)) PRE.set(variant, fetch(`pre/${variant}.json`).then(r => r.ok ? r.json() : null).catch(() => null));
+  return PRE.get(variant);
 }
+async function cacheGet(key) {
+  const local = await IDB.get(key); if (local) return local;
+  const pack = await prePack(keyVariant(key)); return pack?.[key] ?? null;
+}
+async function cachePut(key, data) { const ok = await IDB.put(key, data); if (ok) updateStoreStatus(); return !!ok; }
+async function updateStoreStatus() { const n = await IDB.count(); const el = document.getElementById('kvStatus'); if (el) el.textContent = `Saved on this device: ${n ?? 0} result${n === 1 ? '' : 's'}`; }
+// Console: importFromKV() copies charts seeded to the old shared cache onto this device (needs config.json).
+async function importFromKV({ kinds = ['dealer', 'flop', 'flop+dealer', 'dead1', 'dead2'], variants = Object.keys(VARIANTS) } = {}) {
+  if (!workerBase()) return console.warn('No cf_worker_url in config.json — nothing to import from.');
+  let got = 0, miss = 0;
+  for (const v of variants) for (const kn of seedScenarios(kinds)) {
+    const key = chartKvKey(v, kn); if (await IDB.get(key)) continue;
+    const d = await kvGet(key); if (d) { await IDB.put(key, d); got++; } else miss++;
+    if ((got + miss) % 50 === 0) console.log(`… ${got} imported, ${miss} not in the shared cache`);
+  }
+  updateStoreStatus(); console.log(`Imported ${got} charts (${miss} weren't in the shared cache).`);
+}
+// Console: exportPacks() downloads one pre/<variant>.json per game variant with every chart on this
+// device — those files are what the app bundles as its pre-calculations.
+async function exportPacks() {
+  const keys = (await IDB.keys()) || [], packs = {};
+  // compact for shipping: 4 decimals, and only the max raise + check (smaller raises are never shown)
+  const slim = chart => Object.fromEntries(Object.entries(chart).map(([cls, groups]) => [cls, groups.map(g => ({ ...g, a: Object.fromEntries(Object.entries(g.a)
+    .filter(([act]) => !/^bet[123]$/.test(act) || act === 'bet3' && !('bet4' in g.a)).map(([act, v]) => [act, Math.round(v * 1e4) / 1e4])) }))]));
+  for (const k of keys) { if (!String(k).includes('/chart/')) continue; const v = keyVariant(k); (packs[v] ||= {})[k] = slim(await IDB.get(k)); }
+  for (const [v, data] of Object.entries(packs)) {
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = `${v}.json`; a.click(); await new Promise(r => setTimeout(r, 400));
+    console.log(`${v}.json — ${Object.keys(data).length} charts, ${(blob.size / 1e6).toFixed(1)} MB`);
+  }
+}
+window.importFromKV = importFromKV; window.exportPacks = exportPacks;
 
 // ── State (settings persist; cards don't) ─────────────────────────────────
 const S = {
@@ -1110,10 +1155,12 @@ function renderOpts() {
     h += pick('wptTrips', 'Trips Plus bonus', E.GAMES.wpt.trips, 'Pays on your final hand, whatever the dealer has:', 'trips', sideEdge);
     h += pick('pocket', 'Pocket Bonus', E.GAMES.wpt.pocket, 'Pays on your two starting cards:', 'pocket', pocketEdge);
   }
+  if (APP.native) h += `<div class="opt wide"><label>Ads</label><div id="adsOpt"></div></div>`;
   h += `<div class="opt wide"><label>Quiz score</label><div class="qbests" id="qBests"></div><button class="resetbtn" id="qResetBtn">Reset quiz stats</button></div>`;
   const el = document.getElementById('opts');
   el.innerHTML = h;
   if (typeof QZ !== 'undefined') renderQuizBests();
+  renderAdsOpt();
   document.getElementById('qResetBtn').onclick = () => {
     if (!confirm('Reset your quiz stats for both modes (hands, perfect %, streaks, EV lost)?')) return;
     QZ.statsBy = emptyStatsBy(); saveQuiz(); renderQuizScore();
@@ -1271,7 +1318,7 @@ async function solve() {
   renderResults();
   const t0 = performance.now();
   const kvKey = `${ENGINE_VERSION}/${variantKey()}/${sp.street}-${canonKey(sp).replace(/[^a-z0-9_-]/g, '')}.json`;
-  let res = heavy ? await kvGet(kvKey) : null, cached = !!res;
+  let res = heavy ? await cacheGet(kvKey) : null, cached = !!res;
   if (seq !== solveSeq) return;
   if (!res) {
     try {
@@ -1292,7 +1339,7 @@ async function solve() {
       const r = await runJob({ type: 'decide', spec: sp, st: copy, game: S.game, opts: gameOpts() }, { prio: 3, transfer: [copy.W.buffer, copy.L.buffer, copy.Wq.buffer, copy.Lq.buffer, copy.cat.buffer] });
       res = r.res;
       res.ms = Math.round(performance.now() - t0);
-      if (heavy && res.ms > 1500) kvPut(kvKey, res).then(ok => ok && setKvStatus('Saved this result to the shared cache'));
+      if (heavy && res.ms > 1500) cachePut(kvKey, res);
     } catch (e) {
       if (seq === solveSeq) { RES = { error: e.message }; renderResults(); }
       return;
@@ -1704,7 +1751,7 @@ async function buildChart() {
   if (S.tab !== 'chart') { CH = { key, pendingTab: true }; return; } // only spend CPU while the chart is on screen
   CH = { key, street: kn.street, loading: true }; renderChart();
   const kvKey = chartKvKey(variant, kn);
-  const cached = kn.street === 'preflop' ? await kvGet(kvKey) : null; // postflop charts take seconds; not worth the cache
+  const cached = kn.street === 'preflop' ? await cacheGet(kvKey) : null; // postflop charts take seconds; not worth storing
   if (stale()) return;
   // what to compare against: preflop → the no-info chart; postflop → the same board without the dealer/others' cards
   const baseKn = { ...kn, dealer: [], dead: [] };
@@ -1718,7 +1765,7 @@ async function buildChart() {
         if (stale()) return; CH.data = d; CH.done = done; CH.total = total;
         if (performance.now() - last > 250 || done === total) { renderChart(); last = performance.now(); } } });
       if (stale()) return;
-      if (kn.street === 'preflop' && performance.now() - CH.startedAt > 3000) kvPut(kvKey, CH.data).then(ok => ok && setKvStatus('Saved this chart to the shared cache'));
+      if (kn.street === 'preflop' && performance.now() - CH.startedAt > 3000) cachePut(kvKey, CH.data);
     }
     if (needBase) { CH.base = await computeChart(baseKn, variant, { stale }); if (stale()) return; }
   } catch (_) { return; }
@@ -1904,10 +1951,8 @@ function seedScenarios(kinds) {
 }
 let seedStop = false;
 // part: [i, n] takes every n-th chart starting at i (1-based), to split a long run across devices.
-async function seedCache({ kinds = ['dealer', 'flop', 'flop+dealer'], variants = [variantKey()], part = [1, 1], max = 600 } = {}) {
-  if (!workerBase()) return console.warn('No cf_worker_url in config.json — nothing to seed into.');
-  if (!writeToken) return console.warn('Save the write token first (bottom of the page).');
-  seedStop = false;
+async function seedCache({ kinds = ['dealer', 'flop', 'flop+dealer'], variants = [variantKey()], part = [1, 1], max = Infinity } = {}) {
+  seedStop = false; // results are saved on this device (exportPacks() turns them into the app's bundled files)
   let jobs = []; for (const v of variants) for (const kn of seedScenarios(kinds)) jobs.push([v, kn]);
   jobs = jobs.filter((_, i) => i % part[1] === part[0] - 1);
   let wake = null; try { wake = await navigator.wakeLock?.request('screen'); } catch (_) {} // keep the screen (and the run) awake
@@ -1915,15 +1960,15 @@ async function seedCache({ kinds = ['dealer', 'flop', 'flop+dealer'], variants =
   const t0 = performance.now(); let made = 0, skipped = 0, failed = 0, timeMade = 0, failRun = 0;
   for (let i = 0; i < jobs.length; i++) {
     if (seedStop) { console.log('Stopped.'); break; }
-    if (made >= max) { console.log(`Reached ${max} saves for this run (KV write budget). Run seedCache() again tomorrow to carry on — finished charts are skipped.`); break; }
-    if (failRun >= 3) { console.warn('Saving failed 3 times in a row — probably the daily KV write limit. Stopping; run it again after the daily reset (midnight UTC).'); break; }
+    if (made >= max) { console.log(`Reached ${max} charts for this run. Run seedCache() again to carry on — finished charts are skipped.`); break; }
+    if (failRun >= 3) { console.warn('Saving failed 3 times in a row — is the device out of storage? Stopping.'); break; }
     const [v, kn] = jobs[i], key = chartKvKey(v, kn);
     const label = `${v} ${kn.board.length ? 'flop ' + E.cardStr(kn.board[0]) : ''} ${kn.dealer.length ? 'dealer ' + E.cardStr(kn.dealer[0]) : ''} ${kn.dead.length ? 'seen ' + kn.dead.map(E.cardStr).join(' ') : ''}`.replace(/\s+/g, ' ').trim();
-    if (await kvGet(key)) { skipped++; continue; }
+    if (await cacheGet(key)) { skipped++; continue; }
     const t = performance.now();
     try {
       const data = await computeChart(kn, v, { prio: 0 });
-      const ok = await kvPut(key, data); if (!ok) throw new Error('save failed');
+      const ok = await cachePut(key, data); if (!ok) throw new Error('save failed');
       chartMem.set(`${v}|${chartKnownKey(kn)}`, { key, street: 'preflop', data, base: baselineChart(v), complete: true });
       made++; failRun = 0; timeMade += performance.now() - t;
       const left = jobs.length - i - 1, eta = timeMade / made * left / 60000;
@@ -2379,6 +2424,63 @@ function renderGuide() {
   el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); renderGuide(); });
 }
 
+// ── Android app: banner ad + one-time "Remove ads" purchase ──────────────────
+// Only runs inside the Capacitor app (the website has no ads). Uses the AdMob plugin and
+// cordova-plugin-purchase (Google Play Billing). IDs below are Google's public TEST ids — swap in
+// the real AdMob banner unit and set testing: false before release; the product id must match the
+// one-time product created in Play Console.
+const APP = {
+  native: !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()),
+  testing: true,
+  bannerId: 'ca-app-pub-3940256099942544/9214589741', // TEST adaptive banner
+  productId: 'remove_ads',
+  adsRemoved: (() => { try { return localStorage.getItem('uth.adsRemoved') === '1'; } catch (_) { return false; } })(),
+  price: null, busy: false,
+};
+const AdMob = () => window.Capacitor?.Plugins?.AdMob;
+function setAdHeight(px) { document.documentElement.style.setProperty('--ad-h', px + 'px'); }
+async function startAds() {
+  const ad = AdMob(); if (!APP.native || APP.adsRemoved || !ad) return;
+  try {
+    await ad.initialize({ initializeForTesting: APP.testing });
+    const consent = await ad.requestConsentInfo(); // EU/UK consent form when required
+    if (consent.isConsentFormAvailable && consent.status === 'REQUIRED') await ad.showConsentForm();
+    ad.addListener('bannerAdSizeChanged', info => setAdHeight(APP.adsRemoved ? 0 : info.height || 0));
+    await ad.showBanner({ adId: APP.bannerId, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0, isTesting: APP.testing });
+  } catch (e) { console.warn('ads unavailable', e); }
+}
+async function adsOff() {
+  APP.adsRemoved = true; try { localStorage.setItem('uth.adsRemoved', '1'); } catch (_) {}
+  try { await AdMob()?.removeBanner(); } catch (_) {}
+  setAdHeight(0); renderAdsOpt();
+}
+function startStore() {
+  if (!APP.native || !window.CdvPurchase) return;
+  const { store, ProductType, Platform } = window.CdvPurchase;
+  store.register([{ id: APP.productId, type: ProductType.NON_CONSUMABLE, platform: Platform.GOOGLE_PLAY }]);
+  store.when()
+    .productUpdated(p => { if (p.id === APP.productId) { APP.price = p.pricing?.price || null; if (p.owned) adsOff(); else renderAdsOpt(); } })
+    .approved(t => t.verify())
+    .verified(r => r.finish())
+    .finished(t => { if (t.products.some(p => p.id === APP.productId)) adsOff(); });
+  store.initialize([Platform.GOOGLE_PLAY]).catch(e => console.warn('store unavailable', e));
+}
+function renderAdsOpt() {
+  const el = document.getElementById('adsOpt'); if (!el) return;
+  if (APP.adsRemoved) { el.innerHTML = `<div class="ptdesc">Ads removed — thanks for supporting the app!</div>`; return; }
+  el.innerHTML = `<div class="ptdesc">A small banner at the bottom keeps the app free. One purchase removes it for good.</div>
+    <button class="buy" id="buyBtn" ${APP.busy ? 'disabled' : ''}>Remove ads${APP.price ? ' — ' + APP.price : ''}</button>
+    <button class="linkbtn" id="restoreBtn" style="margin-left:12px">Restore purchase</button>`;
+  document.getElementById('buyBtn').onclick = async () => {
+    const st = window.CdvPurchase?.store, offer = st?.get(APP.productId)?.getOffer();
+    if (!offer) { alert('The store isn\'t available right now — try again in a moment.'); return; }
+    APP.busy = true; renderAdsOpt();
+    try { await offer.order(); } finally { APP.busy = false; renderAdsOpt(); }
+  };
+  document.getElementById('restoreBtn').onclick = () => window.CdvPurchase?.store?.restorePurchases();
+}
+if (APP.native) { startStore(); startAds(); }
+
 let mode = store.get('uth.mode', 'analyze');
 function setMode(m) {
   mode = m; store.set('uth.mode', m);
@@ -2445,14 +2547,6 @@ function openSheet(open) { document.getElementById('pane').classList.toggle('ope
   };
   pane.addEventListener('touchend', end); pane.addEventListener('touchcancel', end);
 })();
-function renderToken() {
-  const el = document.getElementById('tokenArea');
-  el.innerHTML = writeToken
-    ? `Write token saved — slow results are shared to the cache <button id="tokOut">Forget</button>`
-    : `<input id="tokIn" type="password" placeholder="Write token (optional)"> <button id="tokSave">Save</button>`;
-  document.getElementById('tokOut')?.addEventListener('click', () => { writeToken = ''; try { localStorage.removeItem('writeToken'); } catch (_) {} renderToken(); });
-  document.getElementById('tokSave')?.addEventListener('click', () => { writeToken = document.getElementById('tokIn').value.trim(); try { localStorage.setItem('writeToken', writeToken); } catch (_) {} renderToken(); });
-}
 document.querySelectorAll('#gameSeg button').forEach(b => b.onclick = () => setGame(b.dataset.g));
 document.querySelectorAll('#streetSeg button').forEach(b => b.onclick = () => setStreet(b.dataset.s));
 document.querySelectorAll('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.t));
@@ -2470,10 +2564,9 @@ document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.b
   initWorkers();
   document.querySelectorAll('#gameSeg button').forEach(x => x.classList.toggle('on', x.dataset.g === S.game));
   document.querySelectorAll('#streetSeg button').forEach(x => x.classList.toggle('on', x.dataset.s === S.street));
-  renderOpts(); render(); renderToken(); renderResults(); setTab(S.tab);
+  renderOpts(); render(); renderResults(); setTab(S.tab); updateStoreStatus();
   try { const c = await fetch('config.json?t=' + Date.now()); if (c.ok) Object.assign(CFG, await c.json()); } catch (_) {}
   if (CFG.kv_prefix && !CFG.kv_prefix.endsWith('/')) CFG.kv_prefix += '/';
-  setKvStatus(workerBase() ? `Shared cache: ${CFG.kv_prefix}` : 'Shared cache: off (no config.json)');
   try { const b = await fetch('baselines.json'); if (b.ok) BASE = await b.json(); } catch (_) {}
   if (mode === 'guide') renderGuide();
   CH = null; buildChart();
