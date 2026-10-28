@@ -33,6 +33,26 @@
   button { font-family: inherit; }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 18px 60px; }
   header { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+  .brand { flex: 1; min-width: 0; }
+  .pagename { font: 700 11px var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-top: 5px; }
+  .burger { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--ink); cursor: pointer; display: grid; place-items: center; flex: none; }
+  .burger svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+  .burger:hover { border-color: var(--gold-dim); }
+  /* page menu: slides in from the left */
+  .navdrawer { position: fixed; top: 0; left: 0; bottom: 0; width: min(320px, 86vw); z-index: 81; background: #0b1f18; border-right: 1px solid var(--line); box-shadow: 20px 0 50px rgba(0,0,0,.5);
+    transform: translateX(-105%); transition: transform .25s ease; overflow-y: auto; padding: 0 12px 24px; border-top: var(--sat) solid #0b1f18; display: flex; flex-direction: column; gap: 4px; }
+  body.nav-open .navdrawer { transform: none; } body.nav-open #navBg { opacity: 1; pointer-events: auto; } body.nav-open { overflow: hidden; }
+  .navtop { display: flex; justify-content: space-between; align-items: center; padding: 18px 6px 14px; }
+  .navtitle { font: 800 22px var(--serif); color: var(--ink); } .navtitle span { color: var(--gold); }
+  .navitem { display: flex; align-items: center; gap: 14px; padding: 12px 12px; border-radius: 12px; border: 1px solid transparent; background: none; color: var(--ink); text-align: left; cursor: pointer; font: inherit; width: 100%; }
+  .navitem svg { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; color: var(--dim); }
+  .navitem b { display: block; font: 700 16px var(--sans); }
+  .navitem small { display: block; font-size: 12.5px; color: var(--faint); margin-top: 2px; }
+  .navitem:hover:not(.locked) { background: rgba(255,255,255,.04); }
+  .navitem.on { background: rgba(230,192,106,.12); border-color: var(--gold-dim); } .navitem.on svg { color: var(--gold); }
+  .navitem.locked { cursor: default; opacity: .7; } .navitem.locked b { color: var(--dim); }
+  .navitem .navprog { color: var(--gold); }
+  .navsep { height: 1px; background: var(--line); margin: 8px 6px; }
   h1 { font-family: var(--serif); font-weight: 800; font-size: 32px; letter-spacing: -0.01em; line-height: 1; }
   h1 span { color: var(--gold); }
   .seg { display: inline-flex; background: var(--felt-deep); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
@@ -159,7 +179,11 @@
   .legend small { color: var(--faint); font-size: 12px; }
   .rc.chg::after { content: ''; position: absolute; inset: 0; border: 2px solid var(--gold); border-radius: 3px; }
   .rc.sel { outline: 2px solid #fff; outline-offset: 1px; z-index: 1; }
-  .rc .bdg { position: absolute; right: -3px; bottom: -3px; z-index: 2; font: 700 12px/1 var(--mono); color: #fff; padding: 2px 3px; border-radius: 4px; letter-spacing: -0.03em; box-shadow: 0 0 0 1.5px #0a1611; }
+  /* Hand names and badges scale with the grid (a cell is 1/13 of it): names about a third of the cell,
+     every name sitting a little above center so the badge in the bottom corner never touches it. */
+  .rgrid { container-type: inline-size; }
+  .rc { font-size: clamp(9px, 2.55cqw, 17px); padding-bottom: 22%; }
+  .rc .bdg { position: absolute; right: -0.2em; bottom: -0.2em; z-index: 2; font: 700 clamp(8px, 2.3cqw, 16px)/1 var(--sans); color: #fff; padding: 0.12em 0.2em; min-width: 1.24em; text-align: center; box-sizing: border-box; border-radius: 0.3em; box-shadow: 0 0 0 1.5px #0a1611; }
   .legend .lg-b { position: relative; width: 18px !important; height: 18px !important; }
   .legend .lg-b b { position: absolute; right: -4px; bottom: -4px; font: 700 11px/1 var(--mono); color: #fff; padding: 1px 2px; border-radius: 3px; }
   .cinfo { margin-top: 12px; border: 1px solid var(--gold-dim); border-radius: 10px; padding: 10px 12px; background: rgba(230,192,106,0.05); }
@@ -189,19 +213,18 @@
   body { padding-top: var(--sat); padding-bottom: calc(var(--ad-h, 0px) + var(--sab)); }
   footer .disclaim { flex-basis: 100%; font-size: 11px; color: var(--faint); }
   #adsOpt .ptdesc { margin-bottom: 8px; } #adsOpt button.buy { background: var(--gold); color: #1c1606; border: 0; border-radius: 9px; padding: 9px 14px; font: 700 14px var(--sans); cursor: pointer; }
-  .gear { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--gold); font-size: 19px; cursor: pointer; display: grid; place-items: center; }
-  .gear:hover { border-color: var(--gold-dim); }
   /* Game badges: plain flag-stripe and chip shapes with the name in plain type (deliberately not the games' logos) */
   #gameSeg button { padding: 4px 6px; display: grid; place-items: center; }
   #gameSeg .gbadge { width: 112px; height: 30px; display: block; opacity: .55; transition: opacity .15s, transform .15s; }
   #gameSeg button.on { background: rgba(230,192,106,.18); box-shadow: inset 0 0 0 2px var(--gold); }
   #gameSeg button.on .gbadge, #gameSeg button:hover .gbadge { opacity: 1; }
   .drawer-bg { position: fixed; inset: 0; background: rgba(3,10,7,.55); z-index: 80; opacity: 0; pointer-events: none; transition: opacity .2s; }
-  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw); z-index: 81; background: #0b1f18; border-left: 1px solid var(--line); box-shadow: -20px 0 50px rgba(0,0,0,.5);
-    transform: translateX(105%); transition: transform .25s ease; overflow-y: auto; padding: 0 18px 30px; -webkit-overflow-scrolling: touch; border-top: var(--sat) solid #0b1f18; }
-  body.set-open .drawer { transform: none; } body.set-open .drawer-bg { opacity: 1; pointer-events: auto; } body.set-open { overflow: hidden; }
+  .drawer { position: fixed; top: 0; left: 0; bottom: 0; width: min(420px, 100vw); z-index: 82; background: #0b1f18; border-right: 1px solid var(--line); box-shadow: 20px 0 50px rgba(0,0,0,.5);
+    transform: translateX(-105%); transition: transform .25s ease; overflow-y: auto; padding: 0 18px 30px; -webkit-overflow-scrolling: touch; border-top: var(--sat) solid #0b1f18; }
+  body.set-open .drawer { transform: none; } body.set-open #setBg { opacity: 1; pointer-events: auto; } body.set-open { overflow: hidden; }
   .dhead { position: sticky; top: 0; background: #0b1f18; display: flex; justify-content: space-between; align-items: center; padding: 16px 0 10px; z-index: 2; }
   .dhead b { font-family: var(--serif); font-size: 20px; }
+  .dhead button.dback { width: auto; padding: 0 10px; font: 600 13px var(--sans); color: var(--gold); }
   .dhead button { background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 8px; width: 34px; height: 34px; font-size: 15px; cursor: pointer; }
   .dedge { border: 1px solid var(--gold-dim); border-radius: 12px; padding: 12px 14px; background: rgba(230,192,106,.06); margin-bottom: 6px; }
   .dedge .ek { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
@@ -233,7 +256,45 @@
   .mbar { display: none; }
 
   /* Quiz */
-  .quiz { display: none; }
+  .quiz, .daily { display: none; }
+  body.daily-mode .daily { display: block; }
+  body.daily-mode .layout, body.daily-mode .mbar { display: none !important; }
+  /* Daily challenge */
+  .dweek { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; margin: 14px 0 16px; }
+  .dday { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px 7px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--dim); cursor: pointer; font: 500 12px var(--sans); min-width: 0; }
+  .dday .dw { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--faint); }
+  .dday .dn { font: 700 18px var(--sans); color: var(--ink); }
+  .dday .ds { font-size: 11.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .dday .ds i { font-style: normal; margin-left: 2px; }
+  .dday.today { border-color: var(--gold-dim); } .dday.today .ds { color: var(--gold); }
+  .dday.sel { box-shadow: inset 0 0 0 2px var(--gold); background: rgba(230,192,106,.1); }
+  .dday.perfect .ds { color: var(--gold); } .dday.leak .ds { color: #e6c06a; } .dday.costly .ds { color: var(--bad); } .dday.going .ds { color: var(--dim); }
+  .dcard { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: rgba(0,0,0,.12); }
+  .dtitle { font: 700 20px var(--serif); color: var(--ink); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .dlate { font: 600 12px var(--sans); color: var(--faint); text-transform: uppercase; letter-spacing: .06em; }
+  .dstory { margin: 12px 0; padding: 10px 14px; border-left: 3px solid var(--gold); background: rgba(230,192,106,.07); border-radius: 0 8px 8px 0; font-style: italic; color: var(--ink); }
+  .dmeta { color: var(--dim); margin: 0 0 12px; font-size: 14px; }
+  .qact.dgo { background: var(--gold); border-color: var(--gold); color: #13261e; }
+  .dscore { font: 700 30px var(--sans); color: var(--bad); margin: 6px 0 4px; } .dscore small { font-size: 15px; color: var(--dim); font-weight: 500; }
+  .dscore.perfect { color: var(--gold); }
+  .dgrid { font-size: 22px; letter-spacing: 2px; margin-bottom: 14px; }
+  table.dlist { width: 100%; max-width: 520px; margin-top: 14px; border-collapse: collapse; } table.dlist td { padding: 7px 6px; border-top: 1px solid var(--line); white-space: nowrap; font: 14px var(--sans); }
+  .dcard .qacts { max-width: 520px; }
+  table.dlist td:first-child { color: var(--faint); width: 1.6em; } table.dlist td:nth-child(2) { color: var(--dim); } table.dlist td:nth-child(4), table.dlist td:last-child { text-align: right; }
+  .drev { margin-top: 14px; }
+  .dtop { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .dpips { display: flex; gap: 4px; flex-wrap: wrap; }
+  .dpips span { font: 600 10.5px var(--sans); padding: 3px 5px; border-radius: 5px; background: var(--felt-deep); color: var(--faint); border: 1px solid var(--line); }
+  .dpips span.now { border-color: var(--gold); color: var(--gold); }
+  .dpips span.perfect { background: rgba(52,178,104,.35); color: var(--ink); border-color: transparent; }
+  .dpips span.leak { background: rgba(230,192,106,.35); color: var(--ink); border-color: transparent; }
+  .dpips span.costly { background: rgba(214,84,74,.45); color: var(--ink); border-color: transparent; }
+  .dhand { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 12px; color: var(--dim); }
+  .dhand b { color: var(--ink); }
+  .dstake { font: 700 13px var(--sans); color: var(--gold); background: rgba(230,192,106,.1); border: 1px solid var(--gold-dim); padding: 3px 9px; border-radius: 99px; }
+  .dlost { margin-left: 12px; font: 700 18px var(--sans); color: var(--bad); }
+  @media (max-width: 420px) { .dgrid { font-size: 18px; letter-spacing: 0; } table.dlist td { padding: 7px 3px; font-size: 13px; } .dcard { padding: 14px 12px; } }
+  @media (max-width: 700px) { .dweek { gap: 4px; } .dday .dn { font-size: 16px; } .dday .ds { font-size: 10.5px; } .dpips span { padding: 2px 4px; font-size: 9.5px; } }
   body.quiz-mode .quiz { display: block; }
   body.quiz-mode .layout, body.quiz-mode .mbar { display: none !important; }
   .guide { display: none; }
@@ -327,6 +388,10 @@
   .qgroup .cards { display: flex; gap: 6px; align-items: center; }
   .qgroup .pc { cursor: default; width: 46px; height: 64px; font-size: 20px; }
   .qgroup .pc .x { display: none !important; }
+  .qgroup.qothers { flex-basis: 100%; } /* other players' hands always get their own line */
+  .qgroup .pc.deal { animation: dealin .38s cubic-bezier(.2,.9,.3,1.2) both; }
+  @keyframes dealin { from { transform: translateY(-14px) rotateY(80deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .qgroup .pc.deal { animation: none; } }
   .qgroup .pc.hidden { background: repeating-linear-gradient(45deg, #1c3a2f 0 6px, #17322a 6px 12px); border-color: #2c5545; box-shadow: none; }
   .qprompt { margin: 18px 0 10px; color: var(--dim); }
   .qacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
@@ -361,7 +426,8 @@
   table.qgrade tr.qevs td { padding-top: 0; font-size: 12px; color: var(--faint); border-top: none; }
   table.qgrade tr.qevs td b { font-family: var(--mono); color: var(--dim); font-weight: 500; }
   .qtough { font-size: 11px; color: var(--gold); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
-  .resetbtn { padding: 8px 14px; border-radius: 9px; border: 1px solid var(--bad); background: rgba(255,122,110,0.08); color: var(--bad); font-weight: 600; cursor: pointer; }
+  .resetbtn { padding: 8px 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--ink); font-weight: 600; cursor: pointer; }
+  .resetbtn.danger { border-color: var(--bad); background: rgba(255,122,110,0.08); color: var(--bad); }
   /* Streak celebrations: tier 1 = toast; 2+ = centred card over a dimmed page, bigger and brighter as tiers rise */
   .cele-toast { position: fixed; left: 50%; top: calc(18px + var(--sat)); transform: translate(-50%, -140%); z-index: 90; background: #123d2c; border: 1px solid var(--gold); color: var(--ink);
     border-radius: 999px; padding: 10px 18px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.5); transition: transform .35s cubic-bezier(.2,1.4,.4,1); white-space: nowrap; }
@@ -395,19 +461,20 @@
   .qnext button { padding: 10px 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-2); color: var(--ink); font-weight: 600; font-size: 15px; cursor: pointer; }
   .qnext button.primary { background: var(--gold); color: #1c1606; border-color: var(--gold); }
 
-  @media (max-width: 370px) { header h1 { font-size: 17px !important; } #gameSeg .gbadge { width: 64px !important; height: 18px !important; } }
+  @media (max-width: 380px) { header h1 { font-size: 17px !important; } header { gap: 5px !important; } .burger { width: 32px !important; height: 32px !important; } #gameSeg .gbadge { width: 62px !important; height: 18px !important; } }
+  @media (max-width: 340px) { header h1 { font-size: 13.5px !important; } #gameSeg .gbadge { width: 48px !important; height: 14px !important; } .burger { width: 30px !important; height: 30px !important; } .wrap { padding-left: 8px !important; padding-right: 8px !important; } }
   /* ── Mobile: one column; results become a bottom sheet ── */
   @media (max-width: 860px) {
     .wrap { padding: 16px 12px 96px; }
     h1 { font-size: 26px; }
-    header { margin-bottom: 12px; display: grid; grid-template-columns: auto 1fr auto; gap: 10px 8px; align-items: center; }
+    header { margin-bottom: 12px; display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; }
+    .burger { width: 36px; height: 36px; } .pagename { font-size: 10px; margin-top: 3px; }
     header h1 { font-size: 20px; }
-    #gameSeg { justify-self: end; gap: 1px; } #gameSeg .gbadge { width: 74px; height: 20px; } #gameSeg button { padding: 3px; }
-    header { gap: 10px 6px; } .gear { width: 34px; height: 34px; font-size: 17px; }
+    #gameSeg { justify-self: end; gap: 1px; } #gameSeg .gbadge { width: 72px; height: 20px; } #gameSeg button { padding: 3px; }
+    header { gap: 10px 6px; }
     header h1 { white-space: nowrap; }
-    #modeSeg { grid-column: 1 / -1; grid-row: 2; display: flex; } #modeSeg button { flex: 1; }
-    .gear { grid-column: 3; grid-row: 1; }
     .layout { grid-template-columns: 1fr; }
+    .rc { font-size: clamp(9px, 2.95cqw, 11px); padding-bottom: 32%; } /* phones: names a bit bigger and higher, clear of the badge */
     .panel { padding: 13px; }
     .picker { display: none; }
     .keypad { display: block; }
@@ -434,8 +501,6 @@
     .mbar .mtxt b { color: var(--ink); font-family: var(--mono); }
     .mbar .mopen { color: var(--gold); font-weight: 600; font-size: 14px; white-space: nowrap; }
     body.sheet-open { overflow: hidden; }
-    .rc { font-size: 9px; }
-    .rc .bdg { font-size: 10px; padding: 1px 2px; right: -2px; bottom: -2px; }
     td, th { padding: 7px 5px; }
   }
 </style>
@@ -460,17 +525,12 @@
 </script>
 <div class="wrap">
   <header>
-    <h1>Hold'em <span>Trainer</span></h1>
-    <div class="seg" id="modeSeg">
-      <button data-m="analyze">Analyze</button>
-      <button data-m="quiz">Quiz</button>
-      <button data-m="guide">Guide</button>
-    </div>
+    <button class="burger" id="navBtn" aria-label="Menu" title="Menu" aria-controls="navDrawer" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <div class="brand"><h1>Hold'em <span>Trainer</span></h1><div class="pagename" id="pageName"></div></div>
     <div class="seg" id="gameSeg">
       <button data-g="uth" aria-label="Ultimate Texas Hold'em" title="Ultimate Texas Hold'em"><svg class="gbadge" viewBox="0 0 112 30" aria-hidden="true"><defs><clipPath id="cpU"><rect width="112" height="30" rx="7"/></clipPath></defs><g clip-path="url(#cpU)"><rect width="34" height="30" fill="#3b6fb6"/><rect x="34" width="78" height="15" fill="#efe9da"/><rect x="34" y="15" width="78" height="15" fill="#bf4a42"/></g><text x="56" y="20.5" text-anchor="middle" font-family="IBM Plex Sans, system-ui, sans-serif" font-weight="700" font-size="14" letter-spacing=".5" fill="#fff" stroke="#14261d" stroke-width="3" paint-order="stroke">ULTIMATE</text></svg></button>
       <button data-g="wpt" aria-label="WPT Heads-Up Hold'em" title="WPT Heads-Up Hold'em"><svg class="gbadge" viewBox="0 0 112 30" aria-hidden="true"><ellipse cx="56" cy="15" rx="55" ry="14" fill="#1d5c41"/><ellipse cx="56" cy="15" rx="51" ry="11.5" fill="none" stroke="#efe4c4" stroke-width="3" stroke-dasharray="9 7"/><ellipse cx="56" cy="15" rx="44" ry="8.5" fill="#174a35"/><text x="56" y="20" text-anchor="middle" font-family="IBM Plex Sans, system-ui, sans-serif" font-weight="700" font-size="13" letter-spacing=".5" fill="#efe4c4" stroke="#0e2a1f" stroke-width="2.5" paint-order="stroke">HEADS-UP</text></svg></button>
     </div>
-    <button class="gear" id="setBtn" aria-label="Settings" title="Settings">⚙</button>
   </header>
 
   <div class="layout">
@@ -501,6 +561,7 @@
   </div>
 
   <section class="panel guide" id="guide"></section>
+  <section class="panel daily" id="daily"><div id="dBody"></div></section>
 
   <section class="panel quiz" id="quiz">
     <div class="qbar">
@@ -516,14 +577,25 @@
 
 
   <footer>
-    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-27 23:47</span>
+    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-28 12:58</span>
     <span class="disclaim">Strategy trainer only — no real-money play. Not affiliated with or endorsed by Light &amp; Wonder or the World Poker Tour.</span>
   </footer>
 </div>
 <div class="mbar" id="mbar"></div>
+<div class="drawer-bg" id="navBg"></div>
+<nav class="navdrawer" id="navDrawer" aria-label="Pages">
+  <div class="navtop"><span class="navtitle">Hold'em <span>Trainer</span></span><button class="clear" id="navClose" aria-label="Close menu">✕</button></div>
+  <button class="navitem" data-m="analyze"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/></svg><span><b>Analyze</b><small>Solve any hand, see the range chart</small></span></button>
+  <button class="navitem" data-m="quiz"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 12.5l2.8 2.8L16.5 9"/></svg><span><b>Practice</b><small>Play hands and get graded</small></span></button>
+  <button class="navitem" data-m="daily"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span><b>Daily challenge</b><small>Ten hands a day, scored in dollars</small></span></button>
+  <button class="navitem" data-m="guide"><svg viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></svg><span><b>Guide</b><small>Rules, bets and simple strategy</small></span></button>
+  <div class="navsep"></div>
+  <button class="navitem" id="navSettings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/></svg><span><b>Settings</b><small>Pay tables, what you can see, sound</small></span></button>
+  <div class="navitem locked" aria-disabled="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg><span><b>Leak finder</b><small>Play more hands to build a data set</small><small class="navprog" id="leakProg"></small></span></div>
+</nav>
 <div class="drawer-bg" id="setBg"></div>
 <aside class="drawer" id="setDrawer" aria-label="Settings">
-  <div class="dhead"><b>Settings</b><button id="setClose" aria-label="Close settings">✕</button></div>
+  <div class="dhead"><button id="setBack" class="dback" aria-label="Back to the menu">‹ Menu</button><b>Settings</b><button id="setClose" aria-label="Close settings">✕</button></div>
   <div class="dedge" id="setEdge"></div>
   <div class="opts" id="opts"></div>
 </aside>
@@ -1038,13 +1110,13 @@ window.importFromKV = importFromKV; window.exportPacks = exportPacks;
 // ── State (settings persist; cards don't) ─────────────────────────────────
 const S = {
   game: store.get('uth.game', 'uth'), street: store.get('uth.street', 'preflop'), tab: store.get('uth.tab', 'hand'),
-  tables: Object.assign({ uthTrips: 'UTH-01', badBeat: 'BB-1', wptTrips: 'TP-1', pocket: 'PB-1', uthPocket: 'PB-1' }, store.get('uthTables', {})),
+  tables: Object.assign({ uthTrips: 'UTH-01', badBeat: 'BB-4', wptTrips: 'TP-1', pocket: 'PB-1', uthPocket: 'PB-1' }, store.get('uthTables', {})),
   wptRaises: { 3: true, 2: false, 1: false }, // WPT preflop: 3x is always allowed, and smaller raises are never best
   ante: store.get('uth.ante', 0),
   // What you can see before the flop (each optional): the dealer's card, and one flop card
   peekDealer: store.get('uth.peekDealer', store.get('uth.peek', false)), peekFlop: store.get('uth.peekFlop', store.get('uth.peek', false)),
   seeOthers: store.get('uth.seeOthers', true),
-  sound: store.get('uth.sound', true), haptics: store.get('uth.haptics', true), // quiz sounds; vibration on taps (phones)
+  sound: store.get('uth.sound', true), haptics: store.get('uth.haptics', true), // practice/daily sounds; vibration on taps (phones)
   bonusInc: Object.assign({ trips: false, pocket: false }, store.get('uth.bonusInc', {})), // include this bonus bet in the house edge?
   bonusAmt: Object.assign({ trips: 5, pocket: 5 }, store.get('uth.bonusAmt', {})),         // its size in dollars
   hole: [null, null], board: [null, null, null, null, null], dealer: [null], dead: [],
@@ -1148,6 +1220,26 @@ const FX = (() => {
     },
   };
 })();
+// ── Decision log (for a future leak finder) ───────────────────────────────
+// Every graded quiz/daily decision is kept on the device in its own database (not the solver cache):
+// what was showing, what you chose, the best play, each option's EV and what you gave up.
+// Console: LOG.count(), LOG.all() (array of records), LOG.clear().
+const LOG = (() => {
+  let dbp = null;
+  const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('holdem-log', 1); r.onupgradeneeded = () => r.result.createObjectStore('d', { autoIncrement: true }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const tx = async (mode, fn) => { try { const db = await open(); return await new Promise(res => { const t = db.transaction('d', mode), q = fn(t.objectStore('d')); t.oncomplete = () => res(q ? q.result : true); t.onerror = t.onabort = () => res(null); }); } catch (_) { return null; } };
+  return { add: recs => tx('readwrite', st => { recs.forEach(r => st.add(r)); return null; }), count: () => tx('readonly', st => st.count()), all: () => tx('readonly', st => st.getAll()), clear: () => tx('readwrite', st => st.clear()) };
+})();
+function logDecisions(rows, { mode, game, h, extra = {} }) {
+  const t = Date.now(), r4 = x => Math.round(x * 1e4) / 1e4;
+  store.set('uth.handsLogged', store.get('uth.handsLogged', 0) + 1);
+  LOG.add(rows.map(r => {
+    const sp = nodeSpec(h, r.st);
+    return { t, mode, game, street: r.st, cls: handClass(h.hole), hole: sp.hole, board: sp.board, dealer: sp.dealer, dead: sp.dead,
+      pick: r.k, best: r.best, ev: Object.fromEntries(Object.entries(r.acts).map(([k, v]) => [k, r4(v)])), loss: r4(r.loss), gap: r4(r.gain), tough: r.tough, ...extra };
+  }));
+}
+
 // a light tick on every tap of a button, card or option
 document.addEventListener('pointerdown', () => FX.unlock(), { capture: true, passive: true });
 document.addEventListener('click', e => {
@@ -1263,6 +1355,12 @@ function ptTable(key, t) {
   if (key === 'pocket' || key === 'uthPocket') return `<table class="ptab"><tbody>${POCKET_ROWS[t.length].map((n, i) => `<tr><td>${n}</td><td class="r">${t[i]} to 1</td></tr>`).join('')}<tr><td>Anything else</td><td class="r">Loses</td></tr></tbody></table>`;
   return `<table class="ptab"><tbody>${payRows(t, 3)}<tr><td>Anything less</td><td class="r">Loses</td></tr></tbody></table>`;
 }
+function renderHistInfo() {
+  const el = document.getElementById('histInfo'); if (!el) return;
+  const n = store.get('uth.handsLogged', 0);
+  el.textContent = n ? `${n} hand${n === 1 ? '' : 's'} from Practice and the Daily challenge ${n === 1 ? 'is' : 'are'} saved on this device for the leak finder.`
+    : 'Every hand you play in Practice and the Daily challenge is saved on this device for the leak finder.';
+}
 function renderOpts() {
   // bonus: 'trips' / 'pocket' adds the "include in house edge" box and its bet size
   const pick = (key, label, tabs, help, bonus, edge) => `<div class="opt wide"><label>${label}</label><div class="ptpick">${Object.keys(tabs).map(k => `<button class="${S.tables[key] === k ? 'on' : ''}" data-pt="${key}" data-v="${k}">${k}</button>`).join('')}</div>
@@ -1286,19 +1384,25 @@ function renderOpts() {
     h += pick('pocket', 'Pocket Bonus', E.GAMES.wpt.pocket, 'Pays on your two starting cards:', 'pocket', pocketEdge);
   }
   h += `<div class="opt wide"><label>Sound &amp; feel</label>
-      <label class="chk"><input type="checkbox" id="soundIn" ${S.sound ? 'checked' : ''}> Quiz sound effects</label>
+      <label class="chk"><input type="checkbox" id="soundIn" ${S.sound ? 'checked' : ''}> Sound effects</label>
       ${FX.canBuzz() ? `<label class="chk"><input type="checkbox" id="hapticsIn" ${S.haptics ? 'checked' : ''}> Vibrate on taps</label>` : ''}</div>`;
   if (APP.native) h += `<div class="opt wide"><label>Ads</label><div id="adsOpt"></div></div>`;
-  h += `<div class="opt wide"><label>Quiz score</label><div class="qbests" id="qBests"></div><button class="resetbtn" id="qResetBtn">Reset quiz stats</button></div>`;
+  h += `<div class="opt wide"><label>Practice score</label><div class="qbests" id="qBests"></div><button class="resetbtn" id="qResetBtn">Reset practice stats</button></div>`;
+  h += `<div class="opt wide"><label>Saved hand history</label><div class="ptdesc" id="histInfo">Every hand you play in Practice and the Daily challenge is kept on this device for the leak finder.</div><button class="resetbtn danger" id="histWipeBtn">Delete hand history</button></div>`;
   const el = document.getElementById('opts');
   el.innerHTML = h;
   if (typeof QZ !== 'undefined') renderQuizBests();
   renderAdsOpt();
   document.getElementById('qResetBtn').onclick = () => {
-    if (!confirm('Reset your quiz stats for both modes (hands, perfect %, streaks, EV lost)?')) return;
+    if (!confirm('Reset your practice stats for both games and both modes (hands, perfect %, streaks, EV lost)? Your hand history for the leak finder is kept.')) return;
     QZ.statsBy = emptyStatsBy(); saveQuiz(); renderQuizScore();
   };
   el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); });
+  renderHistInfo();
+  document.getElementById('histWipeBtn').onclick = async () => {
+    if (!confirm('Delete your whole hand history from this device?\n\nThe leak finder builds its picture of your mistakes from this history, so it will start over from zero. This can\'t be undone.\n\n(Practice stats and Daily challenge scores are kept.)')) return;
+    await LOG.clear(); store.set('uth.handsLogged', 0); renderOpts(); dToast('Hand history deleted');
+  };
   el.querySelectorAll('[data-binc]').forEach(c => c.onchange = () => { S.bonusInc[c.dataset.binc] = c.checked; saveSettings(); renderOpts(); });
   el.querySelectorAll('[data-bamt]').forEach(i => i.oninput = () => { const v = parseFloat(String(i.value).replace(/[$,]/g, '')); S.bonusAmt[i.dataset.bamt] = v > 0 ? v : 0; saveSettings(); renderEdgeCard(); });
   const peekChanged = () => { saveSettings(); renderSetSum(); if ((!S.peekDealer && S.active === 'dealer') || (!S.seeOthers && S.active === 'dead')) S.active = 'hole'; render(); onCardsChanged(); };
@@ -2276,24 +2380,33 @@ function quizPick(k) {
       for (let ms = 0; ms < SUSPENSE_MS - 200; ms += Math.max(160, 480 - ms / 4)) setTimeout(() => QZ.cur === q && FX.buzz('beat'), ms); // a quickening heartbeat
       setTimeout(() => { if (QZ.cur !== q) return; q.suspense = false; q.drumroll = true; FX.play('hit'); quizReveal(q); setTimeout(() => q.drumroll = false, 900); }, SUSPENSE_MS);
     } else quizReveal(q);
-  } else { q.stage = QSTREETS[QSTREETS.indexOf(q.stage) + 1]; q.shownAt = performance.now(); renderQuiz(); }
+  } else { q.dealFrom = boardAt(q.h, q.stage); q.stage = QSTREETS[QSTREETS.indexOf(q.stage) + 1]; q.shownAt = q.dealtAt = performance.now(); renderQuiz(); }
 }
 function quizReveal(q) {
   const st = statsFor(q.game, q.tough), lost = q.grade.lost, perfect = lost < 1e-9; // counted in the mode the hand was dealt in
   st.n++; st.lost += lost;
   let newBest = false;
   if (perfect) { st.perfect++; st.streak++; newBest = st.streak > st.best; st.best = Math.max(st.best, st.streak); } else st.streak = 0;
-  saveQuiz();
+  saveQuiz(); q.revealAt = performance.now();
+  logDecisions(q.grade.rows, { mode: q.tough ? 'tough' : 'quiz', game: q.game, h: q.h });
   renderQuiz();
   const kind = perfect ? 'perfect' : lost < 0.25 ? 'leak' : 'costly';
   FX.play(kind); FX.buzz(kind);
   if (perfect) celebrateStreak(st.streak, newBest);
 }
-function quizToAnalyzer(st) {
-  const sp = nodeSpec(QZ.cur.h, st);
+function quizToAnalyzer(st) { handToAnalyzer(QZ.cur.h, st); }
+// Open a quiz/daily hand in Analyze at a street. Turns on the "I can see" settings the hand needs
+// (otherwise Analyze would ignore the dealer / flop / other players' cards).
+function handToAnalyzer(h, st, { daily = false } = {}) {
+  const sp = nodeSpec(h, st);
+  const need = { peekDealer: sp.dealer.length > 0, peekFlop: st === 'preflop' && sp.board.length > 0, seeOthers: sp.dead.length > 0 };
+  let changed = false;
+  for (const [k, on] of Object.entries(need)) if (on && !S[k]) { S[k] = true; changed = true; }
+  if (changed) { saveSettings(); renderOpts(); renderSetSum(); }
   S.hole = sp.hole.slice(); S.board = [...sp.board, null, null, null, null, null].slice(0, 5); S.dealer = [sp.dealer[0] ?? null]; S.dead = sp.dead.slice();
   S.active = 'board'; setMode('analyze'); setStreet(st); setTab('hand');
   if (isMobile()) openSheet(true); // phones: go straight to the results, not the card picker
+  if (daily && S.game === 'wpt' && S.tables.badBeat !== DAILY_OPTS.wpt.badBeat) dToast(`Analyze uses your Bad Beat table (${S.tables.badBeat}); the daily uses ${DAILY_OPTS.wpt.badBeat}`);
 }
 function renderQuizBests() {
   const el = document.getElementById('qBests');
@@ -2313,6 +2426,23 @@ function gradeWord(lost) {
   if (lost < 0.25) return ['Small leak', 'no'];
   return ['Costly mistake', 'no'];
 }
+// The cards of a quiz/daily hand at a street. Once the hand is over the rest of the board is dealt out
+// (the dealer's cards stay hidden: grading is on EV, not on how the hand turned out); `runout` animates it.
+const boardAt = (h, st) => st === 'preflop' ? (h.peekF ? 1 : 0) : st === 'flop' ? 3 : 5;
+// `dealFrom`: board cards from this position on were just revealed (a new street, or the run-out at the
+// end of the hand) and slide in one after another.
+function handTableHTML(h, st, { over = false, dealFrom = null, cls = '' } = {}) {
+  const nBoard = over ? 5 : boardAt(h, st);
+  const pc = (c, anim) => anim === null ? cardHTML(c) : cardHTML(c, `style="animation-delay:${anim * 0.18}s"`).replace('class="pc ', 'class="pc deal ');
+  const pcs = arr => arr.map(c => c === 'h' ? '<div class="pc hidden"></div>' : cardHTML(c)).join('');
+  const bd = idx => idx.map(i => i >= nBoard ? '<div class="pc hidden"></div>' : pc(h.board[i], dealFrom !== null && i >= dealFrom ? i - dealFrom : null)).join('');
+  return `<div class="qtable ${cls}">
+      <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs([...h.hole].sort((x, y) => y - x))}</div></div>
+      <div class="qgroup"><div class="k">Board</div><div class="cards">${bd([0, 1, 2])}<span class="slotcards"><span class="gap"></span></span>${bd([3, 4])}</div></div>
+      ${h.dealer.length ? `<div class="qgroup"><div class="k">Dealer shows</div><div class="cards">${pcs([h.dealer[0], 'h'])}</div></div>` : ''}
+      ${h.dead.length ? `<div class="qgroup qothers"><div class="k">Other players' cards</div><div class="cards">${[0, 2, 4].filter(i => i < h.dead.length).map(i => pcs(h.dead.slice(i, i + 2).sort((x, y) => y - x))).join('<span class="slotcards"><span class="gap"></span></span>')}</div></div>` : ''}
+    </div>`;
+}
 function renderQuiz() {
   renderQuizScore();
   document.querySelectorAll('#qToughSeg button').forEach(b => b.classList.toggle('on', (b.dataset.t === '1') === QZ.tough));
@@ -2320,18 +2450,11 @@ function renderQuiz() {
   const el = document.getElementById('qBody'), q = QZ.cur;
   document.getElementById('qNote').textContent = `EV per ${units() ? '$' + S.ante + ' ante' : '1-unit ante'}, including the ${E.GAMES[S.game].spot2} bet. Each decision is graded against the best play at that point, assuming perfect play afterwards.`;
   if (!q) { el.innerHTML = `<div class="empty"><div class="big">Dealing…</div>${QZ.tough ? 'Looking for a hand with a tough spot — this can take a few seconds.' : ''}</div>`; return; }
-  const h = q.h, shown = q.done ? q.picks[q.picks.length - 1].st : q.stage;
-  const nBoard = shown === 'preflop' ? (h.peekF ? 1 : 0) : shown === 'flop' ? 3 : 5;
-  const board = h.board.map((c, i) => i < nBoard ? c : 'h');
-  const pcs = arr => arr.map(c => c === 'h' ? '<div class="pc hidden"></div>' : cardHTML(c)).join('');
+  const h = q.h, over = q.done && !q.suspense;
   const extra = [h.peekF && 'you saw a flop card', h.dealer.length && 'you saw a dealer card', h.dead.length && `${h.dead.length / 2 === 1 ? 'a player showed you their hand' : `${h.dead.length / 2} players showed you their hands`}`].filter(Boolean);
-  let x = `<div class="qhead">${q.done && !q.suspense ? 'Hand over' : QNAME[q.stage]}${extra.length ? `<small>${extra.join(' · ')}</small>` : ''}</div>
-    <div class="qtable ${q.suspense ? 'sus' : ''}">
-      <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs([...h.hole].sort((x, y) => y - x))}</div></div>
-      <div class="qgroup"><div class="k">Board</div><div class="cards">${pcs(board.slice(0, 3))}<span class="slotcards"><span class="gap"></span></span>${pcs(board.slice(3))}</div></div>
-      ${h.dealer.length ? `<div class="qgroup"><div class="k">Dealer shows</div><div class="cards">${pcs([h.dealer[0], 'h'])}</div></div>` : ''}
-      ${h.dead.length ? `<div class="qgroup"><div class="k">Other players' cards</div><div class="cards">${[0, 2, 4].filter(i => i < h.dead.length).map(i => pcs(h.dead.slice(i, i + 2).sort((x, y) => y - x))).join('<span class="slotcards"><span class="gap"></span></span>')}</div></div>` : ''}
-    </div>`;
+  let x = `<div class="qhead">${over ? 'Hand over' : QNAME[q.stage]}${extra.length ? `<small>${extra.join(' · ')}</small>` : ''}</div>`
+    + handTableHTML(h, q.stage, { over, cls: q.suspense ? 'sus' : '',
+      dealFrom: over ? (q.revealAt && performance.now() - q.revealAt < 1500 ? boardAt(h, q.stage) : null) : (q.dealtAt && performance.now() - q.dealtAt < 1500 ? q.dealFrom : null) });
   // The path line and the prompt line are always there, so the buttons (and then Next hand) stay put.
   x += `<div class="qpath">${q.picks.map(p => `<span>${QNAME[p.st]}: <b>${ACT_LABEL[p.k]}</b></span>`).join('')}</div>`;
   if (q.suspense) {
@@ -2340,7 +2463,7 @@ function renderQuiz() {
       <div class="qacts">${acts.map(k => `<button class="qact ${k === mine ? 'picked' : 'dim'}" disabled>${ACT_LABEL[k]}</button>`).join('')}</div>`;
   } else if (!q.done) {
     const acts = quizActions(q.stage, S.game);
-    x += `<div class="qprompt">What's your play? <span style="color:var(--faint)">(keys 1–${acts.length})</span></div>
+    x += `<div class="qprompt">What's your play?</div>
       <div class="qacts">${acts.map(k => `<button class="qact" data-a="${k}">${ACT_LABEL[k]}</button>`).join('')}</div>`;
   } else {
     const g = q.grade, [word, tone] = gradeWord(g.lost);
@@ -2374,6 +2497,280 @@ document.addEventListener('keydown', e => {
   if (!q.done) { const acts = quizActions(q.stage, S.game); if (/^[1-9]$/.test(e.key) && acts[+e.key - 1]) { e.preventDefault(); quizPick(acts[+e.key - 1]); } }
   else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); quizNew(); }
 });
+// ── Daily challenge ───────────────────────────────────────────────────────
+// One set of 10 hands per game per local calendar date, the same on every device: the deals come from a
+// generator seeded with the game + date, and the rules are fixed (default pay tables), not the player's
+// settings. Some days give extra information on every hand, introduced with a little story. A pool of
+// deals is solved and 10 are picked from easiest to hardest; antes rise from $5 to $100, so the score is
+// the dollars of EV given up versus perfect play. One try per day; the last week can be played late.
+const DAILY_VER = 4, DAILY_BACK = 7;
+// deals solved per day before picking 10: fewer on days with seen cards, whose preflop solves are slower
+const DAILY_POOL = { none: 24, flop: 18, dealer: 18, one: 14, two: 12 };
+const DAILY_STAKES = [5, 5, 10, 10, 25, 25, 50, 50, 100, 100];
+const DAILY_OPTS = { uth: { trips: 'UTH-01' }, wpt: { badBeat: 'BB-4', trips: 'TP-1', pocket: 'PB-1' } };
+// Days with extra information are spaced out: 2 or 3 days apart (never three 2-day gaps in a row), so any
+// 7 days in a row have at most 3 of them — at least 4 normal tables — and ~42% overall. The spacing is
+// walked forward from a fixed start date with seeded choices, so every device gets the same days.
+const INFO_EPOCH = Math.round(Date.UTC(2026, 0, 1) / 864e5), INFO_SEQ = {};
+function isInfoDay(game, dayNo) {
+  if (dayNo < INFO_EPOCH) return false;
+  const q = INFO_SEQ[game] ||= { last: INFO_EPOCH - 1, twos: 0, days: new Set() };
+  while (q.last < dayNo) {
+    const g = q.twos >= 2 ? 3 : seedRng(`gap|${game}|${q.last}`)() < 0.6 ? 2 : 3;
+    q.twos = g === 2 ? q.twos + 1 : 0; q.last += g; q.days.add(q.last);
+  }
+  return q.days.has(dayNo);
+}
+const DAILY_NONE = 'A normal table tonight — just you, the dealer and ten hands.';
+const DAILY_INFO = [ // weight, kind, story
+  [15, 'dealer', 'Your dealer flashes you one of their cards as they deal each hand.'],
+  [15, 'flop', 'Your dealer is sloppy bringing out the board — you spot a flop card early.'],
+  [10, 'one', 'A friendly player next to you shows you their cards every hand.'],
+  [5, 'two', 'Both players beside you are chatty and show you their hands every time.'],
+];
+const PLAY_LINK = 'https://play.google.com/store/apps/details?id=com.bunz.holdemtrainer';
+const GAME_NAME = { uth: 'Ultimate Texas Hold\'em', wpt: 'Heads-Up Hold\'em' };
+// dates are local calendar days, "YYYY-MM-DD"
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const todayYmd = () => ymd(new Date());
+const ymdDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const dayAdd = (s, n) => { const d = ymdDate(s); d.setDate(d.getDate() + n); return ymd(d); };
+const dayFmt = (s, o) => ymdDate(s).toLocaleDateString('en-US', o);
+const dayLong = s => dayFmt(s, { weekday: 'long', month: 'long', day: 'numeric' }), dayShort = s => dayFmt(s, { month: 'long', day: 'numeric' });
+function seedRng(str) { // cyrb-style string hash → mulberry32
+  let h = 1779033703 ^ str.length;
+  for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; }
+  let a = h >>> 0;
+  return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+function dailyInfo(game, date) {
+  const [y, m, d] = date.split('-').map(Number);
+  if (!isInfoDay(game, Math.round(Date.UTC(y, m - 1, d) / 864e5))) return { kind: 'none', story: DAILY_NONE };
+  const total = DAILY_INFO.reduce((t, x) => t + x[0], 0);
+  let r = seedRng(`info|${game}|${date}`)() * total;
+  for (const [w, kind, story] of DAILY_INFO) { if (r < w) return { kind, story }; r -= w; }
+  return { kind: 'dealer', story: DAILY_INFO[0][2] };
+}
+function dailyDeal(rng, kind) {
+  const deck = [...Array(52).keys()];
+  for (let i = 51; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
+  const hole = [deck.pop(), deck.pop()], board = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
+  return { hole, board, dealer: kind === 'dealer' ? [deck.pop()] : [], dead: kind === 'one' ? deck.splice(0, 2) : kind === 'two' ? deck.splice(0, 4) : [], peekF: kind === 'flop' };
+}
+const dActs = (st, game) => quizActions(st, game);
+const dBest = (a, st, game) => dActs(st, game).reduce((x, k) => a[k] > a[x] ? k : x);
+const dGap = (a, st, game) => { const v = dActs(st, game).map(k => a[k]).sort((x, y) => y - x); return v[0] - v[1]; };
+const dTough = (st, game) => st === 'preflop' ? 0.015 * (game === 'uth' ? 4 : 3) : TOUGH;
+async function dSolve(sp, game, prio = 1) {
+  if (sp.street === 'preflop' && !sp.board.length && !sp.dealer.length && !sp.dead.length) {
+    for (let i = 0; !BASE && i < 60; i++) await new Promise(r => setTimeout(r, 250));
+    const b = BASE?.[handClass(sp.hole)]?.games[game === 'uth' ? 'uth' : 'wpt:' + DAILY_OPTS.wpt.badBeat];
+    if (b) return Object.fromEntries(Object.entries(b.actions).map(([k, x]) => [k, x.total]));
+  }
+  return (await runJob({ type: 'solve', spec: sp, game, opts: DAILY_OPTS[game] }, { prio })).res.actions;
+}
+// how close the closest call on the best line is, in tough-spot units (smaller = harder)
+function lineDifficulty(h, game) {
+  let d = Infinity;
+  for (const st of QSTREETS) { const a = h.acts[st]; d = Math.min(d, dGap(a, st, game) / dTough(st, game)); if (endsHand(dBest(a, st, game), st)) break; }
+  return d;
+}
+const DAILY_SETS = new Map(), DAILY_PROG = new Map(), DAILY_LAST = new Map();
+function dailySet(game, date, onProgress, prio = 1) {
+  const k = `${game}|${date}`;
+  DAILY_PROG.set(k, onProgress);
+  if (DAILY_SETS.has(k)) { const last = DAILY_LAST.get(k); if (last) onProgress?.(...last); return DAILY_SETS.get(k); }
+  const p = (async () => {
+    const cached = store.get('uth.dset.' + k, null); if (cached?.v === DAILY_VER) return cached;
+    const info = dailyInfo(game, date), rng = seedRng(`deal|${game}|${date}`);
+    const pool = Array.from({ length: DAILY_POOL[info.kind] }, (_, i) => ({ ...dailyDeal(rng, info.kind), i }));
+    let done = 0; const tell = (...a) => { DAILY_LAST.set(k, a); DAILY_PROG.get(k)?.(...a); }; tell(0, pool.length);
+    const r6 = x => Math.round(x * 1e6) / 1e6;
+    await Promise.all(pool.map(async h => {
+      const sol = await Promise.all(QSTREETS.map(st => dSolve(nodeSpec(h, st), game, prio)));
+      h.acts = Object.fromEntries(QSTREETS.map((st, i) => [st, Object.fromEntries(dActs(st, game).map(a => [a, r6(sol[i][a])]))]));
+      h.diff = lineDifficulty(h, game); tell(++done, pool.length);
+    }));
+    const sorted = pool.slice().sort((a, b) => b.diff - a.diff || a.i - b.i); // easiest first
+    const hands = Array.from({ length: 10 }, (_, j) => sorted[Math.round(j * (sorted.length - 1) / 9)]).map(({ i, diff, ...h }) => h);
+    const set = { v: DAILY_VER, game, date, info: info.kind, hands };
+    store.set('uth.dset.' + k, set);
+    // drop stored sets that have fallen out of the playable window
+    try { for (const key of Object.keys(localStorage)) { const m = key.match(/^uth\.dset\.\w+\|(\d{4}-\d\d-\d\d)$/); if (m && m[1] < dayAdd(todayYmd(), -DAILY_BACK - 1)) localStorage.removeItem(key); } } catch (_) {}
+    return set;
+  })();
+  DAILY_SETS.set(k, p); p.catch(() => DAILY_SETS.delete(k));
+  return p;
+}
+// progress / results, per game|date: { i, stage, picks, over, results: [{ lost, grade, picks }], done, late, playedOn }
+const DL = { date: null, view: 'home', review: null, loading: null, set: null };
+const dProgAll = () => store.get('uth.daily3', {});
+const dProg = k => dProgAll()[k] || null;
+function dSave(k, p) { const all = dProgAll(); all[k] = p; store.set('uth.daily3', all); }
+const dKey = (game, date) => `${game}|${date}`;
+const gradeOf = lost => lost < 1e-9 ? 'perfect' : lost < 0.25 ? 'leak' : 'costly';
+const GRADE_SQ = { perfect: '🟩', leak: '🟨', costly: '🟥' };
+const dollars = x => `$${Math.round(Math.abs(x) * 100) % 100 ? Math.abs(x).toFixed(2) : Math.round(Math.abs(x))}`;
+const dTotal = p => p.results.reduce((t, r) => t + r.lost, 0);
+function dGradeHand(h, picks, game) {
+  return picks.map(p => { const a = h.acts[p.st], best = dBest(a, p.st, game); return { ...p, acts: a, best, loss: Math.max(0, a[best] - a[p.k]), gain: dGap(a, p.st, game), tough: dGap(a, p.st, game) < dTough(p.st, game) }; });
+}
+async function dailyOpen(date) {
+  const game = S.game, k = dKey(game, date);
+  DL.date = date; DL.review = null; DL.set = null;
+  const p = dProg(k);
+  DL.view = p && !p.done ? 'play' : 'home';
+  renderDaily();
+  if (DL.view === 'play') await dailyLoad(game, date);
+}
+async function dailyLoad(game, date) {
+  DL.loading = { done: 0, total: DAILY_POOL[dailyInfo(game, date).kind] }; renderDaily();
+  const set = await dailySet(game, date, (done, total) => { if (DL.date === date && S.game === game) { DL.loading = { done, total }; renderDaily(); } });
+  if (DL.date !== date || S.game !== game) return;
+  DL.set = set; DL.loading = null; renderDaily();
+}
+async function dailyStart() {
+  const game = S.game, date = DL.date, k = dKey(game, date);
+  if (!dProg(k)) dSave(k, { i: 0, stage: 'preflop', picks: [], over: false, results: [], done: false, late: date !== todayYmd(), startedOn: todayYmd() });
+  DL.view = 'play'; await dailyLoad(game, date);
+}
+function dailyPick(a) {
+  const game = S.game, k = dKey(game, DL.date), p = dProg(k), set = DL.set;
+  if (!p || p.done || p.over || !set || !dActs(p.stage, game).includes(a)) return;
+  const h = set.hands[p.i];
+  p.picks.push({ st: p.stage, k: a });
+  if (endsHand(a, p.stage)) {
+    const rows = dGradeHand(h, p.picks, game), lostAntes = rows.reduce((t, r) => t + r.loss, 0), grade = gradeOf(lostAntes);
+    p.results.push({ lost: lostAntes * DAILY_STAKES[p.i], grade, picks: p.picks });
+    p.over = true; p.revealAt = Date.now(); dSave(k, p);
+    logDecisions(rows, { mode: 'daily', game, h, extra: { date: DL.date, stake: DAILY_STAKES[p.i] } });
+    FX.play(grade); FX.buzz(grade);
+  } else { p.dealFrom = boardAt(h, p.stage); p.stage = QSTREETS[QSTREETS.indexOf(p.stage) + 1]; p.dealtAt = Date.now(); dSave(k, p); }
+  renderDaily();
+}
+function dailyNext() {
+  const k = dKey(S.game, DL.date), p = dProg(k); if (!p || !p.over) return;
+  if (p.i >= 9) { p.done = true; p.playedOn = todayYmd(); DL.view = 'home'; dSave(k, p); renderDaily(); dailyCelebrate(p); return; }
+  p.i++; p.stage = 'preflop'; p.picks = []; p.over = false; p.dealtAt = 0; dSave(k, p); renderDaily();
+}
+function dailyCelebrate(p) {
+  const lost = dTotal(p), perfect = lost < 1e-9;
+  FX.play(perfect ? 'fan4' : 'fan2', 0.2);
+  if (perfect && !reduceMotion()) confetti(150, 4);
+}
+function shareLine(game, date, p) {
+  const lost = dTotal(p);
+  return `Hold'em Trainer — ${GAME_NAME[game]} daily, ${dayShort(date)}${p.late ? ' (played late)' : ''}\n`
+    + p.results.map(r => GRADE_SQ[r.grade]).join('') + '\n'
+    + (lost < 1e-9 ? 'Perfect — $0 given up 🏆' : `−${dollars(lost)} vs perfect play`) + `\n${PLAY_LINK}`;
+}
+async function dailyShare(text) {
+  try {
+    const sh = window.Capacitor?.isPluginAvailable?.('Share') ? window.Capacitor.Plugins.Share : null;
+    if (sh) { await sh.share({ text, dialogTitle: 'Share your score' }); return; }
+    if (navigator.share) { await navigator.share({ text }); return; }
+  } catch (e) { if (e?.name === 'AbortError' || /cancel/i.test(e?.message || '')) return; }
+  try { await navigator.clipboard.writeText(text); dToast('Copied — paste it anywhere'); } catch (_) { dToast('Couldn\'t share from here'); }
+}
+function dToast(msg) {
+  const t = document.createElement('div'); t.className = 'cele-toast'; t.textContent = msg;
+  document.body.appendChild(t); requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 1800);
+}
+function dHandRows(h, rows, stake) {
+  const m = x => dollars(x * stake);
+  return `<table class="qgrade"><thead><tr><th>Street</th><th>You</th><th>Best</th><th>vs other play</th><th></th></tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${QNAME[r.st]}${r.tough ? ' <span class="qtough">tough spot</span>' : ''}</td>
+      <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${ACT_LABEL[r.k]} ${r.loss < 1e-9 ? '✓' : '✗'}</td><td>${ACT_LABEL[r.best]}</td>
+      <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${r.loss < 1e-9 ? '+' + m(r.gain) : '−' + m(r.loss)}</td>
+      <td><button class="linkbtn" data-dan="${r.st}">Analyze</button></td></tr>`).join('')}
+    </tbody></table>`;
+}
+const VERDICT = { perfect: ['Perfect', 'ok'], leak: ['Small leak', 'no'], costly: ['Costly mistake', 'no'] };
+function renderDaily() {
+  const el = document.getElementById('dBody'); if (!el || mode !== 'daily') return;
+  const game = S.game, today = todayYmd();
+  if (!DL.date || DL.date > today || DL.date < dayAdd(today, -DAILY_BACK)) DL.date = today;
+  const date = DL.date, k = dKey(game, date), p = dProg(k), info = dailyInfo(game, date);
+  const story = `<div class="dstory">${info.story}</div>`;
+  let x = '';
+  if (DL.view === 'play' && p && !p.done) {
+    const st = DL.set;
+    x += `<div class="dtop"><div class="qhead">${dayShort(date)}<small>${GAME_NAME[game]} daily${p.late ? ' · playing late' : ''}</small></div>
+      <div class="dpips">${DAILY_STAKES.map((s, i) => `<span class="${p.results[i] ? p.results[i].grade : i === p.i ? 'now' : ''}" title="$${s}">${'$' + s}</span>`).join('')}</div></div>`;
+    if (!st) { x += `<div class="empty"><div class="big">Shuffling up…</div>${DL.loading ? `Getting today's hands ready (${DL.loading.done} of ${DL.loading.total})` : ''}</div>`; el.innerHTML = x; return; }
+    const h = st.hands[p.i], stake = DAILY_STAKES[p.i];
+    x += info.kind !== 'none' ? story : '';
+    x += `<div class="dhand"><span>Hand <b>${p.i + 1}</b> of 10</span><span class="dstake">$${stake} ante · $${stake} ${E.GAMES[game].spot2}</span></div>`;
+    x += handTableHTML(h, p.stage, { over: p.over,
+      dealFrom: p.over ? (Date.now() - (p.revealAt || 0) < 1500 ? boardAt(h, p.stage) : null) : (Date.now() - (p.dealtAt || 0) < 1500 ? p.dealFrom : null) });
+    x += `<div class="qpath">${p.picks.map(q => `<span>${QNAME[q.st]}: <b>${ACT_LABEL[q.k]}</b></span>`).join('')}</div>`;
+    if (!p.over) {
+      const acts = dActs(p.stage, game);
+      x += `<div class="qprompt">What's your play?</div>
+        <div class="qacts">${acts.map(a => `<button class="qact" data-da="${a}">${ACT_LABEL[a]}</button>`).join('')}</div>`;
+    } else {
+      const r = p.results[p.i], [word, tone] = VERDICT[r.grade];
+      x += `<div class="qprompt qverdict ${tone}"><b>${word}</b>${r.lost > 1e-9 ? `<span class="dlost">−${dollars(r.lost)}</span>` : ''}</div>
+        <div class="qacts"><button class="qact qnextbtn" id="dNext">${p.i >= 9 ? 'See results ▸' : 'Next hand ▸'}</button></div>
+        <div class="qres ${tone}">${dHandRows(h, dGradeHand(h, r.picks, game), stake)}</div>`;
+    }
+    el.innerHTML = x;
+    el.querySelectorAll('[data-da]').forEach(b => b.onclick = () => dailyPick(b.dataset.da));
+    el.querySelectorAll('[data-dan]').forEach(b => b.onclick = () => handToAnalyzer(h, b.dataset.dan, { daily: true }));
+    document.getElementById('dNext')?.addEventListener('click', dailyNext);
+    return;
+  }
+  // home: the week, then the selected day
+  x += `<div class="qhead">Daily challenge<small>${GAME_NAME[game]}</small></div>`;
+  x += `<div class="dweek">${Array.from({ length: DAILY_BACK + 1 }, (_, i) => dayAdd(today, i - DAILY_BACK)).map(d => {
+    const q = dProg(dKey(game, d)), lost = q?.done ? dTotal(q) : 0;
+    const tone = !q ? '' : !q.done ? 'going' : q.results.some(r => r.grade === 'costly') ? 'costly' : q.results.some(r => r.grade === 'leak') ? 'leak' : 'perfect';
+    const sc = !q ? (d === today ? 'Play' : '–') : !q.done ? `${q.results.length}/10` : lost < 1e-9 ? '★' : '−$' + Math.max(1, Math.round(lost));
+    return `<button class="dday ${tone} ${d === date ? 'sel' : ''} ${d === today ? 'today' : ''}" data-day="${d}">
+      <span class="dw">${dayFmt(d, { weekday: 'short' })}</span><span class="dn">${dayFmt(d, { day: 'numeric' })}</span><span class="ds">${sc}${q?.late ? '<i title="Played late">⏱</i>' : ''}</span></button>`;
+  }).join('')}</div>`;
+  x += `<div class="dcard"><div class="dtitle">${dayLong(date)}${date === today ? '' : `<span class="dlate">${p?.done ? (p.late ? 'played late' : '') : 'counts as played late'}</span>`}</div>${story}`;
+  if (!p) {
+    x += `<div class="dmeta">10 hands · antes rise from $5 to $100 · one try</div>
+      <div class="qacts"><button class="qact dgo" id="dStart">Deal me in ▸</button></div>`;
+  } else if (!p.done) {
+    x += `<div class="dmeta">Hand ${p.i + 1} of 10 · so far −${dollars(dTotal(p))}</div><div class="qacts"><button class="qact dgo" id="dResume">Continue ▸</button></div>`;
+  } else {
+    const lost = dTotal(p);
+    x += `<div class="dscore ${lost < 1e-9 ? 'perfect' : ''}">${lost < 1e-9 ? 'Perfect — $0 given up' : `−${dollars(lost)}<small> vs perfect play</small>`}</div>
+      <div class="dgrid">${p.results.map(r => GRADE_SQ[r.grade]).join('')}</div>
+      <div class="qacts"><button class="qact dgo" id="dShare">Share ▸</button></div>`;
+    if (DL.set && DL.review !== null) {
+      const i = DL.review, h = DL.set.hands[i], r = p.results[i];
+      x += `<div class="drev"><div class="dhand"><span>Hand <b>${i + 1}</b> · $${DAILY_STAKES[i]} ante</span><button class="linkbtn" id="dRevClose">back to all hands</button></div>
+        ${handTableHTML(h, r.picks[r.picks.length - 1].st, { over: true })}${dHandRows(h, dGradeHand(h, r.picks, game), DAILY_STAKES[i])}</div>`;
+    } else {
+      x += `<table class="dlist"><tbody>${p.results.map((r, i) => `<tr><td>${i + 1}</td><td>$${DAILY_STAKES[i]}</td><td>${GRADE_SQ[r.grade]} ${VERDICT[r.grade][0]}</td>
+        <td class="${r.lost > 1e-9 ? 'neg' : 'pos'}">${r.lost > 1e-9 ? '−' + dollars(r.lost) : '$0'}</td><td><button class="linkbtn" data-rev="${i}">review</button></td></tr>`).join('')}</tbody></table>`;
+    }
+  }
+  x += `</div><div class="note">Everyone gets the same hands on the same date. Fixed rules: ${game === 'uth' ? 'standard Blind pay table' : `Bad Beat table ${DAILY_OPTS.wpt.badBeat}`}; your table settings don't apply. Graded on expected value.</div>`;
+  el.innerHTML = x;
+  el.querySelectorAll('[data-day]').forEach(b => b.onclick = () => dailyOpen(b.dataset.day));
+  document.getElementById('dStart')?.addEventListener('click', dailyStart);
+  document.getElementById('dResume')?.addEventListener('click', dailyStart);
+  document.getElementById('dShare')?.addEventListener('click', () => dailyShare(shareLine(game, date, p)));
+  document.getElementById('dRevClose')?.addEventListener('click', () => { DL.review = null; renderDaily(); });
+  el.querySelectorAll('[data-dan]').forEach(b => b.onclick = () => handToAnalyzer(DL.set.hands[DL.review], b.dataset.dan, { daily: true }));
+  el.querySelectorAll('[data-rev]').forEach(b => b.onclick = async () => {
+    DL.review = +b.dataset.rev;
+    if (!DL.set) { DL.set = await dailySet(game, date); }
+    renderDaily();
+  });
+}
+document.addEventListener('keydown', e => {
+  if (mode !== 'daily' || e.target.matches('input:not([type=checkbox]), select, textarea')) return;
+  const p = DL.date && dProg(dKey(S.game, DL.date)); if (DL.view !== 'play' || !p || p.done || !DL.set) return;
+  if (!p.over) { const acts = dActs(p.stage, S.game); if (/^[1-9]$/.test(e.key) && acts[+e.key - 1]) { e.preventDefault(); dailyPick(acts[+e.key - 1]); } }
+  else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dailyNext(); }
+});
+
 // ── Streak celebrations ───────────────────────────────────────────────────
 // Milestones in perfect hands in a row; each tier is bigger: a toast, then a card, then confetti that
 // grows with the tier. Tiers 3+ stay up until tapped (or Enter/Esc), so the next hand isn't dealt by accident.
@@ -2700,9 +3097,13 @@ if (APP.native) { window.Capacitor?.Plugins?.SystemBars?.setStyle?.({ style: 'DA
 let mode = store.get('uth.mode', 'analyze');
 function setMode(m) {
   mode = m; store.set('uth.mode', m);
-  document.querySelectorAll('#modeSeg button').forEach(x => x.classList.toggle('on', x.dataset.m === m));
+  document.querySelectorAll('.navitem[data-m]').forEach(x => x.classList.toggle('on', x.dataset.m === m));
+  document.getElementById('pageName').textContent = { analyze: 'Analyze', quiz: 'Practice', daily: 'Daily challenge', guide: 'Guide' }[m];
+  openNav(false);
   document.body.classList.toggle('quiz-mode', m === 'quiz');
   document.body.classList.toggle('guide-mode', m === 'guide');
+  document.body.classList.toggle('daily-mode', m === 'daily');
+  if (m === 'daily') dailyOpen(DL.date || todayYmd());
   if (m === 'guide') { renderGuide(); if (DEMO.step === 0) demoPlay(true); } else clearTimeout(DEMO.timer);
   if (m === 'quiz') { if (!QZ.cur || QZ.cur.key !== quizKey()) { QZ.next = null; quizNew(); } else renderQuiz(); }
 }
@@ -2727,6 +3128,7 @@ function setGame(g) {
   document.querySelectorAll('#gameSeg button').forEach(x => x.classList.toggle('on', x.dataset.g === g));
   renderOpts(); onRulesChanged();
   if (mode === 'quiz' && (!QZ.cur?.picks.length || QZ.cur?.done)) { QZ.next = null; quizNew(); }
+  if (mode === 'daily') dailyOpen(DL.date || todayYmd());
 }
 function setStreet(s, quiet) {
   S.street = s; saveSettings();
@@ -2766,12 +3168,25 @@ function openSheet(open) { document.getElementById('pane').classList.toggle('ope
 document.querySelectorAll('#gameSeg button').forEach(b => b.onclick = () => setGame(b.dataset.g));
 document.querySelectorAll('#streetSeg button').forEach(b => b.onclick = () => setStreet(b.dataset.s));
 document.querySelectorAll('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.t));
-document.querySelectorAll('#modeSeg button').forEach(b => b.onclick = () => setMode(b.dataset.m));
-const openSettings = open => { document.body.classList.toggle('set-open', open); if (open) renderEdgeCard(); };
-document.getElementById('setBtn').onclick = () => openSettings(true);
-document.getElementById('setClose').onclick = () => openSettings(false);
-document.getElementById('setBg').onclick = () => openSettings(false);
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('set-open')) openSettings(false); });
+document.querySelectorAll('.navitem[data-m]').forEach(b => b.onclick = () => setMode(b.dataset.m));
+// page menu
+const LEAK_HANDS = 100; // the leak finder unlocks once this many practice/daily hands are on record
+function openNav(on) {
+  document.body.classList.toggle('nav-open', on);
+  document.getElementById('navBtn').setAttribute('aria-expanded', on);
+  if (on) { const n = store.get('uth.handsLogged', 0); document.getElementById('leakProg').textContent = `${Math.min(n, LEAK_HANDS)} of ${LEAK_HANDS} hands so far`; }
+}
+document.getElementById('navBtn').onclick = () => openNav(true);
+document.getElementById('navClose').onclick = () => openNav(false);
+document.getElementById('navBg').onclick = () => openNav(false);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('nav-open')) openNav(false); });
+const openSettings = open => { document.body.classList.toggle('set-open', open); if (open) { renderEdgeCard(); renderHistInfo(); renderQuizBests(); } };
+// Settings opens from the menu and slides in over it: "‹ Menu" goes back, ✕ / the backdrop close both.
+document.getElementById('navSettings').onclick = () => openSettings(true);
+document.getElementById('setBack').onclick = () => openSettings(false);
+document.getElementById('setClose').onclick = () => { openSettings(false); openNav(false); };
+document.getElementById('setBg').onclick = () => { openSettings(false); openNav(false); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('set-open')) { e.stopImmediatePropagation(); openSettings(false); } }, true);
 document.getElementById('mbar').onclick = () => openSheet(true);
 document.getElementById('sheetClose').onclick = () => openSheet(false);
 document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.board = [null, null, null, null, null]; S.dealer = [null]; S.dead = []; S.active = 'hole'; render(); onCardsChanged(); };
@@ -2787,6 +3202,8 @@ document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.b
   if (mode === 'guide') renderGuide();
   CH = null; buildChart();
   setMode(mode);
+  // get today's daily hands ready in the background (lowest priority), so the Daily tab opens instantly
+  setTimeout(() => { if (!store.get('uth.dset.' + dKey(S.game, todayYmd()), null)) dailySet(S.game, todayYmd(), null, -1).catch(() => {}); }, 4000);
 })();
 </script>
 <canvas id="confetti" width="0" height="0"></canvas>
