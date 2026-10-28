@@ -50,7 +50,8 @@
   .navitem small { display: block; font-size: 12.5px; color: var(--faint); margin-top: 2px; }
   .navitem:hover:not(.locked) { background: rgba(255,255,255,.04); }
   .navitem.on { background: rgba(230,192,106,.12); border-color: var(--gold-dim); } .navitem.on svg { color: var(--gold); }
-  .navitem.locked { cursor: default; opacity: .7; } .navitem.locked b { color: var(--dim); }
+  .navitem.locked { opacity: .7; } .navitem.locked b { color: var(--dim); }
+  .navicon { display: grid; place-items: center; flex: none; } .navitem.on .navicon svg { color: var(--gold); }
   .navitem .navprog { color: var(--gold); }
   .navsep { height: 1px; background: var(--line); margin: 8px 6px; }
   h1 { font-family: var(--serif); font-weight: 800; font-size: 32px; letter-spacing: -0.01em; line-height: 1; }
@@ -215,7 +216,7 @@
   #adsOpt .ptdesc { margin-bottom: 8px; } #adsOpt button.buy { background: var(--gold); color: #1c1606; border: 0; border-radius: 9px; padding: 9px 14px; font: 700 14px var(--sans); cursor: pointer; }
   /* Game badges: plain flag-stripe and chip shapes with the name in plain type (deliberately not the games' logos) */
   #gameSeg button { padding: 4px 6px; display: grid; place-items: center; }
-  #gameSeg .gbadge { width: 112px; height: 30px; display: block; opacity: .55; transition: opacity .15s, transform .15s; }
+  #gameSeg .gbadge { width: 134px; height: auto; aspect-ratio: 112 / 30; display: block; opacity: .55; transition: opacity .15s, transform .15s; }
   #gameSeg button.on { background: rgba(230,192,106,.18); box-shadow: inset 0 0 0 2px var(--gold); }
   #gameSeg button.on .gbadge, #gameSeg button:hover .gbadge { opacity: 1; }
   .drawer-bg { position: fixed; inset: 0; background: rgba(3,10,7,.55); z-index: 80; opacity: 0; pointer-events: none; transition: opacity .2s; }
@@ -256,7 +257,38 @@
   .mbar { display: none; }
 
   /* Quiz */
-  .quiz, .daily { display: none; }
+  .quiz, .daily, .leaks { display: none; }
+  body.leaks-mode .leaks { display: block; }
+  body.leaks-mode .layout, body.leaks-mode .mbar { display: none !important; }
+  .ltiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0 6px; }
+  .ltiles div { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: rgba(0,0,0,.12); }
+  .ltiles b { display: block; font: 700 24px var(--sans); color: var(--ink); } .ltiles span { font-size: 12.5px; color: var(--faint); }
+  .lh { font: 700 17px var(--serif); margin: 20px 0 8px; }
+  table.ltab { width: 100%; border-collapse: collapse; } table.ltab td, table.ltab th { padding: 7px 6px; border-top: 1px solid var(--line); font: 14px var(--sans); text-align: left; }
+  table.ltab th { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .05em; border-top: 0; }
+  table.ltab small { color: var(--faint); font-size: 12px; } table.ltab tr.worst td { background: rgba(255,122,110,.07); }
+  .lbar { display: inline-block; width: 60px; height: 6px; border-radius: 3px; background: var(--line); margin-right: 8px; vertical-align: middle; overflow: hidden; } .lbar i { display: block; height: 100%; background: var(--bad); }
+  .lcards { font-weight: 700; white-space: nowrap; } .lcards small { display: block; font-weight: 400; } .lbest { display: block; }
+  .ledge { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin: 14px 0 4px; background: rgba(0,0,0,.12); }
+  .ledge .k { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+  .erow { display: grid; grid-template-columns: 96px 1fr 70px; align-items: center; gap: 10px; margin: 6px 0; font-size: 14px; } .erow b { text-align: right; font: 700 16px var(--sans); }
+  .ebar { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; } .ebar i { display: block; height: 100%; background: var(--good); } .ebar.bad i { background: var(--bad); }
+  .lhrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; } .lhrow .lfix { padding: 9px 14px; font-size: 14px; }
+  .lcard { border: 1px solid var(--line); border-left: 3px solid var(--bad); border-radius: 10px; padding: 12px 14px; margin: 10px 0; background: rgba(255,122,110,.04); }
+  .lctop { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; } .lctop b { font: 700 17px var(--sans); }
+  .lst { font: 700 10.5px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
+  .ltip { color: var(--dim); font-size: 14px; margin: 4px 0 6px; } .lmeta { font-size: 14px; } .lmeta b { color: var(--ink); }
+  .lex { margin: 8px 0 10px; font-size: 13.5px; } .lex > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 5px 0; border-top: 1px solid var(--line); }
+  .lex small { color: var(--faint); } .lex .lpick { margin-left: auto; color: var(--dim); white-space: nowrap; }
+  .qact.ldrill { padding: 10px 16px; font-size: 15px; }
+  .lclean { color: var(--good); padding: 10px 0; }
+  .lfixed { display: flex; flex-wrap: wrap; gap: 8px; } .lfixed span { font-size: 13px; padding: 4px 10px; border-radius: 99px; border: 1px solid rgba(87,214,141,.4); color: var(--good); }
+  @media (max-width: 520px) { .erow { grid-template-columns: 80px 1fr 62px; } }
+  .unlock-ic svg { width: 54px; height: 54px; fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-linecap: round; }
+  .unlock-btns { display: flex; gap: 14px; justify-content: center; align-items: center; margin-top: 16px; } .unlock-btns .qact { padding: 12px 18px; font-size: 16px; }
+  .cele.unlock { cursor: default; }
+  .unlock-ic.spot svg { stroke: var(--bad); }
+  @media (max-width: 520px) { .ltiles { gap: 6px; } .ltiles div { padding: 10px; } .ltiles b { font-size: 19px; } table.ltab td, table.ltab th { padding: 6px 3px; font-size: 12.5px; } .lbar { width: 30px; margin-right: 4px; } .lhide, .lper { display: none; } }
   body.daily-mode .daily { display: block; }
   body.daily-mode .layout, body.daily-mode .mbar { display: none !important; }
   /* Daily challenge */
@@ -383,12 +415,23 @@
   .qscore .clear { margin-left: 4px; }
   .qhead { font-family: var(--serif); font-size: 22px; font-weight: 600; }
   .qhead small { font-family: 'IBM Plex Sans'; font-size: 14px; color: var(--faint); font-weight: 400; margin-left: 8px; }
+  @media (max-width: 860px) { .qhead small.qextra { display: block; margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } } /* phones: always one line, so nothing below moves */
   .qtable { display: flex; flex-wrap: wrap; gap: 14px 26px; margin: 16px 0 6px; }
   .qgroup .k { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
   .qgroup .cards { display: flex; gap: 6px; align-items: center; }
   .qgroup .pc { cursor: default; width: 46px; height: 64px; font-size: 20px; }
   .qgroup .pc .x { display: none !important; }
-  .qgroup.qothers { flex-basis: 100%; } /* other players' hands always get their own line */
+  /* two rows (see handTableHTML): board on top; your hand / dealer / other players below at a fixed height */
+  .qtable { flex-direction: column; flex-wrap: nowrap; gap: 12px; }
+  .qrow2 { display: flex; gap: 22px; min-height: 89px; align-items: flex-start; container-type: inline-size; }
+  .qrow2 .qgroup { min-width: 0; flex: 0 1 auto; } .qrow2 .qgroup.qdealer { min-width: 50px; } /* room for its label */
+  .qrow2 .k { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .qtable .qrow2 .pc { flex: 0 1 46px; min-width: 0; height: auto; aspect-ratio: 46 / 64; font-size: clamp(12px, 3.4cqw, 20px); }
+  .qrow2 .slotcards .gap { width: 4px; }
+  .qtable .qrow2 .qgroup:first-child { flex-shrink: 0; margin-right: 18px; } @media (max-width: 860px) { .qtable .qrow2 .qgroup:first-child { margin-right: 10px; } } @media (max-width: 400px) { .qtable .qrow2 .qgroup:first-child { margin-right: 8px; } } /* a little extra room after your own hand */
+  .qtable .qrow2 .qgroup:first-child .pc { flex-shrink: 0; } /* your own hand never shrinks */
+  @media (max-width: 400px) { .qrow2 { gap: 10px !important; } .qtable .qrow2 .cards { gap: 3px; } }
+  @media (max-width: 860px) { .qrow2 { gap: 14px; min-height: 79px; } .qtable .qrow2 .pc { flex-basis: 40px; height: auto; font-size: clamp(11px, 5.4cqw, 18px); } .qrow2 .cards { gap: 4px; } }
   .qgroup .pc.deal { animation: dealin .38s cubic-bezier(.2,.9,.3,1.2) both; }
   @keyframes dealin { from { transform: translateY(-14px) rotateY(80deg); opacity: 0; } to { transform: none; opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .qgroup .pc.deal { animation: none; } }
@@ -461,8 +504,8 @@
   .qnext button { padding: 10px 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-2); color: var(--ink); font-weight: 600; font-size: 15px; cursor: pointer; }
   .qnext button.primary { background: var(--gold); color: #1c1606; border-color: var(--gold); }
 
-  @media (max-width: 380px) { header h1 { font-size: 17px !important; } header { gap: 5px !important; } .burger { width: 32px !important; height: 32px !important; } #gameSeg .gbadge { width: 62px !important; height: 18px !important; } }
-  @media (max-width: 340px) { header h1 { font-size: 13.5px !important; } #gameSeg .gbadge { width: 48px !important; height: 14px !important; } .burger { width: 30px !important; height: 30px !important; } .wrap { padding-left: 8px !important; padding-right: 8px !important; } }
+  @media (max-width: 380px) { header h1 { font-size: 17px !important; } header { gap: 5px !important; } .burger { width: 32px !important; height: 32px !important; } #gameSeg .gbadge { width: clamp(58px, calc((100vw - 232px) / 2), 74px) !important; } }
+  @media (max-width: 340px) { header h1 { font-size: 13.5px !important; } #gameSeg .gbadge { width: 48px !important; } .burger { width: 30px !important; height: 30px !important; } .wrap { padding-left: 8px !important; padding-right: 8px !important; } }
   /* ── Mobile: one column; results become a bottom sheet ── */
   @media (max-width: 860px) {
     .wrap { padding: 16px 12px 96px; }
@@ -470,7 +513,7 @@
     header { margin-bottom: 12px; display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; }
     .burger { width: 36px; height: 36px; } .pagename { font-size: 10px; margin-top: 3px; }
     header h1 { font-size: 20px; }
-    #gameSeg { justify-self: end; gap: 1px; } #gameSeg .gbadge { width: 72px; height: 20px; } #gameSeg button { padding: 3px; }
+    #gameSeg { justify-self: end; gap: 1px; } #gameSeg .gbadge { width: clamp(72px, calc((100vw - 262px) / 2), 100px); } #gameSeg button { padding: 3px; }
     header { gap: 10px 6px; }
     header h1 { white-space: nowrap; }
     .layout { grid-template-columns: 1fr; }
@@ -562,6 +605,7 @@
 
   <section class="panel guide" id="guide"></section>
   <section class="panel daily" id="daily"><div id="dBody"></div></section>
+  <section class="panel leaks" id="leaks"><div id="lBody"></div></section>
 
   <section class="panel quiz" id="quiz">
     <div class="qbar">
@@ -577,7 +621,7 @@
 
 
   <footer>
-    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-28 12:58</span>
+    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-28 15:10</span>
     <span class="disclaim">Strategy trainer only — no real-money play. Not affiliated with or endorsed by Light &amp; Wonder or the World Poker Tour.</span>
   </footer>
 </div>
@@ -585,13 +629,13 @@
 <div class="drawer-bg" id="navBg"></div>
 <nav class="navdrawer" id="navDrawer" aria-label="Pages">
   <div class="navtop"><span class="navtitle">Hold'em <span>Trainer</span></span><button class="clear" id="navClose" aria-label="Close menu">✕</button></div>
-  <button class="navitem" data-m="analyze"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/></svg><span><b>Analyze</b><small>Solve any hand, see the range chart</small></span></button>
-  <button class="navitem" data-m="quiz"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 12.5l2.8 2.8L16.5 9"/></svg><span><b>Practice</b><small>Play hands and get graded</small></span></button>
   <button class="navitem" data-m="daily"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span><b>Daily challenge</b><small>Ten hands a day, scored in dollars</small></span></button>
-  <button class="navitem" data-m="guide"><svg viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></svg><span><b>Guide</b><small>Rules, bets and simple strategy</small></span></button>
+  <button class="navitem" data-m="quiz"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 12.5l2.8 2.8L16.5 9"/></svg><span><b>Practice</b><small>Play hands and get graded</small></span></button>
+  <button class="navitem" id="navLeaks" data-m="leaks"><span class="navicon" id="leakIcon"></span><span><b>Leak finder</b><small id="leakSub"></small><small class="navprog" id="leakProg"></small></span></button>
+  <button class="navitem" data-m="analyze"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/></svg><span><b>Analyze</b><small>Solve any hand, see the range chart</small></span></button>
   <div class="navsep"></div>
-  <button class="navitem" id="navSettings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/></svg><span><b>Settings</b><small>Pay tables, what you can see, sound</small></span></button>
-  <div class="navitem locked" aria-disabled="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg><span><b>Leak finder</b><small>Play more hands to build a data set</small><small class="navprog" id="leakProg"></small></span></div>
+  <button class="navitem" data-m="guide"><svg viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></svg><span><b>How to Play</b><small>Rules, bets and simple strategy</small></span></button>
+  <button class="navitem" id="navSettings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span><b>Settings</b><small>Pay tables, what you can see, sound</small></span></button>
 </nav>
 <div class="drawer-bg" id="setBg"></div>
 <aside class="drawer" id="setDrawer" aria-label="Settings">
@@ -1232,12 +1276,14 @@ const LOG = (() => {
 })();
 function logDecisions(rows, { mode, game, h, extra = {} }) {
   const t = Date.now(), r4 = x => Math.round(x * 1e4) / 1e4;
-  store.set('uth.handsLogged', store.get('uth.handsLogged', 0) + 1);
-  LOG.add(rows.map(r => {
+  const was = store.get('uth.handsLogged', 0);
+  store.set('uth.handsLogged', was + 1);
+  if (was < LEAK_HANDS && was + 1 >= LEAK_HANDS) setTimeout(showLeakUnlock, 2200); // after the hand's own verdict and any streak card
+  return LOG.add(rows.map(r => {
     const sp = nodeSpec(h, r.st);
     return { t, mode, game, street: r.st, cls: handClass(h.hole), hole: sp.hole, board: sp.board, dealer: sp.dealer, dead: sp.dead,
       pick: r.k, best: r.best, ev: Object.fromEntries(Object.entries(r.acts).map(([k, v]) => [k, r4(v)])), loss: r4(r.loss), gap: r4(r.gain), tough: r.tough, ...extra };
-  }));
+  })).then(() => updateLeaks()); // may celebrate a fixed leak
 }
 
 // a light tick on every tap of a button, card or option
@@ -2398,14 +2444,7 @@ function quizToAnalyzer(st) { handToAnalyzer(QZ.cur.h, st); }
 // Open a quiz/daily hand in Analyze at a street. Turns on the "I can see" settings the hand needs
 // (otherwise Analyze would ignore the dealer / flop / other players' cards).
 function handToAnalyzer(h, st, { daily = false } = {}) {
-  const sp = nodeSpec(h, st);
-  const need = { peekDealer: sp.dealer.length > 0, peekFlop: st === 'preflop' && sp.board.length > 0, seeOthers: sp.dead.length > 0 };
-  let changed = false;
-  for (const [k, on] of Object.entries(need)) if (on && !S[k]) { S[k] = true; changed = true; }
-  if (changed) { saveSettings(); renderOpts(); renderSetSum(); }
-  S.hole = sp.hole.slice(); S.board = [...sp.board, null, null, null, null, null].slice(0, 5); S.dealer = [sp.dealer[0] ?? null]; S.dead = sp.dead.slice();
-  S.active = 'board'; setMode('analyze'); setStreet(st); setTab('hand');
-  if (isMobile()) openSheet(true); // phones: go straight to the results, not the card picker
+  specToAnalyzer(nodeSpec(h, st), st); // phones go straight to the results, not the card picker
   if (daily && S.game === 'wpt' && S.tables.badBeat !== DAILY_OPTS.wpt.badBeat) dToast(`Analyze uses your Bad Beat table (${S.tables.badBeat}); the daily uses ${DAILY_OPTS.wpt.badBeat}`);
 }
 function renderQuizBests() {
@@ -2431,16 +2470,22 @@ function gradeWord(lost) {
 const boardAt = (h, st) => st === 'preflop' ? (h.peekF ? 1 : 0) : st === 'flop' ? 3 : 5;
 // `dealFrom`: board cards from this position on were just revealed (a new street, or the run-out at the
 // end of the hand) and slide in one after another.
+// Two rows, always: the board on top; your hand, the dealer's card and other players' hands below. The
+// bottom row has a fixed height and its cards shrink when it gets crowded (10 cards on a phone), so the
+// buttons underneath never move from hand to hand.
 function handTableHTML(h, st, { over = false, dealFrom = null, cls = '' } = {}) {
   const nBoard = over ? 5 : boardAt(h, st);
   const pc = (c, anim) => anim === null ? cardHTML(c) : cardHTML(c, `style="animation-delay:${anim * 0.18}s"`).replace('class="pc ', 'class="pc deal ');
   const pcs = arr => arr.map(c => c === 'h' ? '<div class="pc hidden"></div>' : cardHTML(c)).join('');
   const bd = idx => idx.map(i => i >= nBoard ? '<div class="pc hidden"></div>' : pc(h.board[i], dealFrom !== null && i >= dealFrom ? i - dealFrom : null)).join('');
+  const pair = '<span class="slotcards"><span class="gap"></span></span>';
   return `<div class="qtable ${cls}">
-      <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs([...h.hole].sort((x, y) => y - x))}</div></div>
-      <div class="qgroup"><div class="k">Board</div><div class="cards">${bd([0, 1, 2])}<span class="slotcards"><span class="gap"></span></span>${bd([3, 4])}</div></div>
-      ${h.dealer.length ? `<div class="qgroup"><div class="k">Dealer shows</div><div class="cards">${pcs([h.dealer[0], 'h'])}</div></div>` : ''}
-      ${h.dead.length ? `<div class="qgroup qothers"><div class="k">Other players' cards</div><div class="cards">${[0, 2, 4].filter(i => i < h.dead.length).map(i => pcs(h.dead.slice(i, i + 2).sort((x, y) => y - x))).join('<span class="slotcards"><span class="gap"></span></span>')}</div></div>` : ''}
+      <div class="qgroup qboard"><div class="k">Board</div><div class="cards">${bd([0, 1, 2])}${pair}${bd([3, 4])}</div></div>
+      <div class="qrow2">
+        <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs([...h.hole].sort((x, y) => y - x))}</div></div>
+        ${h.dealer.length ? `<div class="qgroup qdealer"><div class="k">Dealer</div><div class="cards">${pcs([h.dealer[0], 'h'])}</div></div>` : ''}
+        ${h.dead.length ? `<div class="qgroup qothers"><div class="k">Other players</div><div class="cards">${[0, 2, 4].filter(i => i < h.dead.length).map(i => pcs(h.dead.slice(i, i + 2).sort((x, y) => y - x))).join(pair)}</div></div>` : ''}
+      </div>
     </div>`;
 }
 function renderQuiz() {
@@ -2451,8 +2496,8 @@ function renderQuiz() {
   document.getElementById('qNote').textContent = `EV per ${units() ? '$' + S.ante + ' ante' : '1-unit ante'}, including the ${E.GAMES[S.game].spot2} bet. Each decision is graded against the best play at that point, assuming perfect play afterwards.`;
   if (!q) { el.innerHTML = `<div class="empty"><div class="big">Dealing…</div>${QZ.tough ? 'Looking for a hand with a tough spot — this can take a few seconds.' : ''}</div>`; return; }
   const h = q.h, over = q.done && !q.suspense;
-  const extra = [h.peekF && 'you saw a flop card', h.dealer.length && 'you saw a dealer card', h.dead.length && `${h.dead.length / 2 === 1 ? 'a player showed you their hand' : `${h.dead.length / 2} players showed you their hands`}`].filter(Boolean);
-  let x = `<div class="qhead">${over ? 'Hand over' : QNAME[q.stage]}${extra.length ? `<small>${extra.join(' · ')}</small>` : ''}</div>`
+  const extra = [h.peekF && 'saw a flop card', h.dealer.length && 'saw a dealer card', h.dead.length && (h.dead.length === 2 ? '1 hand shown' : `${h.dead.length / 2} hands shown`)].filter(Boolean);
+  let x = `<div class="qhead">${over ? 'Hand over' : QNAME[q.stage]}<small class="qextra">${extra.join(' · ') || '&nbsp;'}</small></div>`
     + handTableHTML(h, q.stage, { over, cls: q.suspense ? 'sus' : '',
       dealFrom: over ? (q.revealAt && performance.now() - q.revealAt < 1500 ? boardAt(h, q.stage) : null) : (q.dealtAt && performance.now() - q.dealtAt < 1500 ? q.dealFrom : null) });
   // The path line and the prompt line are always there, so the buttons (and then Next hand) stay put.
@@ -2650,7 +2695,7 @@ function dailyPick(a) {
 }
 function dailyNext() {
   const k = dKey(S.game, DL.date), p = dProg(k); if (!p || !p.over) return;
-  if (p.i >= 9) { p.done = true; p.playedOn = todayYmd(); DL.view = 'home'; dSave(k, p); renderDaily(); dailyCelebrate(p); return; }
+  if (p.i >= 9) { p.done = true; p.playedOn = todayYmd(); DL.view = 'home'; dSave(k, p); renderDaily(); dailyCelebrate(p); leakNewsSoon(3500); return; }
   p.i++; p.stage = 'preflop'; p.picks = []; p.over = false; p.dealtAt = 0; dSave(k, p); renderDaily();
 }
 function dailyCelebrate(p) {
@@ -2769,6 +2814,425 @@ document.addEventListener('keydown', e => {
   const p = DL.date && dProg(dKey(S.game, DL.date)); if (DL.view !== 'play' || !p || p.done || !DL.set) return;
   if (!p.over) { const acts = dActs(p.stage, S.game); if (/^[1-9]$/.test(e.key) && acts[+e.key - 1]) { e.preventDefault(); dailyPick(acts[+e.key - 1]); } }
   else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dailyNext(); }
+});
+
+// ── Leak finder ───────────────────────────────────────────────────────────
+// Unlocks after LEAK_HANDS hands of Practice/Daily are on record (the decision log). First version: for the
+// selected game, the totals, where the EV goes by street, and the costliest single decisions.
+function showLeakUnlock() {
+  document.querySelector('.cele')?.remove();
+  const el = document.createElement('div'); el.className = 'cele t3 unlock'; el.setAttribute('role', 'dialog');
+  el.innerHTML = `<div class="cele-card"><div class="unlock-ic">${ICON_LEAK}</div><div class="cele-title">Leak finder unlocked</div>
+    <div class="cele-sub">${LEAK_HANDS} hands on record — enough to start showing where your EV goes.</div>
+    <div class="unlock-btns"><button class="qact dgo" id="unlockGo">Open leak finder</button><button class="linkbtn" id="unlockLater">Later</button></div></div>`;
+  document.body.appendChild(el); requestAnimationFrame(() => el.classList.add('show'));
+  const close = () => { if (!el.isConnected) return; el.classList.remove('show'); setTimeout(() => el.remove(), 250); };
+  el.close = close;
+  el.onclick = e => { if (e.target === el) close(); };
+  el.querySelector('#unlockGo').onclick = () => { close(); setMode('leaks'); };
+  el.querySelector('#unlockLater').onclick = close;
+  FX.play('fan3'); FX.buzz('streak');
+}
+function specToAnalyzer(sp, st) {
+  const need = { peekDealer: sp.dealer.length > 0, peekFlop: st === 'preflop' && sp.board.length > 0, seeOthers: sp.dead.length > 0 };
+  let changed = false;
+  for (const [k, on] of Object.entries(need)) if (on && !S[k]) { S[k] = true; changed = true; }
+  if (changed) { saveSettings(); renderOpts(); renderSetSum(); }
+  S.hole = sp.hole.slice(); S.board = [...sp.board, null, null, null, null, null].slice(0, 5); S.dealer = [sp.dealer[0] ?? null]; S.dead = sp.dead.slice();
+  S.active = 'board'; setMode('analyze'); setStreet(st); setTab('hand');
+  if (isMobile()) openSheet(true);
+}
+let LEAK_RECS = [];
+// ── Leak categories ───────────────────────────────────────────────────────
+// Each category is a type of spot (situation) and the mistake made in it. A category is a leak when, over
+// your last LEAK_WINDOW spots of that type (at least LEAK_MIN), you get it wrong more than 10% of the time;
+// it's fixed once that drops to 5% or less. Rates are per game. Drills deal close spots of the same type
+// that fall both ways.
+const LEAK_WINDOW = 100, LEAK_MIN = 5, LEAK_OPEN = 0.10, LEAK_FIXED = 0.05;
+const rk = c => c >> 2, sut = c => c & 3;
+const catOf = cards => E.pcatOf(E.eval7(cards));
+const isBet = k => /^bet/.test(k);
+// one pair made with a hole card (not a board pair): which rank, and the other hole card as kicker
+function hiddenPair(hole, board) {
+  const br = board.map(rk);
+  if (rk(hole[0]) === rk(hole[1])) return { pocket: true, r: rk(hole[0]), kick: null };
+  const m = hole.find(c => br.includes(rk(c))); if (m === undefined) return null;
+  return { pocket: false, r: rk(m), kick: rk(hole.find(c => c !== m)) };
+}
+// "weak": an underpair, bottom pair, or a pair whose kicker is 9 or lower
+function weakPair(hole, board) {
+  const hp = hiddenPair(hole, board); if (!hp || catOf([...hole, ...board]) !== 1) return false;
+  const br = board.map(rk), lo = Math.min(...br);
+  if (hp.pocket) return hp.r < Math.max(...br);
+  return hp.r === lo || hp.kick <= 7; // rank 7 = a 9
+}
+const pairedBoard = board => new Set(board.map(rk)).size < board.length;
+function hasDraw(hole, board) {
+  const all = [...hole, ...board];
+  for (let s = 0; s < 4; s++) if (all.filter(c => sut(c) === s).length >= 4 && hole.some(c => sut(c) === s)) return true;
+  const rs = new Set(all.map(rk)), hr = new Set(hole.map(rk));
+  for (let lo = 1; lo <= 8; lo++) { // four in a row, open at both ends
+    const w = [lo, lo + 1, lo + 2, lo + 3];
+    if (w.every(r => rs.has(r)) && w.some(r => hr.has(r))) return true;
+  }
+  return false;
+}
+function wetBoard(board) {
+  for (let s = 0; s < 4; s++) if (board.filter(c => sut(c) === s).length >= 3) return true;
+  const rs = new Set(board.map(rk)); if (rs.has(12)) rs.add(-1);
+  for (let lo = -1; lo <= 8; lo++) { let n = 0; for (let r = lo; r < lo + 5; r++) if (rs.has(r)) n++; if (n >= 3) return true; }
+  return false;
+}
+const TIE_CACHE = new Map();
+function tieShare(r) { // river: share of dealer hands that tie you
+  const k = [r.hole, r.board, r.dead].join('|'); if (TIE_CACHE.has(k)) return TIE_CACHE.get(k);
+  const R = riverGroups({ hole: r.hole, board: r.board, dealer: [], dead: r.dead || [] }), v = R.G.tie.n / R.N;
+  TIE_CACHE.set(k, v); return v;
+}
+// extra information: which kinds a spot had
+const infoKinds = r => [r.dealer?.length && 'dealer', r.street === 'preflop' && r.board.length === 1 && 'flop', r.dead?.length && 'seen'].filter(Boolean);
+const LEAK_CATS = [
+  { id: 'preTight', st: 'preflop', name: 'Checking too tight', tip: 'Hands that should raise but you checked.', family: 'pre',
+    spot: r => isBet(r.best), err: r => r.pick === 'check' },
+  { id: 'preLoose', st: 'preflop', name: 'Raising too loose', tip: 'Hands that should check but you raised.', family: 'pre',
+    spot: r => r.best === 'check', err: r => isBet(r.pick) },
+  { id: 'flopPair', st: 'flop', name: 'Not betting pair or better', tip: 'You had a pair using a hole card (or better) and betting was right.', family: 'flopPair',
+    spot: r => !!hiddenPair(r.hole, r.board) && !weakPair(r.hole, r.board) && isBet(r.best), err: r => r.pick === 'check' },
+  { id: 'flopWeak', st: 'flop', name: 'Betting weak pairs', tip: 'Underpairs, bottom pairs and pairs with a weak kicker (9 or lower) where checking was right.', family: 'flopWeak',
+    spot: r => weakPair(r.hole, r.board) && r.best === 'check', err: r => isBet(r.pick) },
+  { id: 'flopPaired', st: 'flop', name: 'Paired boards', tip: 'Bets and checks on a paired flop.', family: 'flopPaired',
+    spot: r => pairedBoard(r.board), err: r => r.pick !== r.best },
+  { id: 'flopDraw', st: 'flop', name: 'Playing draws', tip: 'Four to a flush or an open-ended straight draw, with no pair.', family: 'flopDraw',
+    spot: r => hasDraw(r.hole, r.board) && !hiddenPair(r.hole, r.board), err: r => r.pick !== r.best },
+  { id: 'rivLoose', st: 'river', name: 'Betting too loose', tip: 'Hands that should fold but you bet 1x.', family: 'river',
+    spot: r => r.best === 'fold', err: r => isBet(r.pick) },
+  { id: 'rivTight', st: 'river', name: 'Folding too tight', tip: 'Hands that should bet 1x but you folded.', family: 'river',
+    spot: r => isBet(r.best), err: r => r.pick === 'fold' },
+  { id: 'rivPush', st: 'river', name: 'Folding hands that often push', tip: 'At least a fifth of the dealer\'s hands tie you, and every tie gets your ante and bet back.', family: 'riverPush',
+    spot: r => isBet(r.best) && tieShare(r) >= 0.2, err: r => r.pick === 'fold' },
+  { id: 'rivWet', st: 'river', name: 'Betting weak pairs on wet boards', tip: 'One pair on a board with a possible flush or straight, where folding was right.', family: 'riverWet',
+    spot: r => r.best === 'fold' && catOf([...r.hole, ...r.board]) === 1 && !!hiddenPair(r.hole, r.board) && wetBoard(r.board), err: r => isBet(r.pick) },
+  { id: 'bbFold', st: 'river', game: 'wpt', name: 'Folding a straight or better', tip: 'With a straight or better you win, or the Bad Beat bonus pays when you lose. Never fold it.', family: null, always: true,
+    spot: r => catOf([...r.hole, ...r.board]) >= 4, err: r => r.pick === 'fold' },
+  ...[['dealer', 'peekDealer', 'Ignoring the dealer\'s card'], ['flop', 'peekFlop', 'Ignoring the flop card you saw'], ['seen', 'seeOthers', 'Ignoring other players\' cards']].map(([kind, setting, name]) => ({
+    id: 'info-' + kind, kind, setting, st: null, name, tip: 'Spots where that card changed the best play, but you made the play that\'s right without it.', family: 'info-' + kind,
+    spot: r => infoKinds(r).includes(kind) && NOINFO.get(noInfoKey(r)) !== undefined && NOINFO.get(noInfoKey(r)) !== r.best,
+    err: r => r.pick === NOINFO.get(noInfoKey(r)) })),
+];
+// best play with no extra information, for the "ignoring the …" categories (worked out in the background)
+const NOINFO = new Map(Object.entries(store.get('uth.noinfo', {})));
+const noInfoKey = r => [r.game, r.street, r.hole, r.street === 'preflop' ? '' : r.board].join('|');
+let noInfoBusy = false;
+async function fillNoInfo(recs) {
+  if (noInfoBusy) return; noInfoBusy = true;
+  try {
+    const todo = recs.filter(r => r.mode !== 'drill' && infoKinds(r).length && !NOINFO.has(noInfoKey(r)));
+    for (const r of todo) {
+      const k = noInfoKey(r); if (NOINFO.has(k)) continue;
+      const sp = { hole: r.hole, board: r.street === 'preflop' ? [] : r.board, dealer: [], dead: [], street: r.street };
+      const opts = r.game === 'uth' ? { trips: S.tables.uthTrips } : { badBeat: r.mode === 'daily' ? DAILY_OPTS.wpt.badBeat : S.tables.badBeat };
+      let acts;
+      if (r.street === 'preflop' && BASE) { const b = BASE[handClass(r.hole)]?.games[r.game === 'uth' ? 'uth' : 'wpt:' + opts.badBeat]; if (b) acts = Object.fromEntries(Object.entries(b.actions).map(([a, x]) => [a, x.total])); }
+      if (!acts) acts = (await runJob({ type: 'solve', spec: sp, game: r.game, opts }, { prio: -1 })).res.actions;
+      NOINFO.set(k, dBest(acts, r.street, r.game));
+    }
+    if (todo.length) { store.set('uth.noinfo', Object.fromEntries([...NOINFO].slice(-3000))); if (mode === 'leaks') renderLeaks(); }
+  } catch (_) {} finally { noInfoBusy = false; }
+}
+const leakLabel = c => c.st ? `${QNAME[c.st]}: ${c.name}` : c.name;
+const catsFor = game => LEAK_CATS.filter(c => (!c.game || c.game === game) && (!c.setting || S[c.setting]));
+// per category: the last LEAK_WINDOW spots, mistakes, rate, EV lost; plus the hands-played count for "per 100 hands"
+function leakStats(game, recs) {
+  const cats = catsFor(game), mine = recs.filter(r => r.game === game);
+  const hands = new Set(mine.filter(r => r.mode !== 'drill').map(r => r.t)).size || 1;
+  return cats.map(c => {
+    const spots = mine.filter(r => (!c.st || r.street === c.st) && c.spot(r)).slice(-LEAK_WINDOW);
+    const errs = spots.filter(c.err), lost = errs.reduce((t, r) => t + r.loss, 0);
+    return { c, n: spots.length, wrong: errs.length, rate: spots.length ? errs.length / spots.length : 0, per100: lost / hands * 100, examples: errs.slice(-3).reverse() };
+  });
+}
+// open / fixed per game and category, kept between visits so a fix can be celebrated
+function leakStatus(s, prev) {
+  if (s.c.always) return s.wrong ? (s.rate <= LEAK_FIXED && prev === 'open' ? 'fixed' : 'open') : (prev === 'open' ? 'fixed' : prev || 'none');
+  if (s.n < LEAK_MIN) return prev || 'none';
+  if (s.rate > LEAK_OPEN) return 'open';
+  if (prev === 'open') return s.rate <= LEAK_FIXED ? 'fixed' : 'open';
+  return prev || 'none';
+}
+async function updateLeaks({ celebrate = true } = {}) {
+  const recs = await LOG.all() || []; LEAK_RECS = recs;
+  const all = store.get('uth.leakState', {}), news = [];
+  for (const game of ['uth', 'wpt']) {
+    const st = all[game] ||= {};
+    for (const s of leakStats(game, recs)) {
+      const prev = st[s.c.id]?.status, next = leakStatus(s, prev);
+      if (next !== prev) {
+        st[s.c.id] = { status: next, at: Date.now() };
+        if (next === 'fixed' && prev === 'open') news.push({ kind: 'fixed', game, id: s.c.id });
+        if (next === 'open' && prev !== 'open') news.push({ kind: 'open', game, id: s.c.id, wrong: s.wrong, n: s.n });
+      }
+    }
+  }
+  store.set('uth.leakState', all);
+  fillNoInfo(recs);
+  // queue the news (only once the leak finder is unlocked) and show it at a good moment
+  if (celebrate && news.length && store.get('uth.handsLogged', 0) >= LEAK_HANDS) {
+    const q = store.get('uth.leakNews', []).filter(x => !news.some(y => y.game === x.game && y.id === x.id));
+    store.set('uth.leakNews', [...q, ...news]);
+  }
+  if (celebrate && store.get('uth.leakNews', []).length) leakNewsSoon(); // new news, or news still waiting from a daily
+  return recs;
+}
+// Leak news (spotted / fixed) never interrupts a daily challenge (or, later, a table session): it waits
+// until that's finished. After a Practice hand it shows once any streak card is closed. On the leak
+// finder page itself there's no popup; the page shows it.
+function leakNewsMoment() {
+  if (mode === 'leaks') { store.set('uth.leakNews', []); return false; }
+  if (mode === 'daily') { const p = DL.date && dProg(dKey(S.game, DL.date)); if (DL.view === 'play' && p && !p.done) return false; }
+  return !document.querySelector('.cele') && !document.body.classList.contains('nav-open') && !document.body.classList.contains('set-open');
+}
+let leakNewsTimer = null;
+function leakNewsSoon(delay = 1600) {
+  clearTimeout(leakNewsTimer);
+  leakNewsTimer = setTimeout(function tick() {
+    const q = store.get('uth.leakNews', []); if (!q.length) return;
+    if (!leakNewsMoment()) { if (mode !== 'daily' || DL.view !== 'play') leakNewsTimer = setTimeout(tick, 800); return; } // a daily in progress: picked up when it ends
+    store.set('uth.leakNews', []);
+    const fixed = q.filter(x => x.kind === 'fixed'), spotted = q.filter(x => x.kind === 'open');
+    if (spotted.length) showLeakSpotted(spotted); else if (fixed.length) celebrateFix({ game: fixed[0].game, c: LEAK_CATS.find(c => c.id === fixed[0].id) });
+    if (spotted.length && fixed.length) store.set('uth.leakNews', fixed); // the fix gets its moment next time
+  }, delay);
+}
+function showLeakSpotted(list) {
+  document.querySelector('.cele')?.remove();
+  const cats = list.map(x => ({ ...x, c: LEAK_CATS.find(c => c.id === x.id) })).filter(x => x.c);
+  if (!cats.length) return;
+  const one = cats[0], other = g => g !== S.game ? ` (${GAME_NAME[g]})` : '';
+  const el = document.createElement('div'); el.className = 'cele t2 unlock'; el.setAttribute('role', 'dialog');
+  el.innerHTML = `<div class="cele-card"><div class="unlock-ic spot">${ICON_LEAK}</div><div class="cele-title">${cats.length > 1 ? `${cats.length} leaks spotted` : 'Leak spotted'}</div>
+    <div class="cele-sub">${cats.length > 1 ? cats.map(x => `<b>${leakLabel(x.c)}</b>${other(x.game)}`).join('<br>')
+      : `<b>${leakLabel(one.c)}</b>${other(one.game)} — you've gotten this spot wrong ${one.wrong} of the last ${one.n} times. The leak finder shows where and lets you practice it.`}</div>
+    <div class="unlock-btns"><button class="qact dgo" id="spotGo">Open leak finder</button><button class="linkbtn" id="spotLater">Later</button></div></div>`;
+  document.body.appendChild(el); requestAnimationFrame(() => el.classList.add('show'));
+  const close = () => { if (!el.isConnected) return; el.classList.remove('show'); setTimeout(() => el.remove(), 250); };
+  el.close = close; el.onclick = e => { if (e.target === el) close(); };
+  el.querySelector('#spotGo').onclick = () => { close(); if (one.game !== S.game) setGame(one.game); setMode('leaks'); };
+  el.querySelector('#spotLater').onclick = close;
+  FX.play('leak'); FX.buzz('leak');
+}
+function celebrateFix({ game, c }) {
+  document.querySelector('.cele')?.remove();
+  const el = document.createElement('div'); el.className = 'cele t3 unlock'; el.setAttribute('role', 'dialog');
+  el.innerHTML = `<div class="cele-card"><div class="unlock-ic">${ICON_LEAK}</div><div class="cele-title">Leak fixed</div>
+    <div class="cele-sub"><b>${leakLabel(c)}</b>${game !== S.game ? ` (${GAME_NAME[game]})` : ''} — you're getting this spot right ${Math.round((1 - LEAK_FIXED) * 100)}% of the time now.</div>
+    <div class="unlock-btns"><button class="qact dgo" id="fixOk">Nice</button></div></div>`;
+  document.body.appendChild(el); requestAnimationFrame(() => el.classList.add('show'));
+  const close = () => { if (!el.isConnected) return; el.classList.remove('show'); setTimeout(() => el.remove(), 250); };
+  el.close = close; el.onclick = e => { if (e.target === el || e.target.id === 'fixOk') close(); };
+  FX.play('fan3'); FX.buzz('streak'); if (!reduceMotion()) confetti(90, 3);
+}
+// house edge (per ante) on your last 1000 hands vs perfect play on the same hands: perfect EV is the best
+// option at the hand's first decision; yours is that minus the EV you gave up along the way
+function edgeVsPerfect(game, recs) {
+  const by = new Map();
+  for (const r of recs) if (r.game === game && r.mode !== 'drill') { if (!by.has(r.t)) by.set(r.t, []); by.get(r.t).push(r); }
+  const hands = [...by.values()].filter(h => h.some(r => r.street === 'preflop')).slice(-1000);
+  let perfect = 0, you = 0;
+  for (const h of hands) { const pre = h.find(r => r.street === 'preflop'), pev = Math.max(...quizActions('preflop', game).map(a => pre.ev[a])); perfect += pev; you += pev - h.reduce((t, r) => t + r.loss, 0); }
+  return hands.length ? { n: hands.length, perfect: -perfect / hands.length, you: -you / hands.length } : null;
+}
+const pctA = x => `${x < 0 ? '−' : ''}${Math.abs(x * 100).toFixed(2)}%`;
+async function renderLeaks() {
+  const el = document.getElementById('lBody'); if (!el || mode !== 'leaks') return;
+  if (DR.active) { renderDrill(); return; }
+  const recs = await updateLeaks({ celebrate: false }), game = S.game;
+  const mine = recs.filter(r => r.game === game && r.mode !== 'drill'), hands = new Set(mine.map(r => r.t)).size;
+  let x = `<div class="qhead">Leak finder<small>${GAME_NAME[game]}</small></div>`;
+  if (hands < 20) {
+    x += `<div class="empty"><div class="big">Not enough ${game === 'uth' ? 'Ultimate' : 'Heads-Up'} hands yet</div>${hands} on record for this game — play some Practice or Daily hands of ${GAME_NAME[game]} and check back.</div>`;
+    el.innerHTML = x; return;
+  }
+  // your edge vs perfect play
+  const ed = edgeVsPerfect(game, recs);
+  if (ed) {
+    const scale = Math.max(Math.abs(ed.you), Math.abs(ed.perfect), 0.01);
+    const bar = (v, cls) => `<span class="ebar ${cls}"><i style="width:${Math.min(100, Math.abs(v) / scale * 100)}%"></i></span>`;
+    x += `<div class="ledge"><div class="k">House edge on your last ${ed.n} hand${ed.n === 1 ? '' : 's'} (per ante)</div>
+      <div class="erow"><span>You</span>${bar(ed.you, ed.you > ed.perfect + 1e-9 ? 'bad' : 'ok')}<b>${pctA(ed.you)}</b></div>
+      <div class="erow"><span>Perfect play</span>${bar(ed.perfect, 'ok')}<b>${pctA(ed.perfect)}</b></div>
+      <div class="note">Same hands, same cards. The gap is what your decisions cost${ed.you - ed.perfect > 1e-9 ? `: ${(ed.you - ed.perfect) * 100 >= 0.01 ? ((ed.you - ed.perfect) * 100).toFixed(2) : '<0.01'}% of an ante per hand` : ''}. A negative edge means you're ahead of the house (extra information can do that).</div></div>`;
+  }
+  // leaks
+  const stats = leakStats(game, recs), state = store.get('uth.leakState', {})[game] || {};
+  const open = stats.filter(s => state[s.c.id]?.status === 'open').sort((a, b) => b.per100 - a.per100);
+  const fixed = stats.filter(s => state[s.c.id]?.status === 'fixed');
+  const fmt = v => money(v).replace(/[+−]/, '');
+  x += `<div class="lhrow"><h3 class="lh">Your leaks</h3>${open.length > 1 ? `<button class="qact dgo lfix" data-drill="mix">Fix my leaks ▸</button>` : ''}</div>`;
+  if (!open.length) x += `<div class="lclean">No leaks right now — you're getting every type of spot right at least ${Math.round((1 - LEAK_OPEN) * 100)}% of the time.</div>`;
+  for (const s of open) {
+    x += `<div class="lcard"><div class="lctop"><span class="lst">${QNAME[s.c.st] || 'Extra info'}</span><b>${s.c.name}</b></div>
+      <div class="ltip">${s.c.tip}</div>
+      <div class="lmeta">Wrong <b>${s.wrong} of ${s.n}</b> times (${Math.round(s.rate * 100)}%) · costs about <b>${fmt(s.per100)}</b>${unitWord()} per 100 hands</div>
+      ${s.examples.length ? `<div class="lex">${s.examples.map(r => `<div><span class="lcards">${[...r.hole].sort((a, b) => b - a).map(cardTxt).join('')}</span>${r.board.length ? `<small> on ${r.board.map(cardTxt).join(' ')}</small>` : ''}${r.dealer?.length ? `<small> · dealer ${cardTxt(r.dealer[0])}</small>` : ''}${r.dead?.length ? `<small> · others ${r.dead.map(cardTxt).join(' ')}</small>` : ''}
+        <span class="lpick">${ACT_LABEL[r.pick]} <span class="neg">✗</span> best ${ACT_LABEL[r.best]} <button class="linkbtn" data-lrec="${recs.indexOf(r)}">Analyze</button></span></div>`).join('')}</div>` : ''}
+      ${s.c.family ? `<button class="qact ldrill" data-drill="${s.c.id}">Practice this ▸</button>` : ''}</div>`;
+  }
+  // watch list: categories that need more spots before they can be judged
+  if (fixed.length) x += `<h3 class="lh">Fixed</h3><div class="lfixed">${fixed.map(s => `<span>✓ ${leakLabel(s.c)}</span>`).join('')}</div>`;
+  // where it goes, by street
+  const lost = mine.reduce((t, r) => t + r.loss, 0);
+  const rows = QSTREETS.map(st => { const rs = mine.filter(r => r.street === st), w = rs.filter(r => r.loss > 1e-9), l = rs.reduce((t, r) => t + r.loss, 0); return { st, n: rs.length, w: w.length, l }; }).filter(r => r.n);
+  const worst = rows.slice().sort((a, b) => b.l - a.l)[0];
+  x += `<h3 class="lh">By street</h3><table class="ltab"><thead><tr><th>Street</th><th class="lhide">Decisions</th><th>Mistakes</th><th>EV lost</th><th>Share</th></tr></thead><tbody>
+    ${rows.map(r => `<tr class="${r === worst && r.l > 1e-9 ? 'worst' : ''}"><td>${QNAME[r.st]}</td><td class="lhide">${r.n}</td><td>${Math.round(r.w / r.n * 100)}%</td><td>${fmt(r.l / r.n)}<small class="lper"> / decision</small></td>
+      <td><span class="lbar"><i style="width:${lost > 1e-9 ? r.l / lost * 100 : 0}%"></i></span>${lost > 1e-9 ? Math.round(r.l / lost * 100) : 0}%</td></tr>`).join('')}
+    </tbody></table>`;
+  x += `<div class="note">A type of spot becomes a leak when you get it wrong more than ${Math.round(LEAK_OPEN * 100)}% of the time over your last ${LEAK_WINDOW} spots of that type (once it has come up at least ${LEAK_MIN} times), and it's fixed when that's down to ${Math.round(LEAK_FIXED * 100)}%. Practice, Daily and drill hands all count.</div>`;
+  el.innerHTML = x;
+  el.querySelectorAll('[data-lrec]').forEach(b => b.onclick = () => { const r = LEAK_RECS[+b.dataset.lrec]; specToAnalyzer({ hole: r.hole, board: r.board, dealer: r.dealer || [], dead: r.dead || [] }, r.street); });
+  el.querySelectorAll('[data-drill]').forEach(b => b.onclick = () => startDrill(b.dataset.drill === 'mix' ? open.filter(s => s.c.family).slice(0, 3).map(s => s.c.id) : [b.dataset.drill]));
+}
+
+// ── Drills ────────────────────────────────────────────────────────────────
+// 10 single decisions, each starting at the street of the spot (earlier streets shown as checks). Spots
+// are close calls of the category's type and fall both ways: the generator asks for whichever answer
+// (bet or check/fold) the session has had fewer of.
+const DRILL_LEN = 10;
+const DR = { active: false, cats: [], i: 0, cur: null, next: null, results: [], want: { yes: 0, no: 0 } };
+const DRILL_CLOSE = { preflop: 0.12, flop: 0.45, river: 0.6 };
+function drillFits(fam, h, st) {
+  const hole = h.hole, board = st === 'preflop' ? [] : st === 'flop' ? h.board.slice(0, 3) : h.board;
+  switch (fam) {
+    case 'pre': return true;
+    case 'flopPair': return !!hiddenPair(hole, board) && !weakPair(hole, board);
+    case 'flopWeak': return weakPair(hole, board);
+    case 'flopPaired': return pairedBoard(board);
+    case 'flopDraw': return hasDraw(hole, board) && !hiddenPair(hole, board);
+    case 'river': return true;
+    case 'riverPush': return tieShare({ hole, board, dead: h.dead }) >= 0.2;
+    case 'riverWet': return catOf([...hole, ...board]) === 1 && !!hiddenPair(hole, board) && wetBoard(board);
+    default: return true;
+  }
+}
+async function drillMake(catId, game, easy = false) {
+  const c = LEAK_CATS.find(x => x.id === catId), fam = c.family, info = fam.startsWith('info-') ? fam.slice(5) : null;
+  const st = info === 'flop' ? 'preflop' : c.st || 'preflop';
+  const wantYes = DR.want.yes <= DR.want.no; // the side we're short of: a bet (yes) or a check/fold (no)
+  for (let tries = 0; tries < 600; tries++) {
+    const batch = Array.from({ length: Math.max(1, NW) }, () => {
+      const h = quizDeal(); h.dealer = []; h.dead = []; h.peekF = false;
+      return h;
+    });
+    // extra information for "ignoring the …" drills
+    for (const h of batch) {
+      const deck = [...Array(52).keys()].filter(x => !h.hole.includes(x) && !h.board.includes(x)).sort(() => Math.random() - 0.5);
+      if (info === 'dealer') h.dealer = [deck[0]];
+      if (info === 'flop') h.peekF = true;
+      if (info === 'seen') h.dead = deck.slice(1, 1 + 2 * (1 + Math.floor(Math.random() * 2)));
+    }
+    const cands = batch.filter(h => info || drillFits(fam, h, st));
+    if (!cands.length) continue;
+    const solved = await Promise.all(cands.map(async h => {
+      const acts = await nodeSolve(nodeSpec(h, st));
+      return { h, acts };
+    }));
+    for (const { h, acts } of solved) {
+      const best = qBest(acts, st), gap = qGap(acts, st);
+      // close spots, plus the odd clearer one as a sanity check (2–4× the closeness limit)
+      if (easy ? (gap < DRILL_CLOSE[st] * 2 || gap > DRILL_CLOSE[st] * 4 * (tries > 250 ? 2 : 1)) : gap > DRILL_CLOSE[st] * (tries > 250 ? 2 : 1)) continue;
+      if (info) { // the information has to matter: without it the best play flips, or nearly
+        const base = await nodeSolve({ ...nodeSpec(h, st), dealer: [], dead: [], board: st === 'preflop' ? [] : nodeSpec(h, st).board });
+        if (qBest(base, st) === best && qGap(base, st) > DRILL_CLOSE[st]) continue;
+      }
+      if ((best !== 'check' && best !== 'fold') !== wantYes && tries < 300) continue; // hold out for the side we're short of
+      // no repeats in a session: without extra information a preflop spot is just its hand type (K4o is K4o)
+      const sp = nodeSpec(h, st), plain = st === 'preflop' && !sp.board.length && !sp.dealer.length && !sp.dead.length;
+      const key = plain ? 'pre|' + handClass(h.hole) : [[...sp.hole].sort((a, b) => a - b), sp.board, sp.dealer, [...sp.dead].sort((a, b) => a - b)].join('|');
+      if (DR.seen.has(key)) continue;
+      DR.seen.add(key);
+      const acts3 = {}; acts3[st] = acts;
+      return { h: { ...h, acts: acts3 }, st, cat: catId, game };
+    }
+  }
+  return null;
+}
+function drillQueueNext() {
+  const catId = DR.cats[(DR.i + 1) % DR.cats.length], game = S.game;
+  DR.next = DR.i + 1 < DRILL_LEN ? drillMake(catId, game, DR.easyAt.has(DR.i + 1)).catch(() => null) : null;
+}
+async function startDrill(cats) {
+  // one or two clearer spots per session, at random places (never the first)
+  const easyAt = new Set(); while (easyAt.size < 1 + (Math.random() < 0.5 ? 1 : 0)) easyAt.add(1 + Math.floor(Math.random() * (DRILL_LEN - 1)));
+  Object.assign(DR, { active: true, finished: false, seen: new Set(), easyAt, cats, i: 0, cur: null, next: null, results: [], want: { yes: 0, no: 0 }, seq: (DR.seq || 0) + 1 });
+  setMode('leaks'); renderDrill();
+  const seq = DR.seq;
+  const d = await drillMake(cats[0], S.game); if (seq !== DR.seq) return;
+  DR.cur = d ? { ...d, done: false, shownAt: performance.now() } : null;
+  if (!d) { DR.active = false; dToast('Couldn\'t find spots of that type — try again'); renderLeaks(); return; }
+  drillQueueNext(); renderDrill();
+}
+function drillPick(k) {
+  const q = DR.cur; if (!q || q.done || !quizActions(q.st, S.game).includes(k)) return;
+  const acts = q.h.acts[q.st], best = qBest(acts, q.st), loss = Math.max(0, acts[best] - acts[k]);
+  q.done = true; q.pick = k; q.best = best; q.loss = loss; q.revealAt = performance.now();
+  if (best === 'check' || best === 'fold') DR.want.no++; else DR.want.yes++;
+  DR.results.push({ ok: loss < 1e-9, loss, cat: q.cat });
+  logDecisions([{ st: q.st, k, acts, best, loss, gain: qGap(acts, q.st), tough: qGap(acts, q.st) < toughLimit(q.st) }], { mode: 'drill', game: q.game, h: q.h, extra: { cat: q.cat } });
+  const kind = loss < 1e-9 ? 'perfect' : loss < 0.25 ? 'leak' : 'costly'; FX.play(kind); FX.buzz(kind);
+  renderDrill();
+}
+async function drillNext() {
+  if (!DR.cur?.done) return;
+  if (DR.i + 1 >= DRILL_LEN) { DR.cur = null; DR.finished = true; renderDrill(); return; }
+  DR.i++; DR.cur = null; renderDrill();
+  const seq = DR.seq, d = await DR.next; if (seq !== DR.seq) return;
+  DR.cur = d ? { ...d, done: false } : null;
+  if (!d) { DR.finished = true; }
+  else drillQueueNext();
+  renderDrill();
+}
+function renderDrill() {
+  const el = document.getElementById('lBody'); if (!el) return;
+  const names = DR.cats.map(id => leakLabel(LEAK_CATS.find(c => c.id === id)));
+  const right = DR.results.filter(r => r.ok).length;
+  let x = `<div class="dtop"><div class="qhead">Practice<small>${names.join(' · ')}</small></div><button class="linkbtn" id="drillQuit">back to leaks</button></div>
+    <div class="dpips">${Array.from({ length: DRILL_LEN }, (_, i) => `<span class="${DR.results[i] ? (DR.results[i].ok ? 'perfect' : 'costly') : i === DR.i && !DR.finished ? 'now' : ''}">${i + 1}</span>`).join('')}</div>`;
+  if (DR.finished) {
+    x += `<div class="dcard" style="margin-top:14px"><div class="dscore ${right === DRILL_LEN ? 'perfect' : ''}">${right} of ${DR.results.length} right</div>
+      <div class="dmeta">${right === DR.results.length ? 'Clean sweep.' : `EV given up: ${money(DR.results.reduce((t, r) => t + r.loss, 0)).replace(/[+−]/, '')}${unitWord()}.`} Your leak percentages are updated with these hands.</div>
+      <div class="qacts"><button class="qact dgo" id="drillAgain">Another 10 ▸</button><button class="qact" id="drillDone">Back to leaks</button></div></div>`;
+    el.innerHTML = x;
+    document.getElementById('drillAgain').onclick = () => startDrill(DR.cats);
+    document.getElementById('drillDone').onclick = () => { DR.active = false; renderLeaks(); };
+    document.getElementById('drillQuit').onclick = () => { DR.active = false; renderLeaks(); };
+    return;
+  }
+  const q = DR.cur;
+  if (!q) { x += `<div class="empty"><div class="big">Finding a spot…</div></div>`; el.innerHTML = x; document.getElementById('drillQuit').onclick = () => { DR.active = false; DR.seq++; renderLeaks(); }; return; }
+  const before = QSTREETS.slice(0, QSTREETS.indexOf(q.st)).map(s => `<span>${QNAME[s]}: <b>Check</b></span>`);
+  x += `<div class="qhead" style="margin-top:12px">${q.done ? 'Spot over' : QNAME[q.st]}<small class="qextra">${[q.h.peekF && 'saw a flop card', q.h.dealer.length && 'saw a dealer card', q.h.dead.length && (q.h.dead.length === 2 ? '1 hand shown' : `${q.h.dead.length / 2} hands shown`)].filter(Boolean).join(' · ') || '&nbsp;'}</small></div>`;
+  x += handTableHTML(q.h, q.st, { over: q.done, dealFrom: q.done && performance.now() - q.revealAt < 1500 ? boardAt(q.h, q.st) : null });
+  x += `<div class="qpath">${before.join('')}${q.done ? `<span>${QNAME[q.st]}: <b>${ACT_LABEL[q.pick]}</b></span>` : ''}</div>`;
+  if (!q.done) {
+    x += `<div class="qprompt">What's your play?</div><div class="qacts">${quizActions(q.st, S.game).map(k => `<button class="qact" data-dp="${k}">${ACT_LABEL[k]}</button>`).join('')}</div>`;
+  } else {
+    const ok = q.loss < 1e-9, acts = q.h.acts[q.st];
+    x += `<div class="qprompt qverdict ${ok ? 'ok' : 'no'}"><b>${ok ? 'Right' : 'Not quite'}</b>${ok ? '' : `<span class="dlost">−${money(q.loss).replace(/[+−]/, '')}</span>`}</div>
+      <div class="qacts"><button class="qact qnextbtn" id="drillNext">${DR.i + 1 >= DRILL_LEN ? 'See results ▸' : 'Next spot ▸'}</button></div>
+      <div class="qres ${ok ? 'ok' : 'no'}"><div class="why">Best: <b>${ACT_LABEL[q.best]}</b> · ${quizActions(q.st, S.game).map(k => `${ACT_LABEL[k]} <b>${money(acts[k])}</b>`).join(' · ')}
+        <button class="linkbtn" id="drillAn" style="margin-left:10px">Analyze</button></div></div>`;
+  }
+  el.innerHTML = x;
+  el.querySelectorAll('[data-dp]').forEach(b => b.onclick = () => drillPick(b.dataset.dp));
+  document.getElementById('drillNext')?.addEventListener('click', drillNext);
+  document.getElementById('drillAn')?.addEventListener('click', () => specToAnalyzer(nodeSpec(q.h, q.st), q.st));
+  document.getElementById('drillQuit').onclick = () => { DR.active = false; DR.seq++; renderLeaks(); };
+}
+document.addEventListener('keydown', e => {
+  if (mode !== 'leaks' || !DR.active || e.target.matches('input:not([type=checkbox]), select, textarea')) return;
+  const q = DR.cur; if (!q) return;
+  if (!q.done) { const acts = quizActions(q.st, S.game); if (/^[1-9]$/.test(e.key) && acts[+e.key - 1]) { e.preventDefault(); drillPick(acts[+e.key - 1]); } }
+  else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drillNext(); }
 });
 
 // ── Streak celebrations ───────────────────────────────────────────────────
@@ -3095,14 +3559,17 @@ function renderAdsOpt() {
 if (APP.native) { window.Capacitor?.Plugins?.SystemBars?.setStyle?.({ style: 'DARK' }).catch?.(() => {}); startStore(); startAds(); } // light status-bar icons on the dark app
 
 let mode = store.get('uth.mode', 'analyze');
+if (mode === 'leaks' && store.get('uth.handsLogged', 0) < 100) mode = 'analyze';
 function setMode(m) {
   mode = m; store.set('uth.mode', m);
   document.querySelectorAll('.navitem[data-m]').forEach(x => x.classList.toggle('on', x.dataset.m === m));
-  document.getElementById('pageName').textContent = { analyze: 'Analyze', quiz: 'Practice', daily: 'Daily challenge', guide: 'Guide' }[m];
+  document.getElementById('pageName').textContent = { analyze: 'Analyze', quiz: 'Practice', daily: 'Daily challenge', guide: 'How to Play', leaks: 'Leak finder' }[m];
   openNav(false);
   document.body.classList.toggle('quiz-mode', m === 'quiz');
   document.body.classList.toggle('guide-mode', m === 'guide');
   document.body.classList.toggle('daily-mode', m === 'daily');
+  document.body.classList.toggle('leaks-mode', m === 'leaks');
+  if (m === 'leaks') renderLeaks();
   if (m === 'daily') dailyOpen(DL.date || todayYmd());
   if (m === 'guide') { renderGuide(); if (DEMO.step === 0) demoPlay(true); } else clearTimeout(DEMO.timer);
   if (m === 'quiz') { if (!QZ.cur || QZ.cur.key !== quizKey()) { QZ.next = null; quizNew(); } else renderQuiz(); }
@@ -3129,6 +3596,7 @@ function setGame(g) {
   renderOpts(); onRulesChanged();
   if (mode === 'quiz' && (!QZ.cur?.picks.length || QZ.cur?.done)) { QZ.next = null; quizNew(); }
   if (mode === 'daily') dailyOpen(DL.date || todayYmd());
+  if (mode === 'leaks') renderLeaks();
 }
 function setStreet(s, quiet) {
   S.street = s; saveSettings();
@@ -3168,13 +3636,26 @@ function openSheet(open) { document.getElementById('pane').classList.toggle('ope
 document.querySelectorAll('#gameSeg button').forEach(b => b.onclick = () => setGame(b.dataset.g));
 document.querySelectorAll('#streetSeg button').forEach(b => b.onclick = () => setStreet(b.dataset.s));
 document.querySelectorAll('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.t));
-document.querySelectorAll('.navitem[data-m]').forEach(b => b.onclick = () => setMode(b.dataset.m));
+document.querySelectorAll('.navitem[data-m]').forEach(b => b.onclick = () => {
+  if (b.dataset.m === 'leaks' && !leakReady()) { const left = LEAK_HANDS - store.get('uth.handsLogged', 0); dToast(`${left} more hand${left === 1 ? '' : 's'} to unlock the leak finder`); return; }
+  setMode(b.dataset.m);
+});
 // page menu
 const LEAK_HANDS = 100; // the leak finder unlocks once this many practice/daily hands are on record
+const ICON_LOCK = '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>';
+const ICON_LEAK = '<svg viewBox="0 0 24 24"><path d="M12 3.2s-5.8 6.6-5.8 10.6a5.8 5.8 0 0 0 11.6 0C17.8 9.8 12 3.2 12 3.2z"/><path d="M9.4 14.6a2.7 2.7 0 0 0 2.6 2.4"/></svg>';
+const leakReady = () => store.get('uth.handsLogged', 0) >= LEAK_HANDS;
+function renderLeakNav() {
+  const n = store.get('uth.handsLogged', 0), ready = n >= LEAK_HANDS, item = document.getElementById('navLeaks');
+  item.classList.toggle('locked', !ready);
+  document.getElementById('leakIcon').innerHTML = ready ? ICON_LEAK : ICON_LOCK;
+  document.getElementById('leakSub').textContent = ready ? 'Where your EV is going' : 'Play more hands to build a data set';
+  document.getElementById('leakProg').textContent = ready ? '' : `${n} of ${LEAK_HANDS} hands so far`;
+}
 function openNav(on) {
   document.body.classList.toggle('nav-open', on);
   document.getElementById('navBtn').setAttribute('aria-expanded', on);
-  if (on) { const n = store.get('uth.handsLogged', 0); document.getElementById('leakProg').textContent = `${Math.min(n, LEAK_HANDS)} of ${LEAK_HANDS} hands so far`; }
+  if (on) renderLeakNav();
 }
 document.getElementById('navBtn').onclick = () => openNav(true);
 document.getElementById('navClose').onclick = () => openNav(false);
