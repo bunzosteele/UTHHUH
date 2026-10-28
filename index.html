@@ -184,7 +184,9 @@
   .chk { gap: 8px; }
 
   /* Settings */
-  body { padding-bottom: var(--ad-h, 0px); }
+  /* Phone status bar / gesture bar (the Android app draws edge to edge): keep content clear of them */
+  :root { --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); }
+  body { padding-top: var(--sat); padding-bottom: calc(var(--ad-h, 0px) + var(--sab)); }
   footer .disclaim { flex-basis: 100%; font-size: 11px; color: var(--faint); }
   #adsOpt .ptdesc { margin-bottom: 8px; } #adsOpt button.buy { background: var(--gold); color: #1c1606; border: 0; border-radius: 9px; padding: 9px 14px; font: 700 14px var(--sans); cursor: pointer; }
   .gear { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--gold); font-size: 19px; cursor: pointer; display: grid; place-items: center; }
@@ -196,7 +198,7 @@
   #gameSeg button.on .gbadge, #gameSeg button:hover .gbadge { opacity: 1; }
   .drawer-bg { position: fixed; inset: 0; background: rgba(3,10,7,.55); z-index: 80; opacity: 0; pointer-events: none; transition: opacity .2s; }
   .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw); z-index: 81; background: #0b1f18; border-left: 1px solid var(--line); box-shadow: -20px 0 50px rgba(0,0,0,.5);
-    transform: translateX(105%); transition: transform .25s ease; overflow-y: auto; padding: 0 18px 30px; -webkit-overflow-scrolling: touch; }
+    transform: translateX(105%); transition: transform .25s ease; overflow-y: auto; padding: 0 18px 30px; -webkit-overflow-scrolling: touch; border-top: var(--sat) solid #0b1f18; }
   body.set-open .drawer { transform: none; } body.set-open .drawer-bg { opacity: 1; pointer-events: auto; } body.set-open { overflow: hidden; }
   .dhead { position: sticky; top: 0; background: #0b1f18; display: flex; justify-content: space-between; align-items: center; padding: 16px 0 10px; z-index: 2; }
   .dhead b { font-family: var(--serif); font-size: 20px; }
@@ -240,6 +242,10 @@
   .guide { line-height: 1.55; color: var(--dim); }
   .guide h2 { font-family: var(--serif); font-weight: 700; font-size: 22px; color: var(--ink); margin: 26px 0 8px; }
   .guide h2:first-child { margin-top: 0; }
+  .guide .gtitle { font-family: var(--serif); font-weight: 700; font-size: 32px; line-height: 1.15; color: var(--ink); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .guide .gtitle small { display: block; font: 700 12px var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .guide .gtitle + h2 { margin-top: 0; }
+  @media (max-width: 700px) { .guide .gtitle { font-size: 26px; } }
   .guide h4 { color: var(--ink); font-size: 15px; margin: 16px 0 4px; }
   .guide p { margin: 0 0 10px; max-width: 760px; }
   .guide b { color: var(--ink); }
@@ -330,6 +336,18 @@
   .qact:disabled { cursor: default; }
   .qpath { min-height: 22px; }
   .qprompt { min-height: 28px; display: flex; align-items: center; }
+  /* suspense before the verdict (long think on the last decision) */
+  .qsus { color: var(--gold); font-weight: 700; letter-spacing: .02em; }
+  .sdots i { font-style: normal; animation: sdot 1s infinite; opacity: .2; } .sdots i:nth-child(2) { animation-delay: .18s; } .sdots i:nth-child(3) { animation-delay: .36s; }
+  @keyframes sdot { 40% { opacity: 1; } }
+  .qact.picked { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold), 0 0 22px rgba(230,192,106,.45); animation: qglow .6s ease-in-out infinite alternate; opacity: 1; cursor: default; }
+  .qact.dim { opacity: .35; cursor: default; }
+  @keyframes qglow { to { box-shadow: 0 0 0 2px var(--gold), 0 0 34px rgba(230,192,106,.75); } }
+  .qtable.sus { animation: qbeat 1.9s ease-in forwards; }
+  @keyframes qbeat { 0%,100% { transform: none; } 20% { transform: scale(1.012); } 25% { transform: none; } 45% { transform: scale(1.016); } 50% { transform: none; } 65% { transform: scale(1.02); } 70% { transform: none; } 80% { transform: scale(1.025); } 84% { transform: none; } 92% { transform: scale(1.03); } }
+  .qverdict.pop b { display: inline-block; animation: vpop .55s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes vpop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .qtable.sus, .qact.picked, .qverdict.pop b, .sdots i { animation: none; } }
   .qverdict b { font: 700 22px var(--sans); letter-spacing: -0.01em; }
   .qverdict.ok b { color: var(--good); } .qverdict.no b { color: var(--bad); }
   .qact.qnextbtn { grid-column: 1 / -1; background: var(--gold); border-color: var(--gold); color: #1c1606; font: 700 18px var(--sans); }
@@ -345,7 +363,7 @@
   .qtough { font-size: 11px; color: var(--gold); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
   .resetbtn { padding: 8px 14px; border-radius: 9px; border: 1px solid var(--bad); background: rgba(255,122,110,0.08); color: var(--bad); font-weight: 600; cursor: pointer; }
   /* Streak celebrations: tier 1 = toast; 2+ = centred card over a dimmed page, bigger and brighter as tiers rise */
-  .cele-toast { position: fixed; left: 50%; top: 18px; transform: translate(-50%, -140%); z-index: 90; background: #123d2c; border: 1px solid var(--gold); color: var(--ink);
+  .cele-toast { position: fixed; left: 50%; top: calc(18px + var(--sat)); transform: translate(-50%, -140%); z-index: 90; background: #123d2c; border: 1px solid var(--gold); color: var(--ink);
     border-radius: 999px; padding: 10px 18px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.5); transition: transform .35s cubic-bezier(.2,1.4,.4,1); white-space: nowrap; }
   .cele-toast.show { transform: translate(-50%, 0); }
   .cele-toast b { color: var(--gold); font-family: var(--mono); }
@@ -399,7 +417,7 @@
     .slotgroup:not(.wide) .slothead span { display: none; }
     .slotcards { min-height: 52px; }
     .slotcards.deadrow .pc { flex-basis: 38px; aspect-ratio: 38 / 52; }
-    .pane { position: fixed; left: 0; right: 0; bottom: var(--ad-h, 0px); top: 7vh; z-index: 50; border-radius: 18px 18px 0 0; overflow-y: auto; padding: 0 14px 30px;
+    .pane { position: fixed; left: 0; right: 0; bottom: calc(var(--ad-h, 0px) + var(--sab)); top: max(7vh, calc(var(--sat) + 10px)); z-index: 50; border-radius: 18px 18px 0 0; overflow-y: auto; padding: 0 14px 30px;
             transform: translateY(105%); transition: transform .25s ease; background: #0b1f18; border: 1px solid var(--line); -webkit-overflow-scrolling: touch; }
     .pane.open { transform: none; box-shadow: 0 -10px 40px rgba(0,0,0,.6); }
     .sheet-head { display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #0b1f18; padding: 10px 0 10px; z-index: 2; }
@@ -409,7 +427,7 @@
     .qgroup .pc { width: 40px; height: 56px; font-size: 18px; }
     .qhead { font-size: 19px; }
     .guide .street { grid-template-columns: 64px 1fr; gap: 6px 10px; }
-    .mbar { display: flex; position: fixed; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom) + var(--ad-h, 0px)); z-index: 40; align-items: center; gap: 12px;
+    .mbar { display: flex; position: fixed; left: 10px; right: 10px; bottom: calc(10px + var(--sab) + var(--ad-h, 0px)); z-index: 40; align-items: center; gap: 12px;
             background: #0f2a20; border: 1px solid var(--gold-dim); border-radius: 14px; padding: 11px 14px; box-shadow: 0 8px 30px rgba(0,0,0,.55); cursor: pointer; }
     .mbar .mact { font-family: var(--sans); font-weight: 700; font-size: 20px; letter-spacing: -0.02em; }
     .mbar .mtxt { flex: 1; font-size: 13px; color: var(--dim); line-height: 1.3; min-width: 0; }
@@ -498,7 +516,7 @@
 
 
   <footer>
-    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-27 18:42</span>
+    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-27 23:47</span>
     <span class="disclaim">Strategy trainer only — no real-money play. Not affiliated with or endorsed by Light &amp; Wonder or the World Poker Tour.</span>
   </footer>
 </div>
@@ -1026,6 +1044,7 @@ const S = {
   // What you can see before the flop (each optional): the dealer's card, and one flop card
   peekDealer: store.get('uth.peekDealer', store.get('uth.peek', false)), peekFlop: store.get('uth.peekFlop', store.get('uth.peek', false)),
   seeOthers: store.get('uth.seeOthers', true),
+  sound: store.get('uth.sound', true), haptics: store.get('uth.haptics', true), // quiz sounds; vibration on taps (phones)
   bonusInc: Object.assign({ trips: false, pocket: false }, store.get('uth.bonusInc', {})), // include this bonus bet in the house edge?
   bonusAmt: Object.assign({ trips: 5, pocket: 5 }, store.get('uth.bonusAmt', {})),         // its size in dollars
   hole: [null, null], board: [null, null, null, null, null], dealer: [null], dead: [],
@@ -1033,8 +1052,108 @@ const S = {
 };
 function saveSettings() {
   store.set('uth.game', S.game); store.set('uth.street', S.street); store.set('uth.tab', S.tab); store.set('uthTables', S.tables);
-  store.set('uth.ante', S.ante); store.set('uth.peekDealer', S.peekDealer); store.set('uth.peekFlop', S.peekFlop); store.set('uth.seeOthers', S.seeOthers); store.set('uth.bonusInc', S.bonusInc); store.set('uth.bonusAmt', S.bonusAmt);
+  store.set('uth.ante', S.ante); store.set('uth.peekDealer', S.peekDealer); store.set('uth.peekFlop', S.peekFlop); store.set('uth.seeOthers', S.seeOthers); store.set('uth.sound', S.sound); store.set('uth.haptics', S.haptics); store.set('uth.bonusInc', S.bonusInc); store.set('uth.bonusAmt', S.bonusAmt);
 }
+
+// ── Sound effects and haptics ─────────────────────────────────────────────
+// Sounds are synthesized with Web Audio (no audio files). Haptics use the Capacitor Haptics plugin in
+// the Android app, or the Vibration API in a phone browser. Both have switches in Settings.
+const FX = (() => {
+  let ac = null, out = null, noiseBuf = null;
+  const ctx = () => {
+    if (!ac) {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+      ac = new AC(); const comp = ac.createDynamicsCompressor(); out = ac.createGain(); out.gain.value = 0.7;
+      out.connect(comp); comp.connect(ac.destination);
+      noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    if (ac.state === 'suspended') ac.resume();
+    return ac;
+  };
+  // one note: oscillator → (optional low-pass) → envelope
+  const tone = (type, f, t, d, g, { f2, lp, att = 0.008 } = {}) => {
+    const o = ac.createOscillator(), e = ac.createGain(); o.type = type; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    e.gain.setValueAtTime(0.0001, t); e.gain.exponentialRampToValueAtTime(g, t + att); e.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    let node = o; if (lp) { const fl = ac.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = lp; o.connect(fl); node = fl; }
+    node.connect(e); e.connect(out); o.start(t); o.stop(t + d + 0.05);
+  };
+  const noise = (t, d, g, type = 'bandpass', f = 2000, q = 1) => {
+    const s = ac.createBufferSource(), fl = ac.createBiquadFilter(), e = ac.createGain(); s.buffer = noiseBuf;
+    fl.type = type; fl.frequency.value = f; fl.Q.value = q;
+    e.gain.setValueAtTime(0.0001, t); e.gain.exponentialRampToValueAtTime(g, t + 0.004); e.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    s.connect(fl); fl.connect(e); e.connect(out); s.start(t, Math.random() * 0.5); s.stop(t + d + 0.02);
+  };
+  const C5 = 523.25, st = n => C5 * Math.pow(2, n / 12);
+  const brass = (n, t, d, g = 1) => { tone('sawtooth', st(n), t, d, 0.05 * g, { lp: 2400, att: 0.02 }); tone('triangle', st(n), t, d, 0.11 * g, { att: 0.015 }); };
+  const chips = (t, n, spread) => { for (let i = 0; i < n; i++) { const x = t + Math.random() * spread; noise(x, 0.035, 0.1, 'bandpass', 3200 + Math.random() * 3000, 5); tone('sine', 2400 + Math.random() * 1800, x, 0.07, 0.025); } };
+  const coins = (t, n, spread) => { for (let i = 0; i < n; i++) { const x = t + Math.random() * spread, f = 3200 + Math.random() * 1600; tone('sine', f, x, 0.22, 0.035); tone('sine', f * 1.5, x, 0.12, 0.015); } };
+  const SOUNDS = {
+    perfect: t => { tone('sine', st(12), t, 0.5, 0.2); tone('sine', st(19), t + 0.09, 0.65, 0.18); tone('triangle', st(24), t + 0.09, 0.25, 0.04); },
+    leak: t => { tone('triangle', st(2), t, 0.22, 0.15); tone('triangle', st(-1), t + 0.13, 0.4, 0.15); },
+    // "sad trombone": D4, C#4, C4, then a long B3 that wobbles and sags. Sawtooth through a "wah" filter,
+    // so its overtones carry on phone speakers even though the notes are low.
+    costly: t => {
+      const bone = (n, t0, len, last) => {
+        const o = ac.createOscillator(), f = ac.createBiquadFilter(), e = ac.createGain();
+        o.type = 'sawtooth'; o.frequency.setValueAtTime(st(n), t0);
+        if (last) {
+          o.frequency.setValueAtTime(st(n), t0 + 0.35); o.frequency.linearRampToValueAtTime(st(n - 0.6), t0 + len);
+          const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = 5;
+          lg.gain.setValueAtTime(0, t0); lg.gain.linearRampToValueAtTime(7, t0 + 0.5); lfo.connect(lg); lg.connect(o.frequency); lfo.start(t0); lfo.stop(t0 + len + 0.05);
+        }
+        f.type = 'lowpass'; f.Q.value = 3; f.frequency.setValueAtTime(450, t0); f.frequency.linearRampToValueAtTime(1500, t0 + 0.12); f.frequency.linearRampToValueAtTime(900, t0 + len);
+        e.gain.setValueAtTime(0.0001, t0); e.gain.exponentialRampToValueAtTime(0.2, t0 + 0.04);
+        e.gain.setValueAtTime(0.2, t0 + len * 0.75); e.gain.exponentialRampToValueAtTime(0.0001, t0 + len);
+        o.connect(f); f.connect(e); e.connect(out); o.start(t0); o.stop(t0 + len + 0.05);
+      };
+      bone(-10, t, 0.5); bone(-11, t + 0.55, 0.5); bone(-12, t + 1.1, 0.5); bone(-13, t + 1.65, 1.6, true);
+    },
+    hit: t => { tone('sine', 130, t, 0.3, 0.35, { f2: 45 }); noise(t, 0.7, 0.07, 'highpass', 5000, 0.7); },
+    suspense: (t, dur) => { // drum roll that speeds up and swells, over a rising rumble
+      for (let x = 0; x < dur;) { const p = x / dur; noise(t + x, 0.06, 0.04 + 0.13 * p, 'bandpass', 1300, 0.9); x += 0.085 - 0.055 * p; }
+      tone('sine', 55, t, dur, 0.14, { f2: 82, att: 0.3 }); tone('triangle', 220, t, dur, 0.035, { f2: 440, att: 0.4 });
+    },
+    // streak fanfares, bigger with each tier (2 = 5 in a row … 5 = 50+)
+    fan1: t => { [0, 7, 12].forEach((n, i) => tone('triangle', st(n + 12), t + i * 0.07, 0.25, 0.12)); },
+    fan2: t => { [0, 4, 7].forEach((n, i) => brass(n, t + i * 0.09, 0.22)); brass(12, t + 0.27, 0.6); },
+    fan3: t => { [0, 4, 7, 12].forEach((n, i) => brass(n, t + i * 0.09, 0.2)); [0, 4, 7, 12].forEach(n => brass(n, t + 0.45, 1.0, 0.7)); chips(t + 0.45, 10, 0.9); },
+    fan4: t => { [-5, 0, 4, 7].forEach((n, i) => brass(n, t + i * 0.1, 0.2)); brass(12, t + 0.4, 0.25); [0, 4, 7, 12, 16].forEach(n => brass(n, t + 0.7, 1.2, 0.65)); chips(t + 0.7, 18, 1.2); coins(t + 0.8, 10, 1.1); },
+    fan5: t => {
+      [[0, 4, 7], [2, 5, 9], [4, 7, 11]].forEach((ch, j) => ch.forEach((n, i) => brass(n, t + j * 0.3 + i * 0.07, 0.24)));
+      [0, 4, 7, 12, 16, 19].forEach(n => brass(n, t + 0.95, 1.6, 0.6)); tone('sine', 65.4, t + 0.95, 1.6, 0.25);
+      chips(t + 0.95, 30, 1.8); coins(t + 1.0, 22, 1.8);
+    },
+  };
+  const H = () => window.Capacitor?.isPluginAvailable?.('Haptics') ? window.Capacitor.Plugins.Haptics : null;
+  const VIB = { tap: 8, perfect: [14, 70, 14], leak: 28, costly: [45, 60, 45], streak: [30, 70, 30, 70, 90], beat: 12 };
+  return {
+    play(name, delay = 0, arg) { if (!S.sound || !ctx()) return; try { SOUNDS[name](ac.currentTime + 0.02 + delay, arg); } catch (_) {} },
+    unlock() { if (S.sound) ctx(); },
+    canBuzz: () => !!H() || 'vibrate' in navigator,
+    buzz(kind) {
+      if (!S.haptics) return;
+      if (kind === 'tap') { const now = performance.now(); if (now - (this.lastTap || 0) < 80) return; this.lastTap = now; } // a label click also clicks its box
+      const h = H();
+      try {
+        if (h) {
+          if (kind === 'tap') h.impact({ style: 'LIGHT' });
+          else if (kind === 'beat') h.impact({ style: 'MEDIUM' });
+          else if (kind === 'perfect') h.notification({ type: 'SUCCESS' });
+          else if (kind === 'leak') h.notification({ type: 'WARNING' });
+          else if (kind === 'costly') h.notification({ type: 'ERROR' });
+          else if (kind === 'streak') [0, 140, 280].forEach(ms => setTimeout(() => h.impact({ style: 'HEAVY' }), ms));
+        } else navigator.vibrate?.(VIB[kind] ?? 10);
+      } catch (_) {}
+    },
+  };
+})();
+// a light tick on every tap of a button, card or option
+document.addEventListener('pointerdown', () => FX.unlock(), { capture: true, passive: true });
+document.addEventListener('click', e => {
+  const t = e.target.closest?.('button, .pc, .rc, label, a, select, [data-bet], [data-pt]');
+  if (t && !t.disabled && !t.classList.contains('hidden')) FX.buzz('tap');
+}, { capture: true, passive: true });
 
 // The board is always five slots. Preflop uses the first (a flop card you've seen), the flop
 // the first three, the river all five; the rest stay visible but dimmed, so the layout never moves.
@@ -1166,6 +1285,9 @@ function renderOpts() {
     h += pick('wptTrips', 'Trips Plus bonus', E.GAMES.wpt.trips, 'Pays on your final hand, whatever the dealer has:', 'trips', sideEdge);
     h += pick('pocket', 'Pocket Bonus', E.GAMES.wpt.pocket, 'Pays on your two starting cards:', 'pocket', pocketEdge);
   }
+  h += `<div class="opt wide"><label>Sound &amp; feel</label>
+      <label class="chk"><input type="checkbox" id="soundIn" ${S.sound ? 'checked' : ''}> Quiz sound effects</label>
+      ${FX.canBuzz() ? `<label class="chk"><input type="checkbox" id="hapticsIn" ${S.haptics ? 'checked' : ''}> Vibrate on taps</label>` : ''}</div>`;
   if (APP.native) h += `<div class="opt wide"><label>Ads</label><div id="adsOpt"></div></div>`;
   h += `<div class="opt wide"><label>Quiz score</label><div class="qbests" id="qBests"></div><button class="resetbtn" id="qResetBtn">Reset quiz stats</button></div>`;
   const el = document.getElementById('opts');
@@ -1183,6 +1305,8 @@ function renderOpts() {
   document.getElementById('peekDealerIn').onchange = e => { S.peekDealer = e.target.checked; peekChanged(); };
   document.getElementById('peekFlopIn').onchange = e => { S.peekFlop = e.target.checked; peekChanged(); };
   document.getElementById('seeOthersIn').onchange = e => { S.seeOthers = e.target.checked; peekChanged(); };
+  document.getElementById('soundIn').onchange = e => { S.sound = e.target.checked; saveSettings(); if (S.sound) FX.play('perfect'); };
+  const hIn = document.getElementById('hapticsIn'); if (hIn) hIn.onchange = e => { S.haptics = e.target.checked; saveSettings(); FX.buzz('tap'); };
   document.getElementById('anteIn').oninput = e => {
     const v = parseFloat(String(e.target.value).replace(/[$,]/g, ''));
     S.ante = v > 0 ? v : 0; saveSettings(); renderSetSum(); renderResults(); renderChart(); renderMbar(); renderEdgeCard();
@@ -1449,7 +1573,7 @@ function outsRule(R, bestIsBet) {
   const ruleBet = n <= RULE_OUTS, agrees = ruleBet === bestIsBet;
   const andJoin = a => a.length < 2 ? a.join('') : a.length === 2 ? a.join(' and ') : a.slice(0, -1).join('; ') + '; and ' + a[a.length - 1];
   const all = cats.flatMap(c => R.outs[c]);
-  return `<b>Rule of thumb</b> (bet if ≤ ${RULE_OUTS} cards beat you): ${n ? `${n} do — ${ranksIn(all, R.unseen, [all, R.unseen.filter(x => !all.includes(x))])}` : 'none do'}. `
+  return `<b>Rule of thumb</b> (bet if ≤ ${RULE_OUTS} cards beat you): ${n ? `${n} — ${ranksIn(all, R.unseen, [all, R.unseen.filter(x => !all.includes(x))])}` : 'none'}. `
     + `Rule says ${ruleBet ? 'bet' : 'fold'}${agrees ? ' ✓' : ` — it's right about 98% of the time, but wrong here: ${ruleMissReason(R, ruleBet)}`}.`;
 }
 // Why the card count misleads in this spot. Counting cards treats every win and loss alike; what it
@@ -1481,7 +1605,9 @@ function ranksIn(cards, unseen, groups) {
     rk.push(k === pool.filter(c => c >> 2 === r).length ? RANK_TXT(r) : `some ${RANK_TXT(r)}s`);
   }
   const suitTxt = mine.map(su => `any ${SUIT_WORD[E.SUITS[su]]}`).join(' or ');
-  const other = blocks.filter(su => !mine.includes(su)).map(su => SUIT_WORD[E.SUITS[su]]);
+  // "non-club" only when a club of one of the listed ranks is still out (otherwise it adds nothing)
+  const rkSet = new Set(rest.map(c => c >> 2));
+  const other = blocks.filter(su => !mine.includes(su) && unseen.some(c => (c & 3) === su && rkSet.has(c >> 2))).map(su => SUIT_WORD[E.SUITS[su]]);
   const art = 'any';
   const rankTxt = rk.length ? `${art} ${other.length ? 'non-' + other.join('/non-') + ' ' : ''}${listJoin(rk)}` : '';
   return suitTxt && rankTxt ? `${suitTxt}, or ${rankTxt}` : suitTxt || rankTxt;
@@ -2015,6 +2141,7 @@ window.seedCache = seedCache;
 // A "tough spot": the best option is ahead of the other by less than this (antes). Preflop it's kept to
 // hands right at the edge of the raising range: 0.015 per unit of the max raise (UTH 0.06, WPT 0.045).
 const TOUGH = 0.15;
+const PRE_RAISE_KEEP = 0.25; // share of tough spots that are "raise preflop" that we keep
 const toughLimit = st => st === 'preflop' ? 0.015 * maxPreflopRaise() : TOUGH;
 const QZ = {
   tough: store.get('uth.qTough', false),
@@ -2083,6 +2210,8 @@ async function quizMake() {
       for (const st of QSTREETS) {
         h.acts[st] = await nodeSolve(nodeSpec(h, st));
         if (qGap(h.acts[st], st) < toughLimit(st)) {
+          // "just raise" preflop spots get repetitive once you know the cut-offs: keep only some of them
+          if (st === 'preflop' && qBest(h.acts[st], st) !== 'check' && Math.random() > PRE_RAISE_KEEP) return null;
           if (!h.dead.length) return h;
           const m1 = signed(h.acts[st], st), m0 = signed(await nodeSolve({ ...nodeSpec(h, st), dead: [] }), st);
           return (m0 >= 0) !== (m1 >= 0) || Math.abs(m1 - m0) >= toughLimit(st) ? h : null;
@@ -2108,7 +2237,7 @@ async function quizNew() {
   let q = await QZ.next;
   if (seq !== QZ.seq) return;
   if (!q || q.key !== quizKey()) { quizPrefetch(); q = await QZ.next; if (seq !== QZ.seq) return; } // settings changed since it was dealt
-  QZ.cur = { ...q, stage: 'preflop', picks: [], done: false };
+  QZ.cur = { ...q, stage: 'preflop', picks: [], done: false, shownAt: performance.now() };
   quizPrefetch(); // the next hand gets dealt and solved while this one is played
   renderQuiz();
 }
@@ -2123,19 +2252,42 @@ function quizGrade(q) {
   for (const st of QSTREETS) { const b = qBest(q.h.acts[st], st); if (endsHand(b, st)) { bestEnd = { st, k: b }; break; } }
   return { rows, lost, bestEnd };
 }
+// A drum roll before the verdict when: the hand's last decision is postflop and is itself a tough spot, the
+// hand is still perfect so far, you're on a streak of 5+, and you thought about it for 15 s — or 5 s when a
+// right answer would bring up a streak milestone.
+const SUSPENSE_AFTER = 15, SUSPENSE_MILESTONE_AFTER = 5, SUSPENSE_MIN_STREAK = 5, SUSPENSE_MS = 1900;
+function wantSuspense(q, thought) {
+  if (q.stage === 'preflop') return false;
+  const last = q.grade.rows[q.grade.rows.length - 1];
+  if (!last.tough || q.grade.rows.slice(0, -1).some(r => r.loss > 1e-9)) return false;
+  const streak = statsFor(q.game, q.tough).streak;
+  if (streak < SUSPENSE_MIN_STREAK) return false;
+  return thought > (milestoneFor(streak + 1) ? SUSPENSE_MILESTONE_AFTER : SUSPENSE_AFTER);
+}
 function quizPick(k) {
   const q = QZ.cur; if (!q || q.done || !quizActions(q.stage, S.game).includes(k)) return;
   q.picks.push({ st: q.stage, k });
   if (endsHand(k, q.stage)) {
     q.done = true; q.grade = quizGrade(q);
-    const st = statsFor(q.game, q.tough), lost = q.grade.lost, perfect = lost < 1e-9; // counted in the mode the hand was dealt in
-    st.n++; st.lost += lost;
-    let newBest = false;
-    if (perfect) { st.perfect++; st.streak++; newBest = st.streak > st.best; st.best = Math.max(st.best, st.streak); } else st.streak = 0;
-    if (perfect) celebrateStreak(st.streak, newBest);
-    saveQuiz();
-  } else q.stage = QSTREETS[QSTREETS.indexOf(q.stage) + 1];
+    const thought = (performance.now() - q.shownAt) / 1000;
+    if (wantSuspense(q, thought)) {
+      q.suspense = true; renderQuiz();
+      FX.play('suspense', 0, SUSPENSE_MS / 1000 - 0.05);
+      for (let ms = 0; ms < SUSPENSE_MS - 200; ms += Math.max(160, 480 - ms / 4)) setTimeout(() => QZ.cur === q && FX.buzz('beat'), ms); // a quickening heartbeat
+      setTimeout(() => { if (QZ.cur !== q) return; q.suspense = false; q.drumroll = true; FX.play('hit'); quizReveal(q); setTimeout(() => q.drumroll = false, 900); }, SUSPENSE_MS);
+    } else quizReveal(q);
+  } else { q.stage = QSTREETS[QSTREETS.indexOf(q.stage) + 1]; q.shownAt = performance.now(); renderQuiz(); }
+}
+function quizReveal(q) {
+  const st = statsFor(q.game, q.tough), lost = q.grade.lost, perfect = lost < 1e-9; // counted in the mode the hand was dealt in
+  st.n++; st.lost += lost;
+  let newBest = false;
+  if (perfect) { st.perfect++; st.streak++; newBest = st.streak > st.best; st.best = Math.max(st.best, st.streak); } else st.streak = 0;
+  saveQuiz();
   renderQuiz();
+  const kind = perfect ? 'perfect' : lost < 0.25 ? 'leak' : 'costly';
+  FX.play(kind); FX.buzz(kind);
+  if (perfect) celebrateStreak(st.streak, newBest);
 }
 function quizToAnalyzer(st) {
   const sp = nodeSpec(QZ.cur.h, st);
@@ -2173,8 +2325,8 @@ function renderQuiz() {
   const board = h.board.map((c, i) => i < nBoard ? c : 'h');
   const pcs = arr => arr.map(c => c === 'h' ? '<div class="pc hidden"></div>' : cardHTML(c)).join('');
   const extra = [h.peekF && 'you saw a flop card', h.dealer.length && 'you saw a dealer card', h.dead.length && `${h.dead.length / 2 === 1 ? 'a player showed you their hand' : `${h.dead.length / 2} players showed you their hands`}`].filter(Boolean);
-  let x = `<div class="qhead">${q.done ? 'Hand over' : QNAME[q.stage]}${extra.length ? `<small>${extra.join(' · ')}</small>` : ''}</div>
-    <div class="qtable">
+  let x = `<div class="qhead">${q.done && !q.suspense ? 'Hand over' : QNAME[q.stage]}${extra.length ? `<small>${extra.join(' · ')}</small>` : ''}</div>
+    <div class="qtable ${q.suspense ? 'sus' : ''}">
       <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs([...h.hole].sort((x, y) => y - x))}</div></div>
       <div class="qgroup"><div class="k">Board</div><div class="cards">${pcs(board.slice(0, 3))}<span class="slotcards"><span class="gap"></span></span>${pcs(board.slice(3))}</div></div>
       ${h.dealer.length ? `<div class="qgroup"><div class="k">Dealer shows</div><div class="cards">${pcs([h.dealer[0], 'h'])}</div></div>` : ''}
@@ -2182,14 +2334,18 @@ function renderQuiz() {
     </div>`;
   // The path line and the prompt line are always there, so the buttons (and then Next hand) stay put.
   x += `<div class="qpath">${q.picks.map(p => `<span>${QNAME[p.st]}: <b>${ACT_LABEL[p.k]}</b></span>`).join('')}</div>`;
-  if (!q.done) {
+  if (q.suspense) {
+    const acts = quizActions(q.stage, S.game), mine = q.picks[q.picks.length - 1].k;
+    x += `<div class="qprompt qsus">Let's see<span class="sdots"><i>.</i><i>.</i><i>.</i></span></div>
+      <div class="qacts">${acts.map(k => `<button class="qact ${k === mine ? 'picked' : 'dim'}" disabled>${ACT_LABEL[k]}</button>`).join('')}</div>`;
+  } else if (!q.done) {
     const acts = quizActions(q.stage, S.game);
     x += `<div class="qprompt">What's your play? <span style="color:var(--faint)">(keys 1–${acts.length})</span></div>
       <div class="qacts">${acts.map(k => `<button class="qact" data-a="${k}">${ACT_LABEL[k]}</button>`).join('')}</div>`;
   } else {
     const g = q.grade, [word, tone] = gradeWord(g.lost);
     const offLine = g.rows.find(r => r.k === 'check' && r.best !== 'check');
-    x += `<div class="qprompt qverdict ${tone}"><b>${word}</b></div>
+    x += `<div class="qprompt qverdict ${tone} ${q.drumroll ? 'pop' : ''}"><b>${word}</b></div>
       <div class="qacts"><button class="qact qnextbtn" id="qNext">Next hand ▸</button></div>
       <div class="qres ${tone}">
       <div class="why">${g.lost < 1e-9 ? 'Every decision matched the best play.' : `You gave up <b>${money(g.lost).replace('+', '')}</b>${unitWord()} of EV this hand.`}
@@ -2214,7 +2370,7 @@ document.querySelectorAll('#qToughSeg button').forEach(b => b.onclick = () => {
 });
 document.addEventListener('keydown', e => {
   if (!document.body.classList.contains('quiz-mode') || e.target.matches('input:not([type=checkbox]), select, textarea')) return;
-  const q = QZ.cur; if (!q) return;
+  const q = QZ.cur; if (!q || q.suspense) return;
   if (!q.done) { const acts = quizActions(q.stage, S.game); if (/^[1-9]$/.test(e.key) && acts[+e.key - 1]) { e.preventDefault(); quizPick(acts[+e.key - 1]); } }
   else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); quizNew(); }
 });
@@ -2226,13 +2382,14 @@ const MILESTONES = { 3: [1, 'Hat trick', 'Three perfect hands in a row'], 5: [2,
   30: [4, 'Thirty straight', 'Not a cent of EV given up'], 40: [4, 'Forty', 'Still perfect'], 50: [5, 'Fifty!', 'Fifty perfect hands in a row'],
   75: [5, 'Seventy-five', 'Remarkable'], 100: [5, 'One hundred', 'A hundred perfect hands. Take a bow.'] };
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const milestoneFor = n => MILESTONES[n] || (n > 100 && n % 25 === 0 ? [5, `${n} in a row`, 'Off the charts'] : null);
 function celebrateStreak(n, newBest) {
-  let m = MILESTONES[n]; if (!m && n > 100 && n % 25 === 0) m = [5, `${n} in a row`, 'Off the charts'];
+  const m = milestoneFor(n);
   if (!m) return;
   const [tier, title, sub] = m, best = newBest && n > 3 ? ' · new best streak' : '';
   if (tier === 1) {
     const t = document.createElement('div'); t.className = 'cele-toast'; t.innerHTML = `🔥 <b>${n}</b> in a row — ${title}${best}`;
-    document.body.appendChild(t); requestAnimationFrame(() => t.classList.add('show'));
+    document.body.appendChild(t); requestAnimationFrame(() => t.classList.add('show')); FX.play('fan1', 0.35);
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 2200); return;
   }
   document.querySelector('.cele')?.remove();
@@ -2242,31 +2399,69 @@ function celebrateStreak(n, newBest) {
   const close = () => { if (!el.isConnected) return; el.classList.remove('show'); setTimeout(() => el.remove(), 250); };
   el.onclick = close; el.close = close;
   setTimeout(close, tier === 2 ? 2600 : 9000);
-  if (!reduceMotion()) confetti([0, 0, 70, 140, 260, 420][tier], tier);
+  FX.play('fan' + tier, 0.35); setTimeout(() => FX.buzz('streak'), 350);
+  if (!reduceMotion()) confetti([0, 0, 70, 90, 150, 220][tier], tier);
 }
 document.addEventListener('keydown', e => { // a celebration card swallows Enter/Space/Esc so it doesn't deal the next hand
   const el = document.querySelector('.cele'); if (!el || !['Enter', ' ', 'Escape'].includes(e.key)) return;
   e.preventDefault(); e.stopImmediatePropagation(); el.close?.();
 }, true);
+// Tier 2: confetti. Tier 3 (10+): casino chips. Tier 4 (20+): chips and gold coins. Tier 5 (50+): chips, coins and bills.
 function confetti(count, tier) {
-  const cv = document.getElementById('confetti'), ctx = cv.getContext('2d'), W = cv.width = innerWidth, H = cv.height = innerHeight;
+  const cv = document.getElementById('confetti'), ctx = cv.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1);
+  const W = innerWidth, H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const cols = ['#e6c06a', '#f6dc95', '#57d68d', '#efe4c4', '#ffffff', '#c7963a'];
+  const CHIP = ['#c8323c', '#2a5bd7', '#1d1d1f', '#2f9e5a', '#7b3fb0', '#e8e2d0'];
+  const kinds = tier >= 5 ? ['chip', 'chip', 'coin', 'coin', 'bill'] : tier >= 4 ? ['chip', 'chip', 'coin'] : tier >= 3 ? ['chip'] : ['conf'];
   const bursts = tier >= 5 ? [[0.2, 0.75], [0.8, 0.75], [0.5, 0.6]] : tier >= 4 ? [[0.25, 0.7], [0.75, 0.7]] : [[0.5, 0.65]];
-  const P = [];
+  const P = [], sz = Math.min(1.25, Math.max(0.8, W / 900));
   for (let i = 0; i < count; i++) {
     const [bx, by] = bursts[i % bursts.length], a = -Math.PI / 2 + (Math.random() - 0.5) * 1.6, v = (6 + Math.random() * 9) * (H / 800 + 0.4);
-    P.push({ x: bx * W, y: by * H, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: 3 + Math.random() * 4, c: cols[i % cols.length], rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4, life: 0 });
+    const kind = kinds[i % kinds.length];
+    P.push({ kind, x: bx * W, y: by * H, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: 3 + Math.random() * 4, c: kind === 'chip' ? CHIP[i % CHIP.length] : cols[i % cols.length],
+      rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3, flip: Math.random() * 6, vf: 0.08 + Math.random() * 0.18, s: sz * (0.85 + Math.random() * 0.4) });
   }
-  const t0 = performance.now();
+  // tier 5: bills keep fluttering down from the top for a while
+  if (tier >= 5) for (let i = 0; i < 30; i++) P.push({ kind: 'bill', x: Math.random() * W, y: -40 - Math.random() * H * 0.9, vx: (Math.random() - 0.5) * 1.5, vy: 1.2 + Math.random(), rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.05, flip: Math.random() * 6, vf: 0.06 + Math.random() * 0.06, s: sz, sway: Math.random() * 6, drift: true });
+  const chip = (p, sy) => {
+    const R = 11 * p.s; ctx.scale(1, sy);
+    ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(0, 0, R, 0, 7); ctx.fill();
+    ctx.fillStyle = p.c === '#e8e2d0' ? '#2a5bd7' : '#f4efe2';             // edge spots
+    for (let k = 0; k < 6; k++) { ctx.save(); ctx.rotate(k * Math.PI / 3); ctx.fillRect(-R * 0.17, -R, R * 0.34, R * 0.3); ctx.restore(); }
+    ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.2 * p.s; ctx.setLineDash([2.5 * p.s, 2.5 * p.s]);
+    ctx.beginPath(); ctx.arc(0, 0, R * 0.6, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(0, 0, R, 0, 7); ctx.stroke();
+  };
+  const coin = (p, sx) => {
+    const R = 9 * p.s; ctx.scale(Math.max(0.12, Math.abs(sx)), 1);
+    ctx.fillStyle = '#b8862b'; ctx.beginPath(); ctx.arc(0, 0, R, 0, 7); ctx.fill();
+    ctx.fillStyle = sx > 0 ? '#f2c94c' : '#e0b03d'; ctx.beginPath(); ctx.arc(0, 0, R * 0.82, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.beginPath(); ctx.arc(-R * 0.3, -R * 0.3, R * 0.22, 0, 7); ctx.fill();
+  };
+  const bill = (p, sy) => {
+    const w = 34 * p.s, h = 16 * p.s; ctx.scale(1, Math.max(0.15, Math.abs(sy)));
+    ctx.fillStyle = sy > 0 ? '#7cc38a' : '#5fae70'; ctx.fillRect(-w / 2, -h / 2, w, h);
+    ctx.strokeStyle = '#2f6b3d'; ctx.lineWidth = 1.2; ctx.strokeRect(-w / 2 + 2, -h / 2 + 2, w - 4, h - 4);
+    ctx.fillStyle = '#2f6b3d'; ctx.beginPath(); ctx.ellipse(0, 0, h * 0.32, h * 0.32, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#7cc38a'; ctx.font = `700 ${Math.round(h * 0.5)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('$', 0, 0.5);
+  };
+  const t0 = performance.now(), maxT = tier >= 5 ? 7000 : 4800;
   (function frame(t) {
     ctx.clearRect(0, 0, W, H);
     let alive = 0;
     for (const p of P) {
-      p.vy += 0.25; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
-      if (p.y < H + 20) alive++;
-      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.restore();
+      if (p.drift) { p.sway += 0.04; p.x += p.vx + Math.sin(p.sway) * 1.2; p.y += p.vy; }
+      else { const heavy = p.kind === 'chip' || p.kind === 'coin'; p.vy += heavy ? 0.3 : p.kind === 'bill' ? 0.12 : 0.25; p.vx *= p.kind === 'bill' ? 0.97 : 0.99; if (p.kind === 'bill') p.vy = Math.min(p.vy, 2.6); p.x += p.vx; p.y += p.vy; }
+      p.rot += p.vr; p.flip += p.vf;
+      if (p.y < H + 30) alive++;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      if (p.kind === 'chip') chip(p, Math.cos(p.flip));
+      else if (p.kind === 'coin') coin(p, Math.cos(p.flip));
+      else if (p.kind === 'bill') bill(p, Math.cos(p.flip));
+      else { ctx.fillStyle = p.c; ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); }
+      ctx.restore();
     }
-    if (alive && t - t0 < 4500) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+    if (alive && t - t0 < maxT) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
   })(t0);
 }
 
@@ -2404,7 +2599,7 @@ function renderGuide() {
       <div class="note-strong"><b>This bet is where you win.</b> ${gv ? `With perfect play the Ante and ${s2} together lose ${amt(gv.as)} per hand on average; the ${play} bet wins back ${amt(gv.play)}, leaving the ${pctE(me.edge)} house edge.` : ''} So when you're favored, bet <b>as much as you can, as early as you can</b>: with a good starting hand that means the full ${max}x before the flop, rather than checking and betting 2x later. Every time you're ahead and check, you give back money the ${play} bet should have won.</div>`,
   };
   detail.odds = detail.blind;
-  let h = `<h2>The game</h2>
+  let h = `<h1 class="gtitle"><small>How to play</small>${uth ? 'Ultimate Texas Hold\'em' : 'Heads-Up Hold\'em'}</h1><h2>The game</h2>
     <p>You play against the dealer only — not the other players. You and the dealer each get two cards, and five community cards are dealt face up in the middle (three on the <b>flop</b>, then the <b>turn</b> and <b>river</b> together). Each side makes the <b>best five-card poker hand</b> from their two cards plus the five on the board, and the higher hand wins. The dealer <b>qualifies</b> with a pair or better.</p>
     <div class="demo" id="demo"></div>
 
@@ -2500,7 +2695,7 @@ function renderAdsOpt() {
   };
   document.getElementById('restoreBtn').onclick = () => window.CdvPurchase?.store?.restorePurchases();
 }
-if (APP.native) { startStore(); startAds(); }
+if (APP.native) { window.Capacitor?.Plugins?.SystemBars?.setStyle?.({ style: 'DARK' }).catch?.(() => {}); startStore(); startAds(); } // light status-bar icons on the dark app
 
 let mode = store.get('uth.mode', 'analyze');
 function setMode(m) {
