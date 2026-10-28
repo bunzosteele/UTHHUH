@@ -163,12 +163,24 @@
   .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
   .chart-tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
   .chk { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--dim); cursor: pointer; }
-  .chk input { accent-color: var(--gold); }
+  /* Checkboxes styled like the app's buttons: dark tile, gold when on */
+  input[type=checkbox] { appearance: none; -webkit-appearance: none; flex: none; width: 20px; height: 20px; margin: 0; border-radius: 6px;
+    border: 1.5px solid rgba(239,228,196,.35); background: var(--felt-deep); display: inline-grid; place-items: center; cursor: pointer; transition: background .15s, border-color .15s; }
+  input[type=checkbox]::after { content: ''; width: 5px; height: 10px; border: solid #1c1606; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg) scale(0); margin-top: -2px; transition: transform .12s; }
+  input[type=checkbox]:checked { background: var(--gold); border-color: var(--gold); }
+  input[type=checkbox]:checked::after { transform: rotate(45deg) scale(1); }
+  input[type=checkbox]:hover { border-color: var(--gold-dim); }
+  input[type=checkbox]:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .chk { gap: 8px; }
 
   /* Settings */
   .gear { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--gold); font-size: 19px; cursor: pointer; display: grid; place-items: center; }
   .gear:hover { border-color: var(--gold-dim); }
-  #gameSeg .sm { display: none; }
+  /* Game badges: plain flag-stripe and chip shapes with the name in plain type (deliberately not the games' logos) */
+  #gameSeg button { padding: 4px 6px; display: grid; place-items: center; }
+  #gameSeg .gbadge { width: 112px; height: 30px; display: block; opacity: .55; transition: opacity .15s, transform .15s; }
+  #gameSeg button.on { background: rgba(230,192,106,.18); box-shadow: inset 0 0 0 2px var(--gold); }
+  #gameSeg button.on .gbadge, #gameSeg button:hover .gbadge { opacity: 1; }
   .drawer-bg { position: fixed; inset: 0; background: rgba(3,10,7,.55); z-index: 80; opacity: 0; pointer-events: none; transition: opacity .2s; }
   .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw); z-index: 81; background: #0b1f18; border-left: 1px solid var(--line); box-shadow: -20px 0 50px rgba(0,0,0,.5);
     transform: translateX(105%); transition: transform .25s ease; overflow-y: auto; padding: 0 18px 30px; -webkit-overflow-scrolling: touch; }
@@ -358,7 +370,8 @@
     h1 { font-size: 26px; }
     header { margin-bottom: 12px; display: grid; grid-template-columns: auto 1fr auto; gap: 10px 8px; align-items: center; }
     header h1 { font-size: 23px; }
-    #gameSeg { justify-self: end; } #gameSeg .lg { display: none; } #gameSeg .sm { display: inline; }
+    #gameSeg { justify-self: end; gap: 1px; } #gameSeg .gbadge { width: 80px; height: 22px; } #gameSeg button { padding: 3px; }
+    header h1 { white-space: nowrap; }
     #modeSeg { grid-column: 1 / -1; grid-row: 2; display: flex; } #modeSeg button { flex: 1; }
     .gear { grid-column: 3; grid-row: 1; }
     .layout { grid-template-columns: 1fr; }
@@ -420,8 +433,8 @@
       <button data-m="guide">Guide</button>
     </div>
     <div class="seg" id="gameSeg">
-      <button data-g="uth"><span class="lg">Ultimate Texas</span><span class="sm">Ultimate</span></button>
-      <button data-g="wpt"><span class="lg">WPT Heads-Up</span><span class="sm">Heads-Up</span></button>
+      <button data-g="uth" aria-label="Ultimate Texas Hold'em" title="Ultimate Texas Hold'em"><svg class="gbadge" viewBox="0 0 112 30" aria-hidden="true"><defs><clipPath id="cpU"><rect width="112" height="30" rx="7"/></clipPath></defs><g clip-path="url(#cpU)"><rect width="34" height="30" fill="#3b6fb6"/><rect x="34" width="78" height="15" fill="#efe9da"/><rect x="34" y="15" width="78" height="15" fill="#bf4a42"/></g><text x="56" y="20.5" text-anchor="middle" font-family="IBM Plex Sans, system-ui, sans-serif" font-weight="700" font-size="14" letter-spacing=".5" fill="#fff" stroke="#14261d" stroke-width="3" paint-order="stroke">ULTIMATE</text></svg></button>
+      <button data-g="wpt" aria-label="WPT Heads-Up Hold'em" title="WPT Heads-Up Hold'em"><svg class="gbadge" viewBox="0 0 112 30" aria-hidden="true"><ellipse cx="56" cy="15" rx="55" ry="14" fill="#1d5c41"/><ellipse cx="56" cy="15" rx="51" ry="11.5" fill="none" stroke="#efe4c4" stroke-width="3" stroke-dasharray="9 7"/><ellipse cx="56" cy="15" rx="44" ry="8.5" fill="#174a35"/><text x="56" y="20" text-anchor="middle" font-family="IBM Plex Sans, system-ui, sans-serif" font-weight="700" font-size="13" letter-spacing=".5" fill="#efe4c4" stroke="#0e2a1f" stroke-width="2.5" paint-order="stroke">HEADS-UP</text></svg></button>
     </div>
     <button class="gear" id="setBtn" aria-label="Settings" title="Settings">⚙</button>
   </header>
@@ -469,7 +482,7 @@
 
 
   <footer>
-    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 16:33</span>
+    <span id="kvStatus">Shared cache: off</span><span>· build 2026-10-27 17:21</span>
     <span style="flex:1"></span>
     <span id="tokenArea"></span>
   </footer>
@@ -978,13 +991,16 @@ function groups() {
     { id: 'hole', label: 'Your hand', hint: '2 cards', arr: S.hole, limit: 2, need: 2 },
     ...(S.peekDealer ? [{ id: 'dealer', label: 'Dealer card', hint: 'optional', arr: S.dealer, limit: 1, need: 0 }] : []),
     { id: 'board', label: 'Board', hint, arr: S.board, limit: 5, need: S.street === 'preflop' ? 0 : boardLimit(), wide: true },
-    ...(S.seeOthers ? [{ id: 'dead', label: 'Other players\' cards', hint: 'optional · up to 12', arr: S.dead, open: true, wide: true, need: 0 }] : []),
+    ...(S.seeOthers ? [{ id: 'dead', label: 'Other players\' cards', hint: 'optional · up to 5 players', arr: S.dead, open: true, wide: true, need: 0 }] : []),
   ];
 }
 function allUsed() { return new Set([...S.hole, ...S.board, ...dealerCards(), ...deadCards()].filter(c => c !== null)); }
 function streetForBoard() { const n = S.board.filter(c => c !== null).length; return n >= 4 ? 'river' : n === 3 ? 'flop' : 'preflop'; }
 // After a board change: follow the cards to the matching street (manual street buttons still work).
-function followBoard() { const st = streetForBoard(); if (st !== S.street) setStreet(st, true); }
+// Adding cards only moves forward (picking Flop and then entering the flop one card at a time must not
+// bounce back to preflop); removing cards can move back.
+const STREET_ORDER = { preflop: 0, flop: 1, river: 2 };
+function followBoard(forwardOnly = false) { const st = streetForBoard(); if (st !== S.street && (!forwardOnly || STREET_ORDER[st] > STREET_ORDER[S.street])) setStreet(st, true); }
 
 // ── Money ─────────────────────────────────────────────────────────────────
 // EVs are computed per 1-unit ante. With an ante set, everything shows in dollars.
@@ -1011,7 +1027,7 @@ function renderSlots() {
       const off = g.id === 'board' && i >= boardLimit(); // entered but not used at this street
       return (g.id === 'board' && i === 3 || g.id === 'dead' && i > 0 && i % 2 === 0 ? '<span class="gap"></span>' : '') + cardHTML(c, `data-g="${g.id}" data-i="${i}" ${off ? 'data-off="1"' : ''}`).replace('class="pc', `class="pc${off ? ' off' : ''}`);
     }).join('');
-    if (g.open && g.arr.length < 12) cards += (g.id === 'dead' && g.arr.length && g.arr.length % 2 === 0 ? '<span class="gap"></span>' : '') + cardHTML(null, `data-g="${g.id}" data-i="${g.arr.length}"`);
+    if (g.open && g.arr.length < 10) cards += (g.id === 'dead' && g.arr.length && g.arr.length % 2 === 0 ? '<span class="gap"></span>' : '') + cardHTML(null, `data-g="${g.id}" data-i="${g.arr.length}"`);
     const any = g.arr.some(c => c !== null);
     return `<div class="slotgroup ${g.wide ? 'wide' : ''} ${S.active === g.id ? 'active' : ''}" data-group="${g.id}">
       <div class="slothead"><b>${g.label}</b><span>${any ? `<button class="clear" data-clear="${g.id}">clear</button>` : g.hint}</span></div>
@@ -1047,12 +1063,12 @@ function renderSlots() {
 function groupArr(id) { return S[id]; }
 function addCard(c) {
   const gid = S.active, arr = groupArr(gid), g = groups().find(x => x.id === gid);
-  if (gid === 'dead') { if (arr.length >= 12) return; arr.push(c); }
+  if (gid === 'dead') { if (arr.length >= 10) return; arr.push(c); } // tables seat at most 6, so 5 other hands
   else {
     const i = arr.findIndex((x, k) => x === null && k < g.limit);
     if (i < 0) return;
     arr[i] = c;
-    if (gid === 'board') { followBoard(); if (S.board.includes(null)) { render(); onCardsChanged(); return; } }
+    if (gid === 'board') { followBoard(true); if (S.board.includes(null)) { render(); onCardsChanged(); return; } }
     if (!arr.slice(0, g.limit).includes(null)) { // group full → move on to the next group still missing a required card
       const next = groups().find(gg => gg.need && gg.arr.slice(0, gg.need).includes(null));
       if (next) S.active = next.id;
@@ -1117,7 +1133,8 @@ function renderOpts() {
 // shifting the BB-2 values by how much that table changes the no-information edge.
 const INFO_EV = { uth: { none: -0.021850, flop: 0.045213, dealer: 0.135922, both: 0.223286 }, wpt: { none: -0.030573, flop: 0.006824, dealer: 0.119026, both: 0.164774 } };
 // Each other player's hand you see (2 cards), no dealer/flop card: estimated by sampling (deadfx.js).
-const DEAD_GAIN = { uth: null, wpt: null };
+// deadfx2.js, ~400 samples each: UTH +0.111% ± 0.046% of an ante, WPT (BB-2) +0.107% ± 0.022%.
+const DEAD_GAIN = { uth: 0.0011, wpt: 0.0011 };
 // Money wagered per hand (in antes): Ante + Blind + the Play bet with perfect play. Exact with no extra
 // cards; with a dealer/flop card we know how often you raise preflop (edge.js), and use the no-information
 // rate of later betting for the hands you check — close, but marked approximate.
@@ -1150,7 +1167,7 @@ function renderEdgeCard() {
     <div class="ed">of all money wagered — Ante + ${pl}${useBonus ? ` + ${bon.map(b => b[1]).join(' + ')}` : ''}, perfect play${seen ? `, seeing ${seen} every hand` : ''}.</div>
     <div class="ed">You ${evMoney < 0 ? 'lose' : 'win'} about ${S.ante ? `<b>$${Math.abs(evMoney).toFixed(2)}</b> per hand at a $${S.ante} ante` : `<b>${Math.abs(ev * 100).toFixed(2)}%</b> of an ante per hand`}, with about ${(wager / (S.ante || 1)).toFixed(2)} antes wagered per hand${useBonus ? ' (bonus bets included)' : ''}.</div>
     ${bon.length && !S.ante ? '<div class="ed foot">Set an ante below to include your bonus bets.</div>' : ''}
-    ${S.seeOthers ? `<div class="ed foot">${dg != null ? `Each other player's hand you see adds about <b>${(dg / avg * 100).toFixed(2)}%</b> of money wagered in your favour (estimate, with no dealer or flop card).` : "Seeing other players' hands helps a little more; that estimate is still being worked out."}</div>` : ''}`;
+    ${S.seeOthers ? `<div class="ed foot">${dg != null ? `Each other player's hand you know adds about <b>${(dg / avg * 100).toFixed(2)}%</b> to your edge.` : "Seeing other players' hands helps a little more; that estimate is still being worked out."}</div>` : ''}`;
 }
 function renderSetSum() {
   if (typeof mode !== 'undefined' && mode === 'guide') renderGuide();
