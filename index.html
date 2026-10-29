@@ -119,7 +119,7 @@
 
   /* Results pane */
   .pane .tabs { margin-bottom: 14px; }
-  .sheet-head { display: none; }
+  .sheet-head, .sheet-close { display: none; }
   .verdict { border-radius: 12px; padding: 14px 16px; background: linear-gradient(135deg, rgba(230,192,106,0.14), rgba(230,192,106,0.03)); border: 1px solid rgba(230,192,106,0.45); }
   .verdict .act { font-family: var(--sans); font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
   .act.bet, .chip.bet { color: var(--good); } .act.check, .chip.check { color: var(--warn); } .act.fold, .chip.fold { color: var(--bad); }
@@ -257,7 +257,24 @@
   .mbar { display: none; }
 
   /* Quiz */
-  .quiz, .daily, .leaks, .casino { display: none; }
+  .quiz, .daily, .leaks, .casino, .ach { display: none; }
+  body.ach-mode .ach { display: block; } body.ach-mode .layout, body.ach-mode .mbar { display: none !important; }
+  #aBody { max-width: 860px; }
+  .achbar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; margin: 10px 0 4px; } .achbar i { display: block; height: 100%; background: var(--gold); }
+  .achgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+  .achcard { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: rgba(0,0,0,.12); }
+  .achcard:not(.got) .achtxt b { color: var(--dim); } .achcard.secret { opacity: .6; }
+  .achtxt { display: grid; gap: 3px; min-width: 0; flex: 1; } .achtxt b { font: 700 15px var(--sans); } .achtxt > small { color: var(--faint); font-size: 12.5px; line-height: 1.35; }
+  .ach-medal { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: #1b2a24; border: 2px solid #33463e; color: #5d7067; font: 700 18px var(--sans); }
+  .ach-medal svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .m-bronze { background: #6b4422; border-color: #c98a4e; color: #f3c79c; } .m-silver { background: #4b5560; border-color: #c9d2db; color: #eef3f7; } .m-gold { background: #6b5316; border-color: #e6c06a; color: #ffe7a6; }
+  .m-plat { background: #2c5a63; border-color: #8fe0ee; color: #d9f8ff; } .m-diamond { background: #3b2c6b; border-color: #c3a8ff; color: #efe6ff; }
+  .achpips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; } .achpips span { font-size: 11px; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--line); color: var(--faint); }
+  .achpips span.on { color: #fff; } .achpips span.on.m-bronze, .achpips span.on.m-silver, .achpips span.on.m-gold, .achpips span.on.m-plat, .achpips span.on.m-diamond { border-width: 1px; }
+  .achprog { height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; margin-top: 4px; } .achprog i { display: block; height: 100%; background: var(--gold); }
+  .achnext { color: var(--faint); font-size: 11.5px; }
+  .ach-pop { position: fixed; left: 50%; top: calc(14px + var(--sat)); transform: translate(-50%, -160%); z-index: 96; display: flex; align-items: center; gap: 10px; background: #0f2a20; border: 1px solid var(--gold); border-radius: 14px; padding: 8px 16px 8px 8px; box-shadow: 0 10px 30px rgba(0,0,0,.5); transition: transform .35s cubic-bezier(.2,1.2,.4,1); cursor: pointer; max-width: calc(100vw - 32px); }
+  .ach-pop.show { transform: translate(-50%, 0); } .ach-pop small { display: block; font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: .06em; } .ach-pop b { font: 700 15px var(--sans); }
   body.casino-mode .casino { display: block; }
   body.casino-mode .layout, body.casino-mode .mbar { display: none !important; }
   /* Casino trip */
@@ -276,14 +293,26 @@
   .cbetline .cplay { color: #13261e; background: var(--gold); }
   .cshow { margin-top: 12px; font-size: 14.5px; color: var(--dim); } .cshow b { color: var(--ink); }
   .cparts { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; } .cparts b { font-variant-numeric: tabular-nums; }
-  .cres { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .cres > div { display: flex; flex-direction: column; } .cres span { font-size: 12.5px; color: var(--faint); }
+  .cres { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .cres > div { display: grid; grid-template-rows: 1fr auto auto; } .cres > div > span { align-self: start; } .cres span { font-size: 12.5px; color: var(--faint); }
   .cres b { font: 700 26px var(--sans); font-variant-numeric: tabular-nums; } .cres small { font: 700 15px var(--sans); }
   .cverdict { margin-top: 14px; font-size: 15px; } .cverdict > b:first-child { font-size: 17px; }
   .cnote { margin-top: 8px; color: var(--dim); font-size: 14px; line-height: 1.45; }
   .cmis { border-left-color: var(--gold); background: rgba(230,192,106,.04); } .cmeta { color: var(--faint); font-size: 13px; }
   .ccards { font-size: 13.5px; color: var(--faint); margin: 4px 0 6px; }
   .crow { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 14px; } .crow > span:first-child { flex: 1; } .crow .neg { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ctheo { display: grid; justify-items: end; line-height: 1.15; } .ctheo small { font-size: 10.5px; color: var(--faint); font-weight: 500; white-space: nowrap; }
   .creal { font-size: 13.5px; margin-top: 6px; color: var(--dim); } .creal.neg { color: var(--bad); } .creal.pos { color: var(--good); }
+  .cbr { display: flex; justify-content: space-between; align-items: center; color: var(--dim); font-size: 14px; margin: -4px 2px 6px; }
+  .cwarn { color: var(--bad); font-size: 13.5px; margin: 6px 0; }
+  @media (max-width: 520px) { .crec { grid-template-columns: repeat(2, 1fr); } }
+  .ctables { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; }
+  .ctab { border: 2px solid transparent; border-radius: 10px; padding: 8px 6px; color: #efe4c4; cursor: pointer; display: grid; gap: 2px; text-align: center; background: var(--fc, #1d5a40); font: 600 13px var(--sans); }
+  .ctab small { font-size: 11px; opacity: .85; font-weight: 500; } .ctab.on { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(230,192,106,.35); } .ctab:disabled { opacity: .45; cursor: default; }
+  .felt-green { --fc: #1d6a45; --fc2: #0e3324; } .felt-blue { --fc: #1d4f7a; --fc2: #0c2238; } .felt-red { --fc: #7a1f2c; --fc2: #340c13; } .felt-purple { --fc: #4f2a78; --fc2: #1f0f33; } .felt-black { --fc: #2a2a2a; --fc2: #0a0a0a; }
+  .ctable.felt-green, .ctable.felt-blue, .ctable.felt-red, .ctable.felt-purple, .ctable.felt-black { background: radial-gradient(ellipse at 50% 38%, var(--fc), var(--fc2) 78%); }
+  .ctable.felt-black { border-color: #b8913f; box-shadow: inset 0 0 0 6px #6b5320, inset 0 0 40px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.4); }
+  .k500 { --kc: #6b2fa0; } .k1000 { --kc: #c9a227; }
+  .cchk.off { opacity: .5; }
   .clog { margin: 16px 0; } .clog td.cx { color: var(--bad); font-weight: 700; text-align: center; padding-left: 2px; padding-right: 2px; }
   .csetup { display: grid; gap: 8px; } .crowset { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 8px; } .crowset b { font-weight: 700; } .crowset small { display: block; color: var(--faint); font-size: 12.5px; font-weight: 400; margin-top: 2px; line-height: 1.4; }
   .cbring { font: 700 26px var(--sans); color: var(--gold); font-variant-numeric: tabular-nums; }
@@ -293,7 +322,12 @@
   .csetup .qacts { margin-top: 12px; }
   .cnb { display: flex; align-items: center; gap: 10px; } .ctable .cnb .pc { width: 34px; height: 48px; font-size: 15px; }
   .cerr { display: block; font-style: normal; color: var(--gold); font-size: 12.5px; margin-top: 2px; }
-  .crec { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; } .crec div { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: rgba(0,0,0,.12); display: grid; gap: 2px; }
+  .crec { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; } .crec div { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: rgba(0,0,0,.12); display: grid; gap: 2px; }
+  @media (max-width: 560px) { .crec { grid-template-columns: repeat(2, 1fr); } }
+  .crec div { grid-template-rows: 1fr auto; } .crec span { align-self: start; } .crec b { align-self: end; }
+  .cdelta { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); } .cdelta span { color: var(--dim); font-size: 14px; } .cdelta b { font: 700 22px var(--sans); font-variant-numeric: tabular-nums; }
+  .crow2 .cdealbtn { grid-column: 1 / -1; }
+  .cclear.cout { padding: 8px 18px; } .cclear.cout.sure { border-color: var(--bad); color: var(--bad); }
   .crec span { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; } .crec b { font: 700 20px var(--sans); font-variant-numeric: tabular-nums; }
   .csplit { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; font-size: 14px; color: var(--dim); } .csplit b { font-variant-numeric: tabular-nums; } .csplit small { color: var(--faint); }
   .cbest { text-align: center; border: 2px solid var(--gold); border-radius: 14px; padding: 12px; margin: 0 0 12px; background: rgba(230,192,106,.1); font: 700 18px var(--serif); color: var(--gold); display: grid; gap: 2px; animation: cpop2 .5s cubic-bezier(.2,1.4,.4,1); }
@@ -422,6 +456,7 @@
   .dgrid { font-size: 22px; letter-spacing: 2px; margin-bottom: 14px; }
   table.dlist { width: 100%; max-width: 520px; margin-top: 14px; border-collapse: collapse; } table.dlist td { padding: 7px 6px; border-top: 1px solid var(--line); white-space: nowrap; font: 14px var(--sans); }
   .dcard .qacts { max-width: 520px; }
+  table.dlist.ddl td:nth-child(3) { text-align: left; width: 100%; padding-left: 14px; } table.dlist.ddl td:nth-child(2) { text-align: right; }
   table.dlist td:first-child { color: var(--faint); width: 1.6em; } table.dlist td:nth-child(2) { color: var(--dim); } table.dlist td:nth-child(4), table.dlist td:last-child { text-align: right; }
   .drev { margin-top: 14px; }
   .dtop { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -652,7 +687,9 @@
     .pane { position: fixed; left: 0; right: 0; bottom: calc(var(--ad-h, 0px) + var(--sab)); top: max(7vh, calc(var(--sat) + 10px)); z-index: 50; border-radius: 18px 18px 0 0; overflow-y: auto; padding: 0 14px 30px;
             transform: translateY(105%); transition: transform .25s ease; background: #0b1f18; border: 1px solid var(--line); -webkit-overflow-scrolling: touch; }
     .pane.open { transform: none; box-shadow: 0 -10px 40px rgba(0,0,0,.6); }
-    .sheet-head { display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #0b1f18; padding: 10px 0 10px; z-index: 2; }
+    .sheet-head { display: block; position: relative; height: 14px; }
+    .tabrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; position: sticky; top: 0; background: #0b1f18; padding: 4px 0 10px; z-index: 2; }
+    .tabrow .seg.tabs { margin: 0; flex: none; } .tabrow .seg.tabs button { white-space: nowrap; } .tabrow .sheet-close { display: inline-block; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
     .sheet-head::before { content: ''; position: absolute; left: 50%; top: 5px; width: 40px; height: 4px; border-radius: 2px; background: var(--line); transform: translateX(-50%); }
     .sheet-close { background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 8px; padding: 5px 12px; font-size: 14px; }
     .pane .tabs { margin: 6px 0 12px; }
@@ -716,11 +753,11 @@
     </section>
 
     <aside class="panel pane" id="pane">
-      <div class="sheet-head"><span class="ptitle">Results</span><button class="sheet-close" id="sheetClose">Close</button></div>
-      <div class="seg tabs" id="tabSeg">
+      <div class="sheet-head"></div>
+      <div class="tabrow"><div class="seg tabs" id="tabSeg">
         <button data-t="hand">This hand</button>
         <button data-t="chart">Range chart</button>
-      </div>
+      </div><button class="sheet-close" id="sheetClose">Close</button></div>
       <div id="tabHand"></div>
       <div id="tabChart"></div>
     </aside>
@@ -730,6 +767,7 @@
   <section class="panel daily" id="daily"><div id="dBody"></div></section>
   <section class="panel leaks" id="leaks"><div id="lBody"></div></section>
   <section class="panel casino" id="casino"><div id="cBody"></div></section>
+  <section class="panel ach" id="ach"><div id="aBody"></div></section>
 
   <section class="panel quiz" id="quiz">
     <div class="qbar">
@@ -745,7 +783,7 @@
 
 
   <footer>
-    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-28 20:07</span>
+    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-29 12:31</span>
     <span class="disclaim">Strategy trainer only — no real-money play. Not affiliated with or endorsed by Light &amp; Wonder or the World Poker Tour.</span>
   </footer>
 </div>
@@ -757,6 +795,7 @@
   <button class="navitem" data-m="quiz"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 12.5l2.8 2.8L16.5 9"/></svg><span><b>Practice</b><small>Play hands and get graded</small></span></button>
   <button class="navitem" data-m="casino"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3M6 6l2.1 2.1M15.9 15.9L18 18M18 6l-2.1 2.1M8.1 15.9L6 18"/></svg><span><b>Casino trip</b><small>An hour at the tables with $1,000</small></span></button>
   <button class="navitem" id="navLeaks" data-m="leaks"><span class="navicon" id="leakIcon"></span><span><b>Leak finder</b><small id="leakSub"></small><small class="navprog" id="leakProg"></small></span></button>
+  <button class="navitem" data-m="ach"><span class="navicon" id="achIcon"></span><span><b>Achievements</b><small id="achSub"></small></span></button>
   <button class="navitem" data-m="analyze"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/></svg><span><b>Analyze</b><small>Solve any hand, see the range chart</small></span></button>
   <div class="navsep"></div>
   <button class="navitem" data-m="guide"><svg viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></svg><span><b>How to Play</b><small>Rules, bets and simple strategy</small></span></button>
@@ -1406,13 +1445,14 @@ const LOG = (() => {
 function logDecisions(rows, { mode, game, h, extra = {} }) {
   const t = Date.now(), r4 = x => Math.round(x * 1e4) / 1e4;
   const was = store.get('uth.handsLogged', 0);
-  store.set('uth.handsLogged', was + 1);
-  if (was < LEAK_HANDS && was + 1 >= LEAK_HANDS) setTimeout(showLeakUnlock, 2200); // after the hand's own verdict and any streak card
+  if (mode !== 'drill') { store.set('uth.handsLogged', was + 1);
+    if (was < LEAK_HANDS && was + 1 >= LEAK_HANDS) setTimeout(showLeakUnlock, 2200); } // after the hand's own verdict and any streak card
   return LOG.add(rows.map(r => {
     const sp = nodeSpec(h, r.st);
     return { t, mode, game, street: r.st, cls: handClass(h.hole), hole: sp.hole, board: sp.board, dealer: sp.dealer, dead: sp.dead,
       pick: r.k, best: r.best, ev: Object.fromEntries(Object.entries(r.acts).map(([k, v]) => [k, r4(v)])), loss: r4(r.loss), gap: r4(r.gain), tough: r.tough, ...extra };
-  })).then(() => updateLeaks({ fix: mode === 'quiz' || mode === 'tough' })); // a Practice hand is a checkpoint for fixes; daily and drill hands aren't
+  })).then(() => updateLeaks({ fix: mode === 'quiz' || mode === 'tough' })) // a Practice hand is a checkpoint for fixes; daily and drill hands aren't
+    .then(recs => { achCourseCheck(recs || [], t); achSync(); return recs; });
 }
 
 // a light tick on every tap of a button, card or option
@@ -2368,6 +2408,7 @@ async function buildChart() {
     if (needBase) { CH.base = await computeChart(baseKn, variant, { stale }); if (stale()) return; }
   } catch (_) { return; }
   CH.complete = true; chartMem.set(key, CH); renderChart();
+  if (gated) achSet('big_calc', 1);
 }
 // One combo's verdict from its action totals: does a bet beat check/fold, and by how much does the max bet.
 function comboVerdict(a) {
@@ -2451,6 +2492,7 @@ const chartGo = new Set(); // slow charts the user asked to calculate
 function renderChart() {
   const el = document.getElementById('tabChart');
   if (S.tab !== 'chart') return;
+  if (CH?.complete && CH.key) achChartSeen(CH.key);
   const kn = knownForChart(), street = kn.street;
   const betLbl = street === 'preflop' ? `Bet ${S.game === 'uth' ? 4 : Math.max(...[3, 2, 1].filter(m => S.wptRaises[m]))}x` : street === 'flop' ? 'Bet 2x' : 'Bet 1x';
   const pasLbl = street === 'river' ? 'Fold' : 'Check';
@@ -2747,6 +2789,8 @@ function quizReveal(q) {
   const kind = perfect ? 'perfect' : lost < 0.25 ? 'leak' : 'costly';
   FX.play(kind); FX.buzz(kind);
   if (perfect) celebrateStreak(st.streak, newBest);
+  if (kind === 'costly') store.set('uth.achBB', true); // bounce back: the next 10 Practice hands perfect
+  else if (perfect && st.streak >= 10 && store.get('uth.achBB', false)) { store.set('uth.achBB', false); achSet('bounce_back', 1); }
 }
 function quizToAnalyzer(st) { handToAnalyzer(QZ.cur.h, st); }
 // Open a quiz/daily hand in Analyze at a street. Turns on the "I can see" settings the hand needs
@@ -3004,7 +3048,7 @@ function dailyPick(a) {
 }
 function dailyNext() {
   const k = dKey(S.game, DL.date), p = dProg(k); if (!p || !p.over) return;
-  if (p.i >= 9) { p.done = true; p.playedOn = todayYmd(); DL.view = 'home'; dSave(k, p); renderDaily(); dailyCelebrate(p); updateLeaks({ fix: true }).then(() => leakNewsSoon(3500)); return; }
+  if (p.i >= 9) { p.done = true; p.playedOn = todayYmd(); DL.view = 'home'; dSave(k, p); renderDaily(); dailyCelebrate(p); updateLeaks({ fix: true }).then(() => { leakNewsSoon(3500); achSync(); }); return; }
   p.i++; p.stage = 'preflop'; p.picks = []; p.over = false; p.dealtAt = 0; dSave(k, p); renderDaily();
 }
 function dailyCelebrate(p) {
@@ -3101,7 +3145,7 @@ function renderDaily() {
       x += `<div class="drev"><div class="dhand"><span>Hand <b>${i + 1}</b> · $${DAILY_STAKES[i]} ante</span><button class="linkbtn" id="dRevClose">back to all hands</button></div>
         ${handTableHTML(h, r.picks[r.picks.length - 1].st, { over: true })}${dHandRows(h, dGradeHand(h, r.picks, game), DAILY_STAKES[i])}</div>`;
     } else {
-      x += `<table class="dlist"><tbody>${p.results.map((r, i) => `<tr><td>${i + 1}</td><td>$${DAILY_STAKES[i]}</td><td>${GRADE_SQ[r.grade]} ${VERDICT[r.grade][0]}</td>
+      x += `<table class="dlist ddl"><tbody>${p.results.map((r, i) => `<tr><td>${i + 1}</td><td>$${DAILY_STAKES[i]}</td><td>${GRADE_SQ[r.grade]} ${VERDICT[r.grade][0]}</td>
         <td class="${r.lost > 1e-9 ? 'neg' : 'pos'}">${r.lost > 1e-9 ? '−' + dollars(r.lost) : '$0'}</td><td><button class="linkbtn" data-rev="${i}">review</button></td></tr>`).join('')}</tbody></table>`;
     }
   }
@@ -3151,6 +3195,7 @@ function specToAnalyzer(sp, st, from = null) {
   S.hole = sp.hole.slice(); S.board = [...sp.board, null, null, null, null, null].slice(0, 5); S.dealer = [sp.dealer[0] ?? null]; S.dead = sp.dead.slice();
   S.active = 'board'; setMode('analyze'); setStreet(st); setTab('hand');
   ANALYZE_FROM = from; renderBackBar();
+  if (from) achBump('analyzed');
   if (isMobile()) openSheet(true);
 }
 let LEAK_RECS = [];
@@ -3388,6 +3433,8 @@ async function renderLeaks() {
   const nDrill = open.filter(s => s.c.family).length;
   x += `<div class="lhrow"><h3 class="lh">Your leaks</h3>${nDrill > 1 ? `<button class="qact dgo lfix" data-drill="mix">${nDrill > 3 ? 'Practice top 3' : 'Practice all'} ▸</button>` : ''}</div>`;
   if (open.length) x += `<div class="lsub">Improve your execution in these spots to plug the leaks!</div>`;
+  if (!open.length && hands >= 300) achSet('no_leaks', 1);
+  if (ed && ed.n >= 1000 && ed.you - ed.perfect <= 0.0025) achSet('near_perfect', 1);
   if (!open.length) x += `<div class="lclean">No leaks detected — keep playing to build up the data set.</div>`;
   for (const s of open) {
     x += `<div class="lcard"><div class="lctop"><span class="lst">${QNAME[s.c.st] || 'Extra info'}</span><b>${s.c.name}</b></div>
@@ -3521,7 +3568,7 @@ async function drillNext() {
   if (DR.i + 1 >= DRILL_LEN) {
     DR.cur = null; DR.finished = true; renderDrill();
     // a drill can only clear a leak if every spot was right
-    if (DR.results.length === DRILL_LEN && DR.results.every(r => r.ok)) updateLeaks({ fix: true });
+    if (DR.results.length === DRILL_LEN && DR.results.every(r => r.ok)) { achBump('drills'); updateLeaks({ fix: true }).then(achSync); }
     return;
   }
   DR.i++; DR.cur = null; renderDrill();
@@ -3602,9 +3649,24 @@ const casPocketT = (g, opts) => opts.pocketT || (g === 'uth' ? UTH_POCKET[S.tabl
 const casPocketName = (g, opts) => g === 'wpt' ? 'Pocket Bonus' : (opts?.pocketT || UTH_POCKET[S.tables.uthPocket]).length === 7 ? 'Pairs' : 'Pocket Bonus';
 const casUpfront = (b, g) => 2 * b.ante + (b.trips || 0) + (casHasPocket(g) ? b.pocket || 0 : 0); // ante + Blind/Odds + bonus bets
 const casNeed = (b, g) => casUpfront(b, g) + b.ante; // and always enough left for a 1x river bet
-const casBroke = s => s.bank < 3 * CASINO_MIN;
+// Tables: limits, minimum buy-in, chips in the rack, felt, and how loose the dealing is (higher stakes,
+// better-trained dealers: fewer flashed cards, fewer mistakes). Unlocked once your bankroll reaches the amount.
+const CAS_TABLES = [
+  { id: 1, min: 5, max: 50, buyMin: 100, unlock: 0, chips: [5, 25], felt: 'green', name: 'Main floor', err: 0.02, flashMax: 100, nbMax: 2 },
+  { id: 2, min: 5, max: 100, buyMin: 100, unlock: 2500, chips: [5, 25, 100], felt: 'blue', name: 'Blue room', err: 0.01, flashMax: 75, nbMax: 2 },
+  { id: 3, min: 25, max: 250, buyMin: 300, unlock: 5000, chips: [5, 25, 100], felt: 'red', name: 'Burgundy room', err: 0.01, flashMax: 50, nbMax: 2 },
+  { id: 4, min: 50, max: 500, buyMin: 500, unlock: 10000, chips: [25, 100, 500], felt: 'purple', name: 'High limit', err: 0, flashMax: 25, nbMax: 2 },
+  { id: 5, min: 100, max: 2500, buyMin: 1000, unlock: 25000, chips: [100, 500, 1000], felt: 'black', name: 'Salon', err: 0, flashMax: 0, nbMax: 1 },
+];
+const casTable = s => CAS_TABLES.find(t => t.id === (s?.table || 2)) || CAS_TABLES[1]; // trips from before tables were $5–$100
+// one bankroll for both games: a trip's buy-in comes out of it, the cash-out goes back in
+const BR = { get: () => ({ bal: CASINO_BANK, best: CASINO_BANK, ...store.get('uth.bankroll', {}) }), set: b => store.set('uth.bankroll', b) };
+const casUnlocked = t => BR.get().best >= t.unlock;
+const casBroke = s => s.bank < 3 * casTable(s).min;
 const casActive = (g = S.game) => { const s = casGet(g); return !!s && !s.done; };
-function casClock(i) { const m = 20 * 60 + i * 2, h = Math.floor(m / 60), mm = m % 60; return `${h > 12 ? h - 12 : h}:${String(mm).padStart(2, '0')} pm`; }
+function casClock(i) { const m = (20 * 60 + i * 2) % (24 * 60), h = Math.floor(m / 60), mm = m % 60; return `${h % 12 || 12}:${String(mm).padStart(2, '0')} ${h >= 12 ? 'pm' : 'am'}`; } // from 8:00 pm, 2 minutes a hand
+const casHours = s => s?.cfg?.hours || 1;
+const casHands = s => casHours(s) * CASINO_HANDS;
 const casD = x => (x < 0 ? '−' : '') + '$' + Math.abs(Math.round(x)).toLocaleString('en-US');
 const casMade = (x, perfect) => x > 0.5 ? `made ${casD(x)}` : x < -0.5 ? `lost ${casD(-x)}` : perfect ? 'broken even' : 'broke even'; // "you made $95" — the word already says which way
 const casSD = x => (x > 0 ? '+' : x < 0 ? '−' : '') + '$' + Math.abs(Math.round(x)).toLocaleString('en-US');
@@ -3616,41 +3678,60 @@ function casStats(g) {
   if (!all[g]) { const hist = store.get('uth.casinoTrips', []).filter(t => t.game === g); all[g] = { trips: hist.length, total: hist.reduce((t, x) => t + (x.net || 0), 0), best: hist.length ? Math.max(...hist.map(x => x.end ?? CASINO_BANK + x.net)) : null }; }
   return all[g];
 }
+function casRecHTML(g) {
+  const rec = casStats(g), br = BR.get();
+  return `<div class="crec"><div><span>Bankroll</span><b>${casD(br.bal)}</b></div><div><span>Highest bankroll</span><b>${casD(br.best)}</b></div><div><span>Casino trips</span><b>${rec.trips}</b></div><div><span>All casino trips</span><b class="${rec.total >= 0 ? 'pos' : 'neg'}">${casSD(rec.total)}</b></div></div>`;
+}
 function casStatsSave(g, st) { const all = store.get('uth.casinoStats', {}); all[g] = st; store.set('uth.casinoStats', all); }
 // trip setup: what you bring, what you can see, and whether the dealer makes mistakes
 const CAS_PCT = [0, 25, 50, 75, 100];
-const casSetupDefaults = () => ({ bring: CASINO_BANK, nb: 0, dflash: 0, fflash: 0, errors: false });
-const casMaxBring = g => Math.max(CASINO_BANK, Math.floor((CASINO_BANK + casStats(g).total) / 5) * 5);
+const casSetupDefaults = () => ({ bring: CASINO_BANK, hours: 1, table: 1, nb: 0, dflash: 0, fflash: 0, errors: false });
+const casMaxBring = () => Math.floor(BR.get().bal / 5) * 5;
+// what a table allows of the setup choices
+function casClampCfg(st) {
+  const t = CAS_TABLES.find(x => x.id === st.table) || CAS_TABLES[0];
+  return { ...st, nb: Math.min(st.nb, t.nbMax), dflash: Math.min(st.dflash, t.flashMax), fflash: Math.min(st.fflash, t.flashMax), errors: t.err > 0 && st.errors };
+}
 function casNewTrip(cfg) {
   const g = S.game, old = casGet(g);
   if (!cfg || !cfg.bring) { CA.setup = true; renderCasino(); return; } // open the setup first
   if (old?.done && old.summary) { const hist = store.get('uth.casinoTrips', []); hist.unshift({ game: g, at: old.started, ...old.summary.brief }); store.set('uth.casinoTrips', hist.slice(0, 20)); }
   const bets = { ante: 0, trips: 0, pocket: 0 }; // every trip starts with an empty table
   CA.setup = false;
-  casSave({ bank: cfg.bring, buyIn: cfg.bring, cfg, bets, hands: [], cur: null, done: false, started: Date.now(), opts: { ...gameOpts(), pocketT: g === 'uth' ? UTH_POCKET[S.tables.uthPocket] : E.GAMES.wpt.pocket[S.tables.pocket] }, maxRaise: g === 'uth' ? 4 : maxPreflopRaise() }, g);
+  const br = BR.get(); br.bal -= cfg.bring; BR.set(br); // the buy-in leaves your bankroll
+  casSave({ bank: cfg.bring, buyIn: cfg.bring, table: cfg.table, cfg, bets, hands: [], cur: null, done: false, started: Date.now(), opts: { ...gameOpts(), pocketT: g === 'uth' ? UTH_POCKET[S.tables.uthPocket] : E.GAMES.wpt.pocket[S.tables.pocket] }, maxRaise: g === 'uth' ? 4 : maxPreflopRaise() }, g);
   CA.acts.clear(); CA.tally = null; renderCasino();
 }
 const casBuyIn = s => s.buyIn || CASINO_BANK;
 function renderCasinoSetup(el, g) {
-  const st = { ...casSetupDefaults(), ...store.get('uth.casSetup', {}) }, max = casMaxBring(g);
-  st.bring = Math.max(100, Math.min(max, st.bring));
-  const seg = (k, vals, fmt) => `<div class="seg csg">${vals.map(v => `<button data-k="${k}" data-v="${v}" class="${st[k] === v ? 'on' : ''}">${fmt(v)}</button>`).join('')}</div>`;
+  const br = BR.get();
+  let st = { ...casSetupDefaults(), ...store.get('uth.casSetup', {}) };
+  if (!CAS_TABLES.some(t => t.id === st.table && casUnlocked(t))) st.table = 1;
+  st = casClampCfg(st);
+  const t = CAS_TABLES.find(x => x.id === st.table), max = casMaxBring(), can = max >= t.buyMin;
+  st.bring = Math.max(t.buyMin, Math.min(max, st.bring));
+  const seg = (k, vals, fmt, ok) => `<div class="seg csg">${vals.map(v => `<button data-k="${k}" data-v="${v}" class="${st[k] === v ? 'on' : ''}" ${ok(v) ? '' : 'disabled'}>${fmt(v)}</button>`).join('')}</div>`;
   el.innerHTML = `<div class="qhead">Plan your trip<small>${GAME_NAME[g]}</small></div>
     <div class="dcard csetup">
-      <div class="crowset"><div><b>Buy-in</b><small>$100 up to ${casD(max)}${max > CASINO_BANK ? ' (your winnings raise the cap)' : ''}</small></div><b class="cbring" id="cBringV">${casD(st.bring)}</b></div>
-      <input type="range" id="cBring" min="100" max="${max}" step="${max > 2000 ? 50 : 25}" value="${st.bring}">
-      <div class="crowset"><div><b>Neighbors who show you their hand</b></div></div>${seg('nb', [0, 1, 2], v => v)}
-      <div class="crowset"><div><b>Dealer flashes a hole card</b><small>how often you see one of the dealer's cards</small></div></div>${seg('dflash', CAS_PCT, v => v + '%')}
-      <div class="crowset"><div><b>Flop card shown early</b><small>how often you see a flop card before you act</small></div></div>${seg('fflash', CAS_PCT, v => v + '%')}
-      <label class="crowset cchk"><div><b>Dealer mistakes</b><small>Dealer occasionally makes a mistake in your favor</small></div><input type="checkbox" id="cErr" ${st.errors ? 'checked' : ''}></label>
-      <div class="qacts"><button class="qact dgo" id="cGo">Start the trip ▸</button><button class="qact" id="cBack">Back</button></div>
+      <div class="crowset"><div><b>Table</b><small>Bankroll ${casD(br.bal)}</small></div></div>
+      <div class="ctables">${CAS_TABLES.map(x => { const open = casUnlocked(x); return `<button class="ctab felt-${x.felt} ${x.id === st.table ? 'on' : ''}" data-tab="${x.id}" ${open ? '' : 'disabled'}><b>$${x.min}–$${x.max.toLocaleString()}</b><small>${open ? `buy in from $${x.buyMin.toLocaleString()}` : `🔒 at a ${casD(x.unlock)} bankroll`}</small></button>`; }).join('')}</div>
+      ${can ? `<div class="crowset"><div><b>Buy-in</b><small>$${t.buyMin.toLocaleString()} up to ${casD(max)} (your bankroll)</small></div><b class="cbring" id="cBringV">${casD(st.bring)}</b></div>
+      ${max > t.buyMin ? `<input type="range" id="cBring" min="${t.buyMin}" max="${max}" step="${max - t.buyMin > 2000 ? 50 : 5}" value="${st.bring}">` : ''}`
+        : `<div class="cwarn">Your bankroll (${casD(br.bal)}) is below this table's $${t.buyMin.toLocaleString()} minimum buy-in.</div>`}
+      <div class="crowset"><div><b>Simulate how many hours?</b><small>30 hands per hour — each hand counts as 2 minutes at the table, so 1 hour means 30 hands to play</small></div></div>${seg('hours', [1, 2, 3, 4, 5, 6, 7, 8], v => v + 'h', () => true)}
+      <div class="crowset"><div><b>Neighbors who show you their hand</b>${t.nbMax < 2 ? '<small>at this table, one at most</small>' : ''}</div></div>${seg('nb', [0, 1, 2], v => v, v => v <= t.nbMax)}
+      <div class="crowset"><div><b>Dealer flashes a hole card</b><small>${t.flashMax ? `how often you see one of the dealer's cards${t.flashMax < 100 ? ` — dealers here are better trained (up to ${t.flashMax}%)` : ''}` : 'never at this table'}</small></div></div>${seg('dflash', CAS_PCT, v => v + '%', v => v <= t.flashMax)}
+      <div class="crowset"><div><b>Flop card shown early</b><small>${t.flashMax ? `how often you see a flop card before you act${t.flashMax < 100 ? ` (up to ${t.flashMax}% here)` : ''}` : 'never at this table'}</small></div></div>${seg('fflash', CAS_PCT, v => v + '%', v => v <= t.flashMax)}
+      <label class="crowset cchk ${t.err ? '' : 'off'}"><div><b>Dealer mistakes</b><small>${t.err ? 'Dealer occasionally makes a mistake in your favor' : 'Dealers at this table don\'t make mistakes'}</small></div><input type="checkbox" id="cErr" ${st.errors ? 'checked' : ''} ${t.err ? '' : 'disabled'}></label>
+      <div class="qacts"><button class="qact dgo" id="cGo" ${can ? '' : 'disabled'}>Start the trip ▸</button><button class="qact" id="cBack">Back</button></div>
     </div>`;
   const save = () => store.set('uth.casSetup', st);
   const rng = document.getElementById('cBring');
-  rng.oninput = () => { st.bring = +rng.value; document.getElementById('cBringV').textContent = casD(st.bring); save(); };
+  if (rng) rng.oninput = () => { st.bring = +rng.value; document.getElementById('cBringV').textContent = casD(st.bring); save(); };
   el.querySelectorAll('.csg [data-k]').forEach(b => b.onclick = () => { st[b.dataset.k] = +b.dataset.v; save(); renderCasinoSetup(el, g); });
+  el.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { st.table = +b.dataset.tab; st = casClampCfg(st); save(); renderCasinoSetup(el, g); });
   document.getElementById('cErr').onchange = e => { st.errors = e.target.checked; save(); };
-  document.getElementById('cGo').onclick = () => { const s0 = casGet(g); if (s0?.done) { s0.dismissed = true; casSave(s0, g); } casNewTrip({ ...st }); };
+  document.getElementById('cGo').onclick = () => { if (!can) return; const s0 = casGet(g); if (s0?.done) { s0.dismissed = true; casSave(s0, g); } casNewTrip({ ...st }); };
   document.getElementById('cBack').onclick = () => { CA.setup = false; renderCasino(); };
 }
 // EV of every option at a node, split into ante / side (Blind or Odds) / play parts, per 1-unit ante.
@@ -3730,8 +3811,8 @@ function casSettle(g, opts, h, units, folded, b) {
 // your cards; a chip rack to bet with (pick a chip, tap a circle); chips fly to the circles, get paid
 // from the dealer's tray or swept away, and come back to your stack. No hand numbers: a clock runs from
 // 8:00 pm, two minutes a hand, and at 9:00 your hour is up.
-const CHIP_DENOMS = [5, 25, 100];
-const casChip = () => CHIP_DENOMS.includes(store.get('uth.casChip', 5)) ? store.get('uth.casChip', 5) : 5;
+const CHIP_DENOMS = [5, 25, 100, 500, 1000]; // every chip there is (stacks are built from these)
+const casChip = s => { const ch = casTable(s).chips, v = store.get('uth.casChip', ch[0]); return ch.includes(v) ? v : ch[0]; };
 function chipList(amount) { // denominations making up an amount, biggest first (what a dealer would stack)
   const out = []; let a = Math.round(amount);
   for (const d of [...CHIP_DENOMS].reverse()) while (a >= d) { out.push(d); a -= d; }
@@ -3805,10 +3886,10 @@ function casOnTable(s, g) { // chips sitting in the circles right now
 }
 function casAddBet(key) {
   const g = S.game, s = casGet(g); if (!s || s.cur || s.done || s.timeUp || key === 'play') return;
-  const d = casChip(), max = key === 'ante' ? CASINO_MAX : CASINO_BONUS_MAX, k = key === 'blind' ? 'ante' : key;
+  const T = casTable(s), d = casChip(s), max = T.max, k = key === 'blind' ? 'ante' : key;
   const nb = { ...s.bets, [k]: Math.min(max, (s.bets[k] || 0) + d) };
   if (nb[k] === (s.bets[k] || 0)) { dToast(`Table max is $${max}`); return; }
-  if (casNeed({ ...nb, ante: Math.max(nb.ante, CASINO_MIN) }, g) > s.bank) { dToast('Not enough chips for that'); return; }
+  if (casNeed({ ...nb, ante: Math.max(nb.ante, T.min) }, g) > s.bank) { dToast('Not enough chips for that'); return; }
   const from = document.getElementById('crk-' + d);
   s.bets = nb; s.lastDim = true; casSave(s, g);
   FX.play('chip'); FX.buzz('tap');
@@ -3823,13 +3904,13 @@ function casClear() {
 }
 function casDeal() {
   const g = S.game, s = casGet(g); if (!s || s.done || s.cur || s.timeUp || CA.seq) return;
-  if (s.bets.ante < CASINO_MIN) { dToast('Put chips on the Ante to play'); return; }
+  if (s.bets.ante < casTable(s).min) { dToast(`The minimum ante here is $${casTable(s).min}`); return; }
   if (s.bank < casNeed(s.bets, g)) { dToast('Not enough chips for these bets'); return; }
   const d = [...Array(52).keys()];
   for (let i = 51; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [d[i], d[j]] = [d[j], d[i]]; }
   const cfg = s.cfg || casSetupDefaults(), roll = p => Math.random() * 100 < p;
   const h = { hole: [d[0], d[1]], dc: [d[2], d[3]], board: d.slice(4, 9), nb: d.slice(9, 9 + 2 * (cfg.nb || 0)), df: roll(cfg.dflash || 0), ff: roll(cfg.fflash || 0),
-    err: cfg.errors ? { miss: Math.random() < 0.01, ante: Math.random() < 0.01, cf: Math.random() < 0.01 } : null };
+    err: cfg.errors && casTable(s).err ? (e => ({ miss: Math.random() < e, ante: Math.random() < e, cf: Math.random() < e }))(casTable(s).err) : null };
   s.cur = { h, bets: { ...s.bets, pocket: casHasPocket(g) ? s.bets.pocket : 0 }, stage: 'preflop', picks: [], over: false, dealtAt: Date.now(), fresh: 'deal' };
   s.lastDim = false; casSave(s, g); casPrefetch(s.hands.length, h, s, g);
   FX.play('chip'); renderCasino();
@@ -3897,16 +3978,19 @@ function casNext() {
   const g = S.game, s = casGet(g), c = s?.cur; if (!c?.over) return;
   CA.seq = null;
   s.hands.push({ h: c.h, bets: c.bets, picks: c.picks, folded: !!c.folded, res: c.res });
-  s.bank += c.res.net; s.cur = null; s.lastDim = false;
+  achCasinoHand(s, c);
+  s.bank += c.res.net; s.cur = null; s.lastDim = false; s.minBank = Math.min(s.minBank ?? casBuyIn(s), s.bank);
   // keep your bets if you can still cover them; otherwise the biggest ante you can (bonus bets off)
-  if (s.bank < casNeed(s.bets, g)) { s.bets.trips = 0; s.bets.pocket = 0; while (s.bets.ante > CASINO_MIN && s.bank < casNeed(s.bets, g)) s.bets.ante -= 5; }
-  if (s.hands.length >= CASINO_HANDS) s.timeUp = 'time';
-  else if (casBroke(s) || s.bank < casNeed({ ante: CASINO_MIN, trips: 0, pocket: 0 }, g)) s.timeUp = 'broke';
+  const T = casTable(s);
+  if (s.bank < casNeed(s.bets, g)) { s.bets.trips = 0; s.bets.pocket = 0; while (s.bets.ante > T.min && s.bank < casNeed(s.bets, g)) s.bets.ante -= 5; }
+  if (s.hands.length >= casHands(s)) s.timeUp = 'time';
+  else if (casBroke(s) || s.bank < casNeed({ ante: T.min, trips: 0, pocket: 0 }, g)) s.timeUp = 'broke';
   casSave(s, g); renderCasino(true);
 }
 function casCashOut() {
   const g = S.game, s = casGet(g); if (!s || s.done || s.cur) return;
-  s.done = true; s.cashedOut = !s.timeUp && s.hands.length < CASINO_HANDS; casSave(s, g); renderCasino(); casFinish(g);
+  const br = BR.get(); br.bal += s.bank; s.brBefore = br.best; s.brAfter = br.bal; br.best = Math.max(br.best, br.bal); BR.set(br); // the chips go back into your bankroll
+  s.done = true; s.cashedOut = !s.timeUp && s.hands.length < casHands(s); casSave(s, g); renderCasino(); casFinish(g);
 }
 function casCardsHTML(cards, show, { fresh = false, delay0 = 0, dim = false, hl = null } = {}) {
   return cards.map((c, i) => !show[i] ? '<div class="pc back"></div>'
@@ -3953,7 +4037,7 @@ function renderCasinoTable(s, g, x) {
   const bonus = g === 'uth'
     ? `<div class="crow3 two">${sp('trips', 'Trips', b.trips || 0, R?.trips)}${sp('pocket', casPocketName(g, s.opts), b.pocket || 0, R?.pocket)}</div>`
     : `<div class="crow3 two">${sp('trips', 'Trips Plus', b.trips || 0, R?.trips)}${sp('pocket', 'Pocket Bonus', b.pocket || 0, R?.pocket)}</div>`;
-  x += `<div class="ctable ${c && !over ? 'live' : ''}">
+  x += `<div class="ctable felt-${casTable(s).felt} ${c && !over ? 'live' : ''}">
     <div class="ctray" id="cTray"><span></span><span></span><span></span><span></span></div>
     <div class="cdeal"><div class="clbl2">Dealer</div><div class="crowc">${cards(h?.dc, dealerShow, fDealer, delayD)}</div></div>
     <div class="crowc cboard">${h ? casCardsHTML(h.board, boardShow, { fresh: fBoard, dim, hl }) : casCardsHTML([0, 0, 0, 0, 0], boardShow)}</div>
@@ -3980,13 +4064,14 @@ function renderCasinoTable(s, g, x) {
     const cap = w => w[0].toUpperCase() + w.slice(1);
     x += ctl([settled ? '&nbsp;' : CA.hl === 'you' ? `<span class="cy">Your best five:</span> ${cap(handWords(E.eval7([...c.h.hole, ...c.h.board])))}` : CA.hl === 'dealer' ? `<span class="cd">Dealer's best five:</span> ${cap(handWords(E.eval7([...c.h.dc, ...c.h.board])))}` : CA.hl === 'both' ? '&nbsp;' : 'Dealer turns over…'], `<button class="qact cgo" disabled>&nbsp;</button><button class="qact" disabled>&nbsp;</button>`, '', 'cbusy');
   } else if (s.timeUp) {
-    x += ctl([s.timeUp === 'time' ? `It's 9:00 pm — that's your hour.` : `You're out of chips for tonight.`, 'cendl'], `<button class="qact cgo cwide" id="cOut2">See how you did ▸</button>`);
+    x += ctl([s.timeUp === 'time' ? `It's ${casClock(casHands(s))} — that's your ${casHours(s) === 1 ? 'hour' : casHours(s) + ' hours'}.` : `You're out of chips for tonight.`, 'cendl'], `<button class="qact cgo cwide" id="cOut2">See how you did ▸</button>`);
   } else {
-    const ch = casChip(), ok = b.ante >= CASINO_MIN && s.bank >= casNeed(b, g);
+    const ch = casChip(s), ok = b.ante >= casTable(s).min && s.bank >= casNeed(b, g);
     const line = last ? [`Last hand ${casSD(last.res.net)} · ${casLastText(last.h, last.res, last.folded)}${last.res.error ? ' · dealer mistake' : ''}`, last.res.net > 0 ? 'pos' : last.res.net < 0 ? 'neg' : ''] : ['Pick a chip, then tap a circle to bet.'];
-    x += ctl(line, `<button class="qact cgo cdealbtn" id="cDeal" ${ok ? '' : 'disabled'}>Deal<small>${b.ante ? `$${casUpfront(b, g)}` : 'place a bet'}</small></button><button class="qact cout" id="cOut">Cash out<small>${s.hands.length ? 'end the trip' : 'leave'}</small></button>`,
-      `<div class="crack">${CHIP_DENOMS.map(d => `<button class="rchip k${d} ${d === ch ? 'on' : ''}" id="crk-${d}" data-chip="${d}"><span>$${d}</span></button>`).join('')}
-        <button class="cclear" id="cClear" ${casUpfront(b, g) ? '' : 'disabled'}>Clear</button></div>`);
+    x += ctl(line, `<button class="qact cgo cdealbtn" id="cDeal" ${ok ? '' : 'disabled'}>Deal<small>${b.ante ? `$${casUpfront(b, g)}` : 'place a bet'}</small></button>`,
+      `<div class="crack">${casTable(s).chips.map(d => `<button class="rchip k${d} ${d === ch ? 'on' : ''}" id="crk-${d}" data-chip="${d}"><span>${d >= 1000 ? "$1K" : "$" + d}</span></button>`).join('')}
+        <button class="cclear" id="cClear" ${casUpfront(b, g) ? '' : 'disabled'}>Clear</button></div>
+      <div class="cfoot"><button class="cclear cout" id="cOut">${s.hands.length ? 'Cash out' : 'Leave the table'}</button></div>`);
   }
   return x;
 }
@@ -4005,7 +4090,7 @@ function renderCasinoPlay(s, g, el) {
   document.getElementById('cDeal')?.addEventListener('click', casDeal);
   document.getElementById('cClear')?.addEventListener('click', casClear);
   document.getElementById('cOut2')?.addEventListener('click', casCashOut);
-  document.getElementById('cOut')?.addEventListener('click', () => { const b = document.getElementById('cOut'); if (b.dataset.sure) casCashOut(); else { b.dataset.sure = 1; b.classList.add('sure'); b.innerHTML = 'Sure?<small>tap again to cash out</small>'; } });
+  document.getElementById('cOut')?.addEventListener('click', () => { const b = document.getElementById('cOut'); if (b.dataset.sure) casCashOut(); else { b.dataset.sure = 1; b.classList.add('sure'); b.textContent = 'Tap again to cash out'; } });
 }
 // The tally: every decision against the options you actually had; perfect play on the same cards and
 // bets (full raises, it never runs short), settled against the real dealer hand.
@@ -4046,11 +4131,12 @@ async function casFinish(g) {
     const sum = k => s.hands.reduce((t, hd) => t + (hd.res[k] || 0), 0), wag = k => s.hands.reduce((t, hd) => t + (hd.bets[k] || 0), 0);
     s.summary.split = { main: sum('ante') + sum('blind') + sum('play'), trips: sum('trips'), tripsW: wag('trips'), pocket: sum('pocket'), pocketW: wag('pocket') };
     // the record: all trips, and a new best cash-out (celebrated when an old best is passed)
-    const st = casStats(g), newBest = st.best !== null && s.bank > st.best;
-    s.summary.prevBest = st.best; s.summary.newBest = newBest;
+    const st = casStats(g), newBest = s.brAfter !== undefined && s.brAfter > s.brBefore; // a new best bankroll
+    s.summary.prevBest = s.brBefore; s.summary.newBest = newBest; s.summary.bankroll = s.brAfter;
     casStatsSave(g, { trips: st.trips + 1, total: st.total + net, best: st.best === null ? s.bank : Math.max(st.best, s.bank) });
     casSave(s, g);
     casLog(g, s, hands);
+    achCasinoTrip(s);
     if (newBest) { FX.play('fan4', 0.2); FX.buzz('streak'); if (!reduceMotion()) confetti(170, 5); }
     else { FX.play(net > 0 ? 'fan3' : 'fan1', 0.2); if (net >= 250 && !reduceMotion()) confetti(120, 4); }
   } catch (e) { console.error(e); }
@@ -4087,15 +4173,18 @@ function renderCasino() {
     const hist = store.get('uth.casinoTrips', []).filter(t => t.game === g);
     x += `<div class="qhead">Casino trip<small>${GAME_NAME[g]}</small></div>
       <div class="dcard ctrip"><div class="dtitle">An hour at the tables</div>
-      <div class="dmeta">8:00–9:00 pm · buy in up to ${casD(casMaxBring(g))} · your bets</div>
+      <div class="dmeta">1 to 8 simulated hours · bankroll ${casD(BR.get().bal)} · your bets</div>
       <p class="cintro">Play it like a real night out: put your chips down, make your plays, and see the dealer's cards. About 30 hands in the hour. No hints or grades along the way — when you cash out you'll see what perfect play would have made with the same cards and bets, and your biggest mistakes.</p>
       <div class="qacts"><button class="qact dgo" id="cStart">Head to the casino ▸</button></div></div>`;
     const rec = casStats(g);
-    if (rec.trips) x += `<div class="crec"><div><span>Casino trips</span><b>${rec.trips}</b></div><div><span>All casino trips</span><b class="${rec.total >= 0 ? 'pos' : 'neg'}">${casSD(rec.total)}</b></div><div><span>Best cash-out</span><b>${casD(rec.best)}</b></div></div>`;
+    if (rec.trips || BR.get().bal !== CASINO_BANK) x += casRecHTML(g);
+    const brNow = BR.get().bal;
+    x += `<div class="cbr"><span>Bankroll ${casD(brNow)}</span>${brNow !== CASINO_BANK ? '<button class="linkbtn" id="cReset">Reset to $1,000</button>' : ''}</div>${brNow < 100 ? `<div class="cwarn">Your bankroll is below the smallest buy-in ($100). Reset it to keep playing.</div>` : ''}`;
     if (hist.length) x += `<h3 class="lh">Past trips</h3><table class="dlist ctrips"><thead><tr><th>Date</th><th>Hands</th><th>You</th><th>Perfect play</th></tr></thead><tbody>${hist.slice(0, 8).map(t => `<tr><td>${new Date(t.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td><td>${t.hands}</td><td class="${t.net >= 0 ? 'pos' : 'neg'}">${casSD(t.net)}</td><td class="${t.perfect >= 0 ? 'pos' : 'neg'}">${casSD(t.perfect)}</td></tr>`).join('')}</tbody></table>`;
-    x += `<div class="note">Pay tables come from your Settings (${g === 'uth' ? `Trips ${S.tables.uthTrips}` : `Bad Beat ${S.tables.badBeat} · Trips Plus ${S.tables.wptTrips} · Pocket Bonus ${S.tables.pocket}`}). Table limits: $5–$100 ante, bonus bets up to $100.</div>`;
+    x += `<div class="note">Pay tables come from your Settings (${g === 'uth' ? `Trips ${S.tables.uthTrips}` : `Bad Beat ${S.tables.badBeat} · Trips Plus ${S.tables.wptTrips} · Pocket Bonus ${S.tables.pocket}`}). Tables run from $5–$50 up to $100–$2,500; the bigger tables open up as your bankroll grows.</div>`;
     el.innerHTML = x;
     document.getElementById('cStart').onclick = () => casNewTrip();
+    const rb = document.getElementById('cReset'); if (rb) rb.onclick = e => { const b = e.target; if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = 'Tap again to reset'; return; } const br = BR.get(); br.bal = CASINO_BANK; BR.set(br); renderCasino(); };
     return;
   }
   if (s.done) { // the tally
@@ -4106,10 +4195,11 @@ function renderCasino() {
     const ok = sm.nOk === sm.nDec, word = sm.perAnte < 1e-6 ? 'Flawless' : sm.perAnte < 0.02 ? 'Sharp' : sm.perAnte < 0.06 ? 'Solid' : sm.perAnte < 0.15 ? 'Leaky' : 'Costly';
     const diff = sm.net - sm.perfect;
     const rec = casStats(g);
-    if (sm.newBest) x += `<div class="cbest">New best cash-out! <b>${casD(s.bank)}</b><small>beats your old best of ${casD(sm.prevBest)}</small></div>`;
+    if (sm.newBest) x += `<div class="cbest">New highest bankroll! <b>${casD(sm.bankroll)}</b><small>beats your old high of ${casD(sm.prevBest)}</small></div>`;
     x += `<div class="dcard csum"><div class="cres"><div><span>You walked away with</span><b>${casD(s.bank)}</b><small class="${sm.net >= 0 ? 'pos' : 'neg'}">${casSD(sm.net)}</small></div>
-        <div><span>Perfect play, same cards &amp; bets</span><b>${casD(casBuyIn(s) + sm.perfect)}</b><small class="${sm.perfect >= 0 ? 'pos' : 'neg'}">${casSD(sm.perfect)}</small></div></div>
-      <div class="cverdict"><b class="${ok ? 'pos' : sm.perAnte < 0.06 ? '' : 'neg'}">${word}</b> · ${sm.nOk} of ${sm.nDec} decisions right${sm.evLost > 0.005 ? ` · your mistakes cost <b>${dollars(sm.evLost)}</b> on average` : ''}</div>
+        <div><span>Perfect play (same cards &amp; bets)</span><b>${casD(casBuyIn(s) + sm.perfect)}</b><small class="${sm.perfect >= 0 ? 'pos' : 'neg'}">${casSD(sm.perfect)}</small></div></div>
+      <div class="cdelta"><span>You vs perfect play</span><b class="${sm.net - sm.perfect >= 0 ? 'pos' : 'neg'}">${casSD(sm.net - sm.perfect)}</b></div>
+      <div class="cverdict"><b class="${ok ? 'pos' : sm.perAnte < 0.06 ? '' : 'neg'}">${word}</b> · ${sm.nOk} of ${sm.nDec} decisions right${sm.evLost > 0.005 ? ` · your mistakes combined cost <b>${dollars(sm.evLost)}</b> on average` : ''}</div>
       ${sm.split && (sm.split.tripsW || sm.split.pocketW) ? `<div class="csplit"><span>Main game <b class="${sm.split.main >= 0 ? 'pos' : 'neg'}">${casSD(sm.split.main)}</b></span>${sm.split.tripsW ? `<span>${g === 'uth' ? 'Trips' : 'Trips Plus'} <b class="${sm.split.trips >= 0 ? 'pos' : 'neg'}">${casSD(sm.split.trips)}</b> <small>of $${sm.split.tripsW} bet</small></span>` : ''}${sm.split.pocketW ? `<span>${casPocketName(g, s.opts)} <b class="${sm.split.pocket >= 0 ? 'pos' : 'neg'}">${casSD(sm.split.pocket)}</b> <small>of $${sm.split.pocketW} bet</small></span>` : ''}</div>` : ''}
       <div class="cnote">${Math.abs(diff) < 0.5 ? 'You matched perfect play to the dollar.' : diff > 0 ? `You finished ${casD(diff)} ahead of perfect play — the cards were kind to your mistakes tonight${sm.evLost > 0.005 ? `, but over time they cost you ${dollars(sm.evLost)} a trip like this` : ''}.` : `Your decisions cost you ${casD(-diff)} tonight${sm.evLost > 0.005 ? ` (${dollars(sm.evLost)} on average — the rest was how the cards fell)` : ''}.`}</div></div>`;
     if (sm.flagged.length) {
@@ -4118,11 +4208,11 @@ function renderCasino() {
         const hd = s.hands[f.i];
         x += `<div class="lcard cmis"><div class="lctop"><span class="lst">${casClock(f.i)}</span><b>${[...hd.h.hole].sort((a, b) => b - a).map(cardTxt).join('')}</b><small class="cmeta">$${hd.bets.ante} ante</small></div>
           <div class="ccards">Board ${hd.h.board.map(cardTxt).join(' ')} · dealer ${hd.h.dc.map(cardTxt).join('')}</div>
-          ${f.rows.map(r => `<div class="crow"><span>${QNAME[r.st]}: you ${r.k === 'check' ? 'checked' : r.k === 'fold' ? 'folded' : r.k === 'allin' ? 'went all-in' : `bet ${r.k.slice(3)}x`}, best was <b>${r.best === 'allin' ? 'all-in' : ACT_LABEL[r.best]}</b></span><span class="neg">−${dollars(r.loss * hd.bets.ante)}</span><button class="anbtn" data-can="${f.i}|${r.st}">Analyze</button></div>`).join('')}
+          ${f.rows.map(r => `<div class="crow"><span>${QNAME[r.st]}: you ${r.k === 'check' ? 'checked' : r.k === 'fold' ? 'folded' : r.k === 'allin' ? 'went all-in' : `bet ${r.k.slice(3)}x`}, best was <b>${r.best === 'allin' ? 'all-in' : ACT_LABEL[r.best]}</b></span><span class="neg ctheo">−${dollars(r.loss * hd.bets.ante)}<small>theoretical cost</small></span><button class="anbtn" data-can="${f.i}|${r.st}">Analyze</button></div>`).join('')}
           <div class="creal ${f.real > 0.5 ? 'neg' : f.real < -0.5 ? 'pos' : ''}">${f.real > 0.5 ? `This one cost you ${casD(f.real)}: you ${casMade(f.net)}, the right play would have ${casMade(f.perfectNet, true)}.` : f.real < -0.5 ? `It worked out this time: you ${casMade(f.net)}, the right play would have ${casMade(f.perfectNet, true)}. Don't count on it.` : `Same result either way this time: you ${casMade(f.net)}.`}</div></div>`;
       }
     } else x += `<div class="lclean">Every decision matched the best play — nothing to flag.</div>`;
-    x += `<div class="crec"><div><span>Casino trips</span><b>${rec.trips}</b></div><div><span>All casino trips</span><b class="${rec.total >= 0 ? 'pos' : 'neg'}">${casSD(rec.total)}</b></div><div><span>Best cash-out</span><b>${casD(rec.best ?? s.bank)}</b></div></div>`;
+    x += casRecHTML(g);
     x += `<details class="clog"><summary>Every hand</summary><table class="dlist"><thead><tr><th>Time</th><th></th><th>Hand</th><th>You</th><th>Perfect play</th><th></th></tr></thead><tbody>${s.hands.map((hd, i) => `<tr><td>${casClock(i)}</td><td class="cx">${sm.perHand[i].evLost > 0.005 ? '✗' : ''}</td><td>${[...hd.h.hole].sort((a, b) => b - a).map(cardTxt).join('')} <small>$${hd.bets.ante}${hd.res.error ? ' · dealer mistake' : ''}</small></td><td class="${hd.res.net >= 0 ? 'pos' : 'neg'}">${casSD(hd.res.net)}</td><td class="${sm.perHand[i].perfectNet >= 0 ? 'pos' : 'neg'}">${casSD(sm.perHand[i].perfectNet)}</td><td><button class="anbtn" data-can="${i}|${sm.perHand[i].mis || hd.picks[hd.picks.length - 1].st}">Analyze</button></td></tr>`).join('')}</tbody></table></details>`;
     x += `<div class="qacts"><button class="qact dgo" id="cAgain">New trip ▸</button></div>`;
     el.innerHTML = x;
@@ -4140,6 +4230,212 @@ document.addEventListener('keydown', e => {
   else if (!c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); s.timeUp ? casCashOut() : casDeal(); }
 });
 
+// ── Achievements ──────────────────────────────────────────────────────────
+// Built into the app (works offline, on the web and in the Android app). Each has a fixed id (so it could
+// be mirrored to Google Play Games later), counts from either game, and tiered ones are one badge with
+// stages. Progress is the best value reached; a tier is earned once the value reaches it. Most progress is
+// read from what the app already stores (streaks, hands, dailies, leaks, bankroll); casino hands and a few
+// actions report events as they happen. Hidden ones show as ??? until earned.
+const ACH_GROUPS = [['practice', 'Practice'], ['daily', 'Daily challenge'], ['leaks', 'Leak finder & drills'], ['casino', 'Casino trip'], ['hands', 'Big hands (casino)'], ['learn', 'Learning']];
+const money$ = v => '$' + v.toLocaleString('en-US');
+const ACH = [
+  { id: 'first_hand', g: 'practice', t: 'First hand', d: 'Play a Practice hand.' },
+  { id: 'streak', g: 'practice', t: 'Perfect streak', d: 'Perfect Practice hands in a row (All hands).', tiers: [5, 10, 25, 50, 100], lbl: v => `${v} in a row` },
+  { id: 'tough_streak', g: 'practice', t: 'Tough spots streak', d: 'Perfect hands in a row in Tough spots mode.', tiers: [5, 10, 25, 50, 100], lbl: v => `${v} in a row` },
+  { id: 'hands', g: 'practice', t: 'Hands played', d: 'Practice, Daily and Casino hands (drills don\'t count).', tiers: [100, 500, 1000, 2500, 10000], lbl: v => v.toLocaleString('en-US') },
+  { id: 'daily_first', g: 'daily', t: 'First daily', d: 'Finish a daily challenge.' },
+  { id: 'daily_perfect', g: 'daily', t: 'Perfect daily', d: 'Finish a daily with $0 given up.' },
+  { id: 'daily_streak', g: 'daily', t: 'Daily streak', d: 'Play the daily on the day, days in a row (either game).', tiers: [3, 7, 30], lbl: v => `${v} days` },
+  { id: 'daily_week', g: 'daily', t: 'Perfect week', d: 'A perfect daily on 7 dates in a row (late plays count).' },
+  { id: 'daily_dealer', g: 'daily', t: 'Perfect with a flashed dealer card', d: 'A perfect daily on a day the dealer flashes a card.' },
+  { id: 'daily_flop', g: 'daily', t: 'Perfect with an early flop card', d: 'A perfect daily on a day a flop card shows early.' },
+  { id: 'daily_neighbors', g: 'daily', t: 'Perfect with neighbors\' hands shown', d: 'A perfect daily on a day other players show their hands.' },
+  { id: 'leak_unlock', g: 'leaks', t: 'Leak finder unlocked', d: `Play ${100} hands.` },
+  { id: 'leak_fixed', g: 'leaks', t: 'First leak fixed', d: 'Fix a leak the Leak finder spotted.' },
+  { id: 'no_leaks', g: 'leaks', t: 'No leaks', d: 'No open leaks with at least 300 hands of that game on record.' },
+  { id: 'drills', g: 'leaks', t: 'Perfect drills', d: 'Finish a drill 10/10.', tiers: [1, 5, 10, 25], lbl: v => `${v} drill${v === 1 ? '' : 's'}` },
+  { id: 'near_perfect', g: 'leaks', t: 'Near-perfect play', d: 'House edge within 0.25% of perfect play over your last 1,000 hands.' },
+  { id: 'trip_first', g: 'casino', t: 'First trip', d: 'Finish a casino trip.' },
+  { id: 'trip_full', g: 'casino', t: 'The whole trip', d: 'Play until the time you set without going broke.' },
+  { id: 'trip_up', g: 'casino', t: 'Cashed out up', d: 'Finish a trip with a profit.' },
+  { id: 'trip_mult', g: 'casino', t: 'Multiplied your buy-in', d: 'Cash out with a multiple of your buy-in.', tiers: [2, 3, 4], lbl: v => `${v}×` },
+  { id: 'trip_flawless', g: 'casino', t: 'Flawless trip', d: 'Play the whole trip with every decision right.' },
+  { id: 'beat_perfect', g: 'casino', t: 'Beat perfect play', d: 'Finish a trip ahead of what perfect play would have made with the same cards and bets.' },
+  { id: 'comeback', g: 'casino', t: 'Comeback', d: 'Drop below half your buy-in, then cash out with a profit.' },
+  { id: 'in_black', g: 'casino', t: 'In the black', d: 'All casino trips in profit after at least 5 trips.' },
+  { id: 'min_full', g: 'casino', t: 'Minimum buy-in, whole trip', d: 'Buy in at the table minimum and play until the end without going broke.' },
+  { id: 'bankroll', g: 'casino', t: 'Bankroll', d: 'Your bankroll after a cash-out.', tiers: [2500, 5000, 10000, 25000, 100000], lbl: money$ },
+  { id: 'big_hand', g: 'casino', t: 'Big hand', d: 'Win this much in a single hand.', tiers: [500, 1000, 5000, 10000, 25000], lbl: money$ },
+  { id: 'max_ante', g: 'casino', t: 'Max ante', d: 'Play a hand at a table\'s maximum ante.', tiers: [1, 2, 3, 4, 5], lbl: v => money$(CAS_TABLES[v - 1].max) },
+  { id: 'dealer_mistake', g: 'casino', t: 'Dealer mistake', d: 'A dealer mistake goes your way.' },
+  { id: 'busted', g: 'casino', t: 'Busted', d: 'Run out of chips on a trip.', hidden: true },
+  { id: 'bonus_sank', g: 'casino', t: 'Bonus bets sank it', d: 'The main game finished up, but the bonus bets made the trip a loss.', hidden: true },
+  { id: 'bonus_saved', g: 'casino', t: 'Bonus bets saved it', d: 'The main game finished down, but the bonus bets made the trip a profit.', hidden: true },
+  { id: 'blind_fh', g: 'hands', t: 'Big Blind payout', d: 'The Blind (Odds) pays on a full house or better.' },
+  { id: 'full_house', g: 'hands', t: 'Full house', d: 'Make a full house.' },
+  { id: 'quads', g: 'hands', t: 'Four of a kind', d: 'Make four of a kind.' },
+  { id: 'straight_flush', g: 'hands', t: 'Straight flush', d: 'Make a straight flush.' },
+  { id: 'royal', g: 'hands', t: 'Royal flush', d: 'Make a royal flush.', hidden: true },
+  { id: 'trips_fh', g: 'hands', t: 'Trips jackpot', d: 'The Trips bet pays on a full house or better.' },
+  { id: 'aces_bonus', g: 'hands', t: 'Pocket rockets', d: 'The Pairs / Pocket Bonus bet pays on pocket aces.' },
+  { id: 'lost_straight', g: 'hands', t: 'Bad beat', d: 'Lose with a straight or better.' },
+  { id: 'counterfeit', g: 'hands', t: 'Counterfeited', d: 'Lose because your two pair was counterfeited.', hidden: true },
+  { id: 'board_plays', g: 'hands', t: 'Played the board', d: 'Push because the board was the best hand for both of you.', hidden: true },
+  { id: 'lost_aces', g: 'hands', t: 'Cracked aces', d: 'Lose with pocket aces.', hidden: true },
+  { id: 'premium_72', g: 'hands', t: 'Beaten by the worst', d: 'Lose with TT+, AQo+ or ATs+ to the dealer\'s 7-2 offsuit.', hidden: true },
+  { id: 'max_72', g: 'hands', t: 'Max bet with 7-2', d: 'Make your biggest preflop raise with 7-2 and win.', hidden: true },
+  { id: 'max_k3', g: 'hands', t: 'Max bet with K-3', d: 'Make your biggest preflop raise with K-3 and win.', hidden: true },
+  { id: 'analyzed', g: 'learn', t: 'Analyzed mistakes', d: 'Open Analyze from a hand you played.', tiers: [10, 100], lbl: v => `${v} hands` },
+  { id: 'charts', g: 'learn', t: 'Range charts', d: 'Open range charts for 10 different hands.', tiers: [10], lbl: v => `${v} charts` },
+  { id: 'big_calc', g: 'learn', t: 'Big calculation', d: 'Calculate a multi-hand range chart.', hidden: true },
+  { id: 'course_corr', g: 'learn', t: 'Course correction', d: 'Get a spot right that you once got wrong.' },
+  { id: 'read_rules', g: 'learn', t: 'Read the rules', d: 'Watch every How to Play example.' },
+  { id: 'bounce_back', g: 'learn', t: 'Bounce back', d: 'After a costly mistake, play the next 10 Practice hands perfectly.' },
+];
+const ACH_BY = Object.fromEntries(ACH.map(a => [a.id, a]));
+const ACH_MEDAL = ['bronze', 'silver', 'gold', 'plat', 'diamond'];
+const achTiers = a => a.tiers || [1];
+const AS = { get: () => ({ p: {}, ...store.get('uth.ach', {}) }), set: v => store.set('uth.ach', v) };
+const achLevel = (a, v) => achTiers(a).filter(t => (v || 0) >= t).length;
+const achQueue = [];
+const achMedal = (a, l) => !l ? 'm-none' : achTiers(a).length === 1 ? 'm-gold' : `m-${ACH_MEDAL[Math.min(l, 5) - 1]}`; // single achievements are gold
+// record progress (best value reached); a new tier queues the unlock popup
+function achSet(id, v, { silent = false } = {}) {
+  const a = ACH_BY[id]; if (!a || !(v > 0)) return;
+  const st = AS.get(), old = st.p[id] || 0; if (v <= old) return;
+  const l0 = achLevel(a, old), l1 = achLevel(a, v);
+  st.p[id] = v; AS.set(st);
+  if (l1 > l0 && !silent && !st.quiet) { for (let l = l0 + 1; l <= l1; l++) achQueue.push({ a, l }); achShowSoon(); }
+  if (mode === 'ach') renderAch();
+  renderAchNav?.();
+}
+const achBump = (id, by = 1) => achSet(id, (AS.get().p[id] || 0) + by);
+// popups: a small banner at the top, one after another; they never block play
+let achTimer = null;
+function achShowSoon() {
+  if (achTimer) return;
+  const next = () => {
+    const it = achQueue.shift(); if (!it) { achTimer = null; return; }
+    const { a, l } = it, tiers = achTiers(a), tl = tiers.length > 1 ? ` · ${a.lbl ? a.lbl(tiers[l - 1]) : tiers[l - 1]}` : '';
+    const el = document.createElement('div'); el.className = 'ach-pop';
+    el.innerHTML = `<span class="ach-medal ${achMedal(a, l)}">${ICON_TROPHY}</span><span><small>Achievement unlocked</small><b>${a.t}${tl}</b></span>`;
+    el.onclick = () => { el.remove(); setMode('ach'); };
+    document.body.appendChild(el); requestAnimationFrame(() => el.classList.add('show'));
+    FX.play(a.hidden ? 'fan3' : 'fan2'); FX.buzz('perfect');
+    setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); achTimer = setTimeout(next, 250); }, 2800);
+  };
+  achTimer = setTimeout(next, 600);
+}
+// read everything the app already keeps; silent the very first time (existing history counts, no popup storm)
+function achSync() {
+  const st = AS.get(), first = !st.synced, o = { silent: first };
+  const B = QZ.statsBy, G = ['uth', 'wpt'];
+  achSet('first_hand', G.some(g => B[g].normal.n + B[g].tough.n > 0) ? 1 : 0, o);
+  achSet('streak', Math.max(...G.map(g => B[g].normal.best)), o);
+  achSet('tough_streak', Math.max(...G.map(g => B[g].tough.best)), o);
+  const hands = store.get('uth.handsLogged', 0);
+  achSet('hands', hands, o); achSet('leak_unlock', hands >= LEAK_HANDS ? 1 : 0, o);
+  const ls = store.get('uth.leakState', {});
+  if (Object.values(ls).some(gs => Object.values(gs || {}).some(x => x.status === 'fixed'))) achSet('leak_fixed', 1, o);
+  // dailies: by date, across both games
+  const days = {};
+  for (const [k, p] of Object.entries(dProgAll())) {
+    if (!p?.done) continue;
+    const [game, date] = k.split('|'), perfect = dTotal(p) < 1e-9, kind = dailyInfo(game, date).kind;
+    const d = days[date] ||= { onTime: false, perfect: false };
+    if (!p.late) d.onTime = true; if (perfect) d.perfect = true;
+    achSet('daily_first', 1, o);
+    if (perfect) { achSet('daily_perfect', 1, o); if (kind === 'dealer') achSet('daily_dealer', 1, o); if (kind === 'flop') achSet('daily_flop', 1, o); if (kind === 'one' || kind === 'two') achSet('daily_neighbors', 1, o); }
+  }
+  const run = key => { let best = 0, cur = 0, prev = null; for (const date of Object.keys(days).filter(x => days[x][key]).sort()) { cur = prev && dayAdd(prev, 1) === date ? cur + 1 : 1; best = Math.max(best, cur); prev = date; } return best; };
+  achSet('daily_streak', run('onTime'), o); if (run('perfect') >= 7) achSet('daily_week', 1, o);
+  // casino record
+  achSet('bankroll', BR.get().best, o);
+  const cs = ['uth', 'wpt'].map(casStats), trips = cs.reduce((t, x) => t + x.trips, 0), total = cs.reduce((t, x) => t + x.total, 0);
+  if (trips) achSet('trip_first', 1, o); if (trips >= 5 && total > 0) achSet('in_black', 1, o);
+  if (first) { st.synced = true; const s2 = AS.get(); s2.synced = true; AS.set(s2); }
+}
+// a casino hand that's just been settled
+function achCasinoHand(s, c) {
+  const r = c.res, h = c.h, A = c.bets.ante, T = casTable(s);
+  if (r.net > 0) achSet('big_hand', r.net);
+  if (A === T.max) achSet('max_ante', T.id);
+  if (r.error) achSet('dealer_mistake', 1);
+  if (c.folded) return; // made-hand achievements only when you played it out
+  const cat = r.cat, hr = h.hole.map(rk).sort((x, y) => y - x), dr = h.dc.map(rk).sort((x, y) => y - x), aa = hr[0] === 12 && hr[1] === 12;
+  if (cat === 6) achSet('full_house', 1); if (cat === 7) achSet('quads', 1); if (cat === 8) achSet('straight_flush', 1); if (cat === 9) achSet('royal', 1);
+  if (r.win && cat >= 6 && r.blind > 0) achSet('blind_fh', 1);
+  if (r.trips > 0 && cat >= 6) achSet('trips_fh', 1);
+  if (r.pocket > 0 && aa) achSet('aces_bonus', 1);
+  if (r.lose && cat >= 4) achSet('lost_straight', 1);
+  if (r.lose && casCounterfeit(h)) achSet('counterfeit', 1);
+  if (!r.win && !r.lose && E.eval7([...h.hole, ...h.board]) === E.eval7(h.board)) achSet('board_plays', 1); // your best five is the board
+  if (r.lose && aa) achSet('lost_aces', 1);
+  const suited = sut(h.hole[0]) === sut(h.hole[1]), premium = (hr[0] === hr[1] && hr[0] >= 8) || (hr[0] === 12 && (hr[1] >= 10 || (suited && hr[1] >= 8)));
+  if (r.lose && premium && dr[0] === 5 && dr[1] === 0 && sut(h.dc[0]) !== sut(h.dc[1])) achSet('premium_72', 1);
+  const maxPre = c.picks.some(p => p.st === 'preflop' && p.k === 'bet' + s.maxRaise);
+  if (r.win && maxPre && hr[0] === 5 && hr[1] === 0) achSet('max_72', 1);
+  if (r.win && maxPre && hr[0] === 11 && hr[1] === 1) achSet('max_k3', 1);
+}
+// a finished trip (after the tally)
+function achCasinoTrip(s) {
+  const sm = s.summary; if (!sm) return;
+  const T = casTable(s), whole = s.timeUp === 'time';
+  achSet('trip_first', 1);
+  if (whole) achSet('trip_full', 1);
+  if (sm.net > 0) achSet('trip_up', 1);
+  achSet('trip_mult', s.bank / casBuyIn(s));
+  if (whole && sm.nDec > 0 && sm.nOk === sm.nDec) achSet('trip_flawless', 1);
+  if (sm.net > sm.perfect + 0.5) achSet('beat_perfect', 1);
+  if (sm.net > 0 && (s.minBank ?? casBuyIn(s)) < casBuyIn(s) / 2) achSet('comeback', 1);
+  if (whole && casBuyIn(s) === T.buyMin) achSet('min_full', 1);
+  if (s.timeUp === 'broke') achSet('busted', 1);
+  if (sm.split) { const bonus = sm.split.trips + sm.split.pocket; if (sm.split.main > 0 && sm.net < 0 && bonus < 0) achSet('bonus_sank', 1); if (sm.split.main < 0 && sm.net > 0 && bonus > 0) achSet('bonus_saved', 1); }
+  achSync();
+}
+// "Course correction": a decision you got right that you'd once gotten wrong (same game, street, hand and what you could see)
+function achCourseCheck(recs, t) {
+  const spot = r => [r.game, r.street, r.cls, [...r.board].sort().join(), (r.dealer || []).join(), [...(r.dead || [])].sort().join()].join('|');
+  const now = recs.filter(r => r.t === t && r.loss < 1e-9); if (!now.length) return;
+  const wrong = new Set(recs.filter(r => r.t < t && r.loss > 1e-9).map(spot));
+  if (now.some(r => wrong.has(spot(r)))) achSet('course_corr', 1);
+}
+function achChartSeen(key) {
+  const seen = store.get('uth.achCharts', []); if (seen.includes(key)) return;
+  seen.push(key); store.set('uth.achCharts', seen.slice(-50)); achSet('charts', seen.length);
+}
+function achDemoSeen(i) {
+  const seen = new Set(store.get('uth.achDemos', [])); seen.add(i); store.set('uth.achDemos', [...seen]);
+  if (seen.size >= DEMOS.length) achSet('read_rules', 1);
+}
+const ICON_TROPHY = '<svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4v3h-4z"/></svg>';
+function renderAchNav() {
+  const el = document.getElementById('achSub'); if (!el) return;
+  document.getElementById('achIcon').innerHTML = ICON_TROPHY;
+  const st = AS.get(), n = ACH.filter(a => achLevel(a, st.p[a.id]) > 0).length;
+  el.textContent = `${n} of ${ACH.length} earned`;
+}
+function renderAch() {
+  const el = document.getElementById('aBody'); if (!el || mode !== 'ach') return;
+  const st = AS.get(), earned = ACH.filter(a => achLevel(a, st.p[a.id]) > 0).length;
+  const stages = ACH.reduce((t, a) => t + achLevel(a, st.p[a.id]), 0), allStages = ACH.reduce((t, a) => t + achTiers(a).length, 0);
+  let x = `<div class="qhead">Achievements<small>${earned} of ${ACH.length} earned · ${stages} of ${allStages} stages</small></div>
+    <div class="achbar"><i style="width:${stages / allStages * 100}%"></i></div>`;
+  for (const [g, name] of ACH_GROUPS) {
+    x += `<h3 class="lh">${name}</h3><div class="achgrid">`;
+    for (const a of ACH.filter(z => z.g === g)) {
+      const v = st.p[a.id] || 0, tiers = achTiers(a), l = achLevel(a, v), secret = a.hidden && !l;
+      const medal = achMedal(a, l);
+      const next = tiers[l], prev = l ? tiers[l - 1] : 0;
+      const prog = tiers.length > 1 || next > 1 ? (l < tiers.length ? `<div class="achprog"><i style="width:${Math.max(0, Math.min(1, (v - prev) / (next - prev))) * 100}%"></i></div><small class="achnext">${a.id === 'max_ante' || a.id === 'trip_mult' ? `Next: ${a.lbl(next)}` : `${a.id === 'bankroll' || a.id === 'big_hand' ? money$(Math.floor(v)) : Math.floor(v).toLocaleString('en-US')} / ${a.lbl ? a.lbl(next) : next}`}</small>` : '<small class="achnext">All stages earned</small>') : '';
+      const pips = tiers.length > 1 ? `<div class="achpips">${tiers.map((tv, i) => `<span class="${i < l ? `on m-${ACH_MEDAL[i]}` : ''}">${a.lbl ? a.lbl(tv) : tv}</span>`).join('')}</div>` : '';
+      x += `<div class="achcard ${l ? 'got' : ''} ${secret ? 'secret' : ''}"><span class="ach-medal ${medal}">${secret ? '?' : ICON_TROPHY}</span>
+        <div class="achtxt"><b>${secret ? '???' : a.t}</b><small>${secret ? 'Hidden achievement — keep playing' : a.d}</small>${secret ? '' : pips + prog}</div></div>`;
+    }
+    x += `</div>`;
+  }
+  el.innerHTML = x;
+}
 // ── Codes (Settings) ──────────────────────────────────────────────────────
 // Test codes replace the hand history of the selected game with a known setup (real dealt and solved
 // hands, no extra information, with chosen mistakes planted). A friend code removes ads for free.
@@ -4217,6 +4513,14 @@ async function applyCode(raw) {
   if (!code) return;
   if (FRIEND_CODES.has(codeHash(code))) { await adsOff(); say(APP.native ? 'Ads removed — enjoy!' : 'Code accepted — ads will be off in the app on this device.'); return; }
   if (code === 'TEST-ADS') { APP.adsRemoved = false; try { localStorage.removeItem('uth.adsRemoved'); } catch (_) {} if (APP.native) startAds(); renderAdsOpt(); say('Ads are back on (testing).'); return; }
+  // achievements: TEST-ACH-RESET, TEST-ACH-ALL, TEST-ACH-<ID>-<N> (sets progress, e.g. TEST-ACH-STREAK-24); TEST-BANKROLL<N>
+  const c0 = code.replace(/\s+/g, '');
+  if (c0 === 'TEST-ACH-RESET') { ['uth.ach', 'uth.achCharts', 'uth.achDemos', 'uth.achBB'].forEach(k => { try { localStorage.removeItem(k); } catch (_) {} }); const st = AS.get(); st.synced = true; AS.set(st); renderAchNav(); say('Achievements cleared (they rebuild from your history as you play).'); return; }
+  if (c0 === 'TEST-ACH-ALL') { const st = AS.get(); for (const a of ACH) st.p[a.id] = achTiers(a).slice(-1)[0]; AS.set(st); renderAchNav(); say('Every achievement unlocked (testing).'); return; }
+  const am = c0.match(/^TEST-ACH-([A-Z0-9_]+)-(\d{1,7})$/);
+  if (am) { const id = am[1].toLowerCase(); if (!ACH_BY[id]) { say(`No achievement "${id}". Ids: ${ACH.map(a => a.id).join(', ')}`); return; } const st = AS.get(); st.p[id] = 0; AS.set(st); achSet(id, +am[2]); say(`${ACH_BY[id].t} progress set to ${am[2]}.`); return; }
+  const bm = c0.match(/^TEST-BANKROLL(\d{1,7})$/);
+  if (bm) { const v = +bm[1], br = BR.get(); br.bal = v; br.best = Math.max(br.best, v); BR.set(br); achSync(); if (mode === 'casino') renderCasino(); say(`Bankroll set to ${casD(v)}.`); return; }
   const sm = code.replace(/\s+/g, '').match(/^TEST-SETPRACTICESTREAK(\d{1,5})$/);
   if (sm) { // sets the current streak of the selected game and practice mode (all hands / tough spots), to test milestones
     const st = statsFor(S.game, QZ.tough), n = +sm[1];
@@ -4301,6 +4605,7 @@ function renderBackBar() {
   el.style.display = on ? '' : 'none';
   if (on) el.innerHTML = `<button class="anbtn" id="backBtn">‹ Back to ${FROM_NAME[ANALYZE_FROM]}</button>`;
   document.getElementById('backBtn')?.addEventListener('click', analyzeBack);
+  const sc = document.getElementById('sheetClose'); if (sc) sc.textContent = on ? `‹ ${FROM_NAME[ANALYZE_FROM]}` : 'Close'; // the sheet's button says where it goes
 }
 function analyzeBack() { const to = ANALYZE_FROM; ANALYZE_FROM = null; if (to) { openSheet(false); setMode(to); } }
 
@@ -4449,6 +4754,7 @@ function drawDemo() {
   const el = document.getElementById('demo'); if (!el) return;
   const d = DEMOS[DEMO.i], C = demoCards(d), st = DEMO.step, s2 = S.game === 'uth' ? 'Blind' : 'Odds';
   const yb = bestFive([...C.you, ...C.board]), db = bestFive([...C.dealer, ...C.board]);
+  if (st >= DEMO_STEPS) achDemoSeen(DEMO.i);
   const hl = st === 5 ? new Set(yb.cards) : st === 6 ? new Set(db.cards) : st >= 7 ? new Set([...yb.cards, ...db.cards]) : null;
   const who = st === 5 ? 'you' : st === 6 ? 'dealer' : null;
   const card = (c, show, side, at) => {
@@ -4633,13 +4939,15 @@ function setMode(m) {
   mode = m; store.set('uth.mode', m);
   document.querySelectorAll('.navitem[data-m]').forEach(x => x.classList.toggle('on', x.dataset.m === m));
   if (m !== 'analyze') ANALYZE_FROM = null; renderBackBar?.();
-  document.getElementById('pageName').textContent = { analyze: 'Analyze', quiz: 'Practice', daily: 'Daily challenge', guide: 'How to Play', leaks: 'Leak finder', casino: 'Casino trip' }[m];
+  document.getElementById('pageName').textContent = { analyze: 'Analyze', quiz: 'Practice', daily: 'Daily challenge', guide: 'How to Play', leaks: 'Leak finder', casino: 'Casino trip', ach: 'Achievements' }[m];
   openNav(false);
   document.body.classList.toggle('quiz-mode', m === 'quiz');
   document.body.classList.toggle('guide-mode', m === 'guide');
   document.body.classList.toggle('daily-mode', m === 'daily');
   document.body.classList.toggle('leaks-mode', m === 'leaks');
   document.body.classList.toggle('casino-mode', m === 'casino');
+  document.body.classList.toggle('ach-mode', m === 'ach');
+  if (m === 'ach') { achSync(); renderAch(); }
   if (m === 'leaks') renderLeaks();
   if (m === 'casino') renderCasino();
   if (m === 'daily') dailyOpen(DL.date || todayYmd());
@@ -4686,7 +4994,7 @@ function openSheet(open) { document.getElementById('pane').classList.toggle('ope
   let y0 = null, t0 = 0, dy = 0, fromHead = false;
   pane.addEventListener('touchstart', e => {
     if (!pane.classList.contains('open') || e.touches.length !== 1) return;
-    fromHead = !!e.target.closest('.sheet-head');
+    fromHead = !!e.target.closest('.sheet-head, .tabrow');
     if (!fromHead && pane.scrollTop > 0) return;
     y0 = e.touches[0].clientY; t0 = performance.now(); dy = 0;
   }, { passive: true });
@@ -4701,7 +5009,7 @@ function openSheet(open) { document.getElementById('pane').classList.toggle('ope
     if (y0 === null) return;
     const fast = dy > 30 && dy / Math.max(1, performance.now() - t0) > 0.6;
     pane.style.transition = ''; pane.style.transform = '';
-    if (dy > 90 || fast) { openSheet(false); if (ANALYZE_FROM) analyzeBack(); }
+    if (dy > 90 || fast) openSheet(false); // swiping down stays on Analyze (the back bar still goes back); the Close button returns
     y0 = null; dy = 0;
   };
   pane.addEventListener('touchend', end); pane.addEventListener('touchcancel', end);
@@ -4755,6 +5063,7 @@ document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.b
   try { const b = await fetch('baselines.json'); if (b.ok) BASE = await b.json(); } catch (_) {}
   if (mode === 'guide') renderGuide();
   CH = null; buildChart();
+  achSync(); renderAchNav();
   setMode(mode);
   // get today's daily hands ready in the background (lowest priority), so the Daily tab opens instantly
   setTimeout(() => { if (!store.get('uth.dset.' + dKey(S.game, todayYmd()), null)) dailySet(S.game, todayYmd(), null, -1).catch(() => {}); }, 4000);
