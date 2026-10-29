@@ -257,7 +257,116 @@
   .mbar { display: none; }
 
   /* Quiz */
-  .quiz, .daily, .leaks { display: none; }
+  .quiz, .daily, .leaks, .casino { display: none; }
+  body.casino-mode .casino { display: block; }
+  body.casino-mode .layout, body.casino-mode .mbar { display: none !important; }
+  /* Casino trip */
+  .cintro { color: var(--dim); font-size: 14.5px; line-height: 1.5; margin: 0 0 14px; }
+  .ctop { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .cchips { display: flex; flex-direction: column; align-items: flex-end; } .cchips span { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; }
+  .cchips b { font: 700 22px var(--sans); color: var(--gold); font-variant-numeric: tabular-nums; }
+  .cbets { margin-top: 14px; } .cbet { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 16px; }
+  .cbet small { display: block; font-size: 12px; color: var(--faint); }
+  .cstep { display: inline-flex; align-items: center; gap: 10px; } .cstep b { min-width: 52px; text-align: center; font: 700 18px var(--sans); font-variant-numeric: tabular-nums; }
+  .cstep button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--felt-2); color: var(--ink); font: 700 20px var(--sans); cursor: pointer; }
+  .cstep button:disabled { opacity: .35; cursor: default; }
+  .cbets .dmeta { margin: 12px 0; }
+  .cfoot { text-align: center; margin-top: 14px; }
+  .cbetline { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 2px; min-height: 26px; } .cbetline span { font: 600 12.5px var(--sans); color: var(--gold); background: rgba(230,192,106,.1); border: 1px solid var(--gold-dim); padding: 3px 9px; border-radius: 99px; }
+  .cbetline .cplay { color: #13261e; background: var(--gold); }
+  .cshow { margin-top: 12px; font-size: 14.5px; color: var(--dim); } .cshow b { color: var(--ink); }
+  .cparts { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; } .cparts b { font-variant-numeric: tabular-nums; }
+  .cres { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .cres > div { display: flex; flex-direction: column; } .cres span { font-size: 12.5px; color: var(--faint); }
+  .cres b { font: 700 26px var(--sans); font-variant-numeric: tabular-nums; } .cres small { font: 700 15px var(--sans); }
+  .cverdict { margin-top: 14px; font-size: 15px; } .cverdict > b:first-child { font-size: 17px; }
+  .cnote { margin-top: 8px; color: var(--dim); font-size: 14px; line-height: 1.45; }
+  .cmis { border-left-color: var(--gold); background: rgba(230,192,106,.04); } .cmeta { color: var(--faint); font-size: 13px; }
+  .ccards { font-size: 13.5px; color: var(--faint); margin: 4px 0 6px; }
+  .crow { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 14px; } .crow > span:first-child { flex: 1; } .crow .neg { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .creal { font-size: 13.5px; margin-top: 6px; color: var(--dim); } .creal.neg { color: var(--bad); } .creal.pos { color: var(--good); }
+  .clog { margin: 16px 0; } .clog td.cx { color: var(--bad); font-weight: 700; text-align: center; padding-left: 2px; padding-right: 2px; }
+  .csetup { display: grid; gap: 8px; } .crowset { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 8px; } .crowset b { font-weight: 700; } .crowset small { display: block; color: var(--faint); font-size: 12.5px; font-weight: 400; margin-top: 2px; line-height: 1.4; }
+  .cbring { font: 700 26px var(--sans); color: var(--gold); font-variant-numeric: tabular-nums; }
+  #cBring { width: 100%; accent-color: var(--gold); }
+  .csg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; } .csg button { padding: 9px 4px; }
+  .cchk { cursor: pointer; align-items: flex-start; } .cchk input { width: 22px; height: 22px; accent-color: var(--gold); flex: none; margin-top: 2px; }
+  .csetup .qacts { margin-top: 12px; }
+  .cnb { display: flex; align-items: center; gap: 10px; } .ctable .cnb .pc { width: 34px; height: 48px; font-size: 15px; }
+  .cerr { display: block; font-style: normal; color: var(--gold); font-size: 12.5px; margin-top: 2px; }
+  .crec { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; } .crec div { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: rgba(0,0,0,.12); display: grid; gap: 2px; }
+  .crec span { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; } .crec b { font: 700 20px var(--sans); font-variant-numeric: tabular-nums; }
+  .csplit { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; font-size: 14px; color: var(--dim); } .csplit b { font-variant-numeric: tabular-nums; } .csplit small { color: var(--faint); }
+  .cbest { text-align: center; border: 2px solid var(--gold); border-radius: 14px; padding: 12px; margin: 0 0 12px; background: rgba(230,192,106,.1); font: 700 18px var(--serif); color: var(--gold); display: grid; gap: 2px; animation: cpop2 .5s cubic-bezier(.2,1.4,.4,1); }
+  .cbest b { font: 700 28px var(--sans); color: var(--ink); } .cbest small { font: 500 13px var(--sans); color: var(--dim); }
+  @keyframes cpop2 { from { transform: scale(.7); opacity: 0; } to { transform: none; opacity: 1; } } .clog summary { cursor: pointer; color: var(--gold); font-weight: 600; }
+  .casino .qacts { margin-top: 12px; }
+  #cBody { max-width: 560px; margin: 0 auto; }
+  .ctop2 { display: flex; justify-content: space-between; align-items: center; margin: 0 2px 10px; }
+  .cclock { display: inline-flex; align-items: center; gap: 7px; font: 700 20px var(--sans); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .cclock svg { width: 20px; height: 20px; fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; }
+  .cbank { display: grid; justify-items: end; line-height: 1.1; } .cbank small { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; }
+  .cbank b { font: 700 24px var(--sans); color: var(--gold); font-variant-numeric: tabular-nums; } .cbank small.cin { text-transform: none; letter-spacing: 0; font-size: 12px; color: var(--dim); }
+  .ctable { position: relative; background: radial-gradient(ellipse at 50% 38%, #217049, #0e3324 78%); border: 2px solid #5a3b1c; box-shadow: inset 0 0 0 6px #3b2611, inset 0 0 40px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.4);
+    border-radius: 26px 26px 120px 120px / 26px 26px 70px 70px; padding: 16px 12px 26px; display: grid; justify-items: center; gap: 8px; overflow: hidden; }
+  .ctable .pc { width: 46px; height: 64px; font-size: 20px; cursor: default; box-shadow: 0 3px 8px rgba(0,0,0,.35); }
+  .ctable .pc .x { display: none !important; }
+  .ctable .pc.back { background: repeating-linear-gradient(45deg, #7a2b2b 0 5px, #6a2222 5px 10px); border: 2px solid #efe4c4; }
+  .ctable .pc.lit-y, .ctable .pc.lit-d, .ctable .pc.lit-b { transform: translateY(-4px); transition: transform .3s, box-shadow .3s, opacity .3s; }
+  .ctable .pc.lit-y { box-shadow: 0 0 0 3px var(--gold), 0 6px 16px rgba(0,0,0,.4); }
+  .ctable .pc.lit-d { box-shadow: 0 0 0 3px #7fb3ff, 0 6px 16px rgba(0,0,0,.4); }
+  .ctable .pc.lit-b { box-shadow: 0 0 0 3px var(--gold), 0 0 0 6px #7fb3ff, 0 6px 16px rgba(0,0,0,.4); }
+  .ctable .pc.hdim { opacity: .35; transition: opacity .3s; }
+  .ctable .pc.cdim { opacity: .62; filter: grayscale(.6) brightness(.9); transition: opacity .3s, filter .3s; }
+  .crowc { display: flex; gap: 6px; } .cboard { margin-top: 4px; }
+  .clbl2 { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #efe4c4; opacity: .7; }
+  .cdeal { display: grid; justify-items: center; gap: 4px; }
+  .ctray { position: absolute; top: 10px; right: 14px; display: flex; gap: 2px; opacity: .55; } .ctray span { width: 7px; height: 22px; border-radius: 3px; background: linear-gradient(#c43b3b, #8f2525); } .ctray span:nth-child(2) { background: linear-gradient(#2f8f5b, #1d6640); } .ctray span:nth-child(3) { background: linear-gradient(#333, #111); } .ctray span:nth-child(4) { background: linear-gradient(#c43b3b, #8f2525); }
+  .carc { font-family: var(--serif); font-size: 12.5px; color: #efe4c4; opacity: .7; text-align: center; margin: 2px 0; }
+  .clow { display: flex; align-items: center; justify-content: center; gap: 18px; width: 100%; margin-top: 4px; }
+  .cspots { display: grid; gap: 4px; justify-items: center; }
+  .cgrid { display: grid; grid-template-columns: auto 18px auto; justify-items: center; align-items: start; gap: 2px 0; }
+  .cmine { display: flex; align-items: flex-end; gap: 3px; min-height: 30px; margin-top: 6px; }
+  .crow3 { display: flex; align-items: flex-start; justify-content: center; gap: 8px; } .ceq2 { color: #efe4c4; opacity: .7; font: 700 18px var(--sans); margin-top: 18px; }
+  .cyou2 { display: grid; justify-items: center; gap: 6px; }
+  .cspotb { display: grid; justify-items: center; gap: 1px; background: none; border: 0; padding: 0; cursor: pointer; color: #efe4c4; font: 600 11px var(--sans); }
+  .cring2 { width: 62px; height: 50px; border: 2px solid rgba(239,228,196,.6); border-radius: 50%; display: flex; align-items: flex-end; justify-content: center; gap: 3px; padding-bottom: 7px; transition: background .15s, border-color .15s; }
+  .cspotb.play .cring2 { border-style: dashed; }
+  .ctable:not(.live) .cspotb:not(.play):hover .cring2 { background: rgba(239,228,196,.08); border-color: var(--gold); }
+  .clab { opacity: .8; letter-spacing: .03em; white-space: nowrap; } .camt { font: 700 12.5px var(--sans); font-variant-numeric: tabular-nums; min-height: 16px; }
+  .camt em { font-style: normal; } .camt .w { color: #7ef0a8; } .camt .l { color: #ff8c80; } .camt .p { opacity: .8; }
+  .cstk { position: relative; width: 32px; flex: none; }
+  .cstk i { position: absolute; left: 0; display: block; box-sizing: border-box; width: 32px; height: 10px; border-radius: 50%; border: 2px dashed #f4e8c8; box-shadow: 0 2px 0 rgba(0,0,0,.45), inset 0 -2px 0 rgba(0,0,0,.25); }
+  .cstk.mine { width: 26px; } .cstk.mine i { width: 26px; height: 8px; }
+  .ctable .pc.deal { animation: dealin .38s cubic-bezier(.2,.9,.3,1.2) both; }
+  @media (prefers-reduced-motion: reduce) { .ctable .pc.deal { animation: none; } }
+  .k5 { --kc: #c43b3b; } .k25 { --kc: #2f8f5b; } .k100 { --kc: #1d1d1d; }
+  .cstk i { background: var(--kc); }
+  .cfly { position: fixed; z-index: 95; width: 26px; height: 26px; border-radius: 50%; background: var(--kc); border: 3px dashed #f4e8c8; box-shadow: 0 2px 6px rgba(0,0,0,.45); pointer-events: none; }
+  .cbanner { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); background: rgba(8,22,16,.9); border: 2px solid var(--gold); border-radius: 14px; padding: 10px 18px; text-align: center; display: grid; gap: 2px;
+    animation: cpop .35s cubic-bezier(.2,1.4,.4,1); box-shadow: 0 10px 30px rgba(0,0,0,.5); min-width: 200px; pointer-events: none; }
+  .cbanner b { font: 700 22px var(--serif); color: var(--ink); } .cbanner span { font: 700 26px var(--sans); color: var(--ink); } .cbanner small { font-size: 12.5px; color: var(--dim); }
+  .cbanner.w { border-color: var(--good); } .cbanner.w span { color: var(--good); } .cbanner.l { border-color: var(--bad); } .cbanner.l span { color: var(--bad); }
+  @keyframes cpop { from { transform: translate(-50%, -50%) scale(.6); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+  .cctl { margin-top: 12px; }
+  .cctl .clast { min-height: 38px; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 19px; }
+  .crow2 { grid-template-columns: 1fr 1fr; } .crow2 .qact { min-height: 70px; } .crow2 .cwide { grid-column: 1 / -1; }
+  .cbusy .qact { opacity: .35; } .cctl .clast.cendl { font: 600 17px var(--serif); color: var(--ink); }
+  .qact.cout.sure { border-color: var(--bad); color: var(--bad); }
+  .cctl .crack { margin: 16px 0 4px; }
+  .cctl .qact.cgo { background: var(--gold); border-color: var(--gold); color: #13261e; } .cctl .qact.cgo small { color: #3b3216; }
+  .cwait { text-align: center; color: var(--dim); padding: 20px 0; }
+  .clast { text-align: center; font-size: 13.5px; color: var(--dim); min-height: 20px; margin-bottom: 10px; } .clast.pos { color: var(--good); } .clast.neg { color: var(--bad); }
+  .crack { display: flex; justify-content: center; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .rchip { width: 54px; height: 54px; border-radius: 50%; background: var(--kc); border: 4px dashed #f4e8c8; box-shadow: 0 3px 8px rgba(0,0,0,.45), inset 0 0 0 4px var(--kc); cursor: pointer; display: grid; place-items: center; padding: 0; transition: transform .12s; }
+  .rchip span { width: 34px; height: 34px; border-radius: 50%; background: var(--kc); border: 1.5px solid rgba(244,232,200,.8); display: grid; place-items: center; font: 700 12px var(--sans); color: #fff; }
+  .rchip.on { transform: translateY(-6px); box-shadow: 0 0 0 3px var(--gold), 0 10px 18px rgba(0,0,0,.5); }
+  .cclear { border: 1px solid var(--line); background: var(--felt-2); color: var(--ink); border-radius: 10px; padding: 9px 14px; font: 600 14px var(--sans); cursor: pointer; } .cclear:disabled { opacity: .4; cursor: default; }
+  .cdealbtn:disabled { opacity: .5; }
+  .cend { text-align: center; } .cendmsg { font: 600 20px var(--serif); margin: 10px 0 14px; }
+  @media (max-width: 380px) { .ctable .pc { width: 40px; height: 56px; font-size: 18px; } .cring2 { width: 52px; height: 42px; } .clow { gap: 10px; } }
+  .casino .dlost.pos { color: var(--good); }
+  .clate { opacity: 0; animation: clate .35s ease-out forwards; } @keyframes clate { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .clate { animation: none; opacity: 1; } }
   body.leaks-mode .leaks { display: block; }
   body.leaks-mode .layout, body.leaks-mode .mbar { display: none !important; }
   .ltiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0 6px; }
@@ -276,18 +385,19 @@
   .lhrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; } .lhrow .lfix { padding: 9px 14px; font-size: 14px; }
   .lcard { border: 1px solid var(--line); border-left: 3px solid var(--bad); border-radius: 10px; padding: 12px 14px; margin: 10px 0; background: rgba(255,122,110,.04); }
   .lctop { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; } .lctop b { font: 700 17px var(--sans); }
-  .lst { font: 700 10.5px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
+  .lst { font: 700 17px var(--sans); color: var(--gold); }
   .ltip { color: var(--dim); font-size: 14px; margin: 4px 0 6px; } .lmeta { font-size: 14px; } .lmeta b { color: var(--ink); }
   .lex { margin: 8px 0 10px; font-size: 13.5px; } .lex > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 5px 0; border-top: 1px solid var(--line); }
-  .lex small { color: var(--faint); } .lex .lpick { margin-left: auto; color: var(--dim); white-space: nowrap; }
+  .lex small { color: var(--faint); } .lex .lpick { margin-left: auto; color: var(--dim); white-space: nowrap; display: inline-flex; gap: 10px; align-items: baseline; } .lex .lpick .neg { font-variant-numeric: tabular-nums; }
   .qact.ldrill { padding: 10px 16px; font-size: 15px; }
   .lclean { color: var(--good); padding: 10px 0; }
+  .lsub { color: var(--dim); font-size: 14px; margin: -2px 0 4px; }
   .lfixed { display: flex; flex-wrap: wrap; gap: 8px; } .lfixed span { font-size: 13px; padding: 4px 10px; border-radius: 99px; border: 1px solid rgba(87,214,141,.4); color: var(--good); }
   @media (max-width: 520px) { .erow { grid-template-columns: 80px 1fr 62px; } }
-  .unlock-ic svg { width: 54px; height: 54px; fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-linecap: round; }
-  .unlock-btns { display: flex; gap: 14px; justify-content: center; align-items: center; margin-top: 16px; } .unlock-btns .qact { padding: 12px 18px; font-size: 16px; }
+  .unlock-ic { display: flex; justify-content: center; } .unlock-ic svg { display: block; width: 54px; height: 54px; fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-linecap: round; }
+  .unlock-btns { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 18px; } /* main button centred, Later underneath */ .unlock-btns .qact { padding: 12px 18px; font-size: 16px; }
   .cele.unlock { cursor: default; }
-  .unlock-ic.spot svg { stroke: var(--bad); }
+  .unlock-ic.warn svg { stroke: var(--bad); }
   @media (max-width: 520px) { .ltiles { gap: 6px; } .ltiles div { padding: 10px; } .ltiles b { font-size: 19px; } table.ltab td, table.ltab th { padding: 6px 3px; font-size: 12.5px; } .lbar { width: 30px; margin-right: 4px; } .lhide, .lper { display: none; } }
   body.daily-mode .daily { display: block; }
   body.daily-mode .layout, body.daily-mode .mbar { display: none !important; }
@@ -470,6 +580,8 @@
   table.qgrade tr.qevs td b { font-family: var(--mono); color: var(--dim); font-weight: 500; }
   .qtough { font-size: 11px; color: var(--gold); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
   .resetbtn { padding: 8px 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--ink); font-weight: 600; cursor: pointer; }
+  .codebox { display: flex; gap: 8px; } .codebox input { flex: 1; min-width: 0; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--ink); font: 600 14px var(--mono); text-transform: uppercase; }
+  #codeMsg { margin-top: 8px; min-height: 1.2em; }
   .resetbtn.danger { border-color: var(--bad); background: rgba(255,122,110,0.08); color: var(--bad); }
   /* Streak celebrations: tier 1 = toast; 2+ = centred card over a dimmed page, bigger and brighter as tiers rise */
   .cele-toast { position: fixed; left: 50%; top: calc(18px + var(--sat)); transform: translate(-50%, -140%); z-index: 90; background: #123d2c; border: 1px solid var(--gold); color: var(--ink);
@@ -489,6 +601,16 @@
   .cele.t4 .cele-card, .cele.t5 .cele-card { animation: celeGlow 1.6s ease-in-out infinite alternate; }
   @keyframes celeGlow { from { box-shadow: 0 0 0 6px rgba(230,192,106,.12), 0 0 30px rgba(230,192,106,.25); } to { box-shadow: 0 0 0 10px rgba(230,192,106,.22), 0 0 80px rgba(230,192,106,.55); } }
   #confetti { position: fixed; inset: 0; z-index: 96; pointer-events: none; }
+  /* Analyze: a small outlined button, everywhere it appears */
+  .anbtn { background: transparent; border: 1px solid var(--gold-dim); color: var(--gold); border-radius: 8px; padding: 4px 11px; font: 600 13px var(--sans); cursor: pointer; white-space: nowrap; line-height: 1.3; }
+  .backbar { margin: -6px 0 12px; } .backbar .anbtn { font-size: 14px; padding: 6px 14px; }
+  .anbtn:hover { background: rgba(230,192,106,.12); border-color: var(--gold); }
+  .qevrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  @media (max-width: 520px) { table .anbtn { padding: 3px 7px; font-size: 12px; } table.qgrade td:last-child { padding-left: 2px; padding-right: 0; } }
+  .drline { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 14px; color: var(--dim); } .drline b { color: var(--ink); }
+  .drres { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  .drevs { display: flex; flex-wrap: wrap; gap: 6px 22px; }
+  .drevs div { display: flex; flex-direction: column; gap: 2px; } .drevs span { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .05em; } .drevs b { font: 700 16px var(--sans); }
   .linkbtn { background: none; border: none; color: var(--gold); cursor: pointer; font-size: 13px; padding: 0; text-decoration: underline; }
   .qact.right { border-color: var(--good); background: rgba(87,214,141,0.14); }
   .qact.wrong { border-color: var(--bad); background: rgba(255,122,110,0.12); }
@@ -576,6 +698,7 @@
     </div>
   </header>
 
+  <div class="backbar" id="backBar" style="display:none"></div>
   <div class="layout">
     <section class="panel">
       <div class="row">
@@ -606,6 +729,7 @@
   <section class="panel guide" id="guide"></section>
   <section class="panel daily" id="daily"><div id="dBody"></div></section>
   <section class="panel leaks" id="leaks"><div id="lBody"></div></section>
+  <section class="panel casino" id="casino"><div id="cBody"></div></section>
 
   <section class="panel quiz" id="quiz">
     <div class="qbar">
@@ -621,7 +745,7 @@
 
 
   <footer>
-    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-28 15:10</span>
+    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-28 20:07</span>
     <span class="disclaim">Strategy trainer only — no real-money play. Not affiliated with or endorsed by Light &amp; Wonder or the World Poker Tour.</span>
   </footer>
 </div>
@@ -631,6 +755,7 @@
   <div class="navtop"><span class="navtitle">Hold'em <span>Trainer</span></span><button class="clear" id="navClose" aria-label="Close menu">✕</button></div>
   <button class="navitem" data-m="daily"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span><b>Daily challenge</b><small>Ten hands a day, scored in dollars</small></span></button>
   <button class="navitem" data-m="quiz"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 12.5l2.8 2.8L16.5 9"/></svg><span><b>Practice</b><small>Play hands and get graded</small></span></button>
+  <button class="navitem" data-m="casino"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3M6 6l2.1 2.1M15.9 15.9L18 18M18 6l-2.1 2.1M8.1 15.9L6 18"/></svg><span><b>Casino trip</b><small>An hour at the tables with $1,000</small></span></button>
   <button class="navitem" id="navLeaks" data-m="leaks"><span class="navicon" id="leakIcon"></span><span><b>Leak finder</b><small id="leakSub"></small><small class="navprog" id="leakProg"></small></span></button>
   <button class="navitem" data-m="analyze"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/></svg><span><b>Analyze</b><small>Solve any hand, see the range chart</small></span></button>
   <div class="navsep"></div>
@@ -1154,7 +1279,7 @@ window.importFromKV = importFromKV; window.exportPacks = exportPacks;
 // ── State (settings persist; cards don't) ─────────────────────────────────
 const S = {
   game: store.get('uth.game', 'uth'), street: store.get('uth.street', 'preflop'), tab: store.get('uth.tab', 'hand'),
-  tables: Object.assign({ uthTrips: 'UTH-01', badBeat: 'BB-4', wptTrips: 'TP-1', pocket: 'PB-1', uthPocket: 'PB-1' }, store.get('uthTables', {})),
+  tables: Object.assign({ uthTrips: 'UTH-01', badBeat: 'BB-4', wptTrips: 'TP-1', pocket: 'PB-1', uthPocket: 'Ult. Pairs' }, store.get('uthTables', {})),
   wptRaises: { 3: true, 2: false, 1: false }, // WPT preflop: 3x is always allowed, and smaller raises are never best
   ante: store.get('uth.ante', 0),
   // What you can see before the flop (each optional): the dealer's card, and one flop card
@@ -1165,7 +1290,9 @@ const S = {
   bonusAmt: Object.assign({ trips: 5, pocket: 5 }, store.get('uth.bonusAmt', {})),         // its size in dollars
   hole: [null, null], board: [null, null, null, null, null], dealer: [null], dead: [],
   active: 'hole', kpRank: null,
-};
+};// Ultimate's pairs bonus defaults to Ultimate Pairs (once, for anyone still on the old default)
+if (!store.get('uth.pairsDef', false)) { if (S.tables.uthPocket === 'PB-1') { S.tables.uthPocket = 'Ult. Pairs'; store.set('uthTables', S.tables); } store.set('uth.pairsDef', true); }
+
 function saveSettings() {
   store.set('uth.game', S.game); store.set('uth.street', S.street); store.set('uth.tab', S.tab); store.set('uthTables', S.tables);
   store.set('uth.ante', S.ante); store.set('uth.peekDealer', S.peekDealer); store.set('uth.peekFlop', S.peekFlop); store.set('uth.seeOthers', S.seeOthers); store.set('uth.sound', S.sound); store.set('uth.haptics', S.haptics); store.set('uth.bonusInc', S.bonusInc); store.set('uth.bonusAmt', S.bonusAmt);
@@ -1225,6 +1352,8 @@ const FX = (() => {
       };
       bone(-10, t, 0.5); bone(-11, t + 0.55, 0.5); bone(-12, t + 1.1, 0.5); bone(-13, t + 1.65, 1.6, true);
     },
+    chip: t => chips(t, 2, 0.05),
+    chips: t => chips(t, 9, 0.35),
     hit: t => { tone('sine', 130, t, 0.3, 0.35, { f2: 45 }); noise(t, 0.7, 0.07, 'highpass', 5000, 0.7); },
     suspense: (t, dur) => { // drum roll that speeds up and swells, over a rising rumble
       for (let x = 0; x < dur;) { const p = x / dur; noise(t + x, 0.06, 0.04 + 0.13 * p, 'bandpass', 1300, 0.9); x += 0.085 - 0.055 * p; }
@@ -1283,7 +1412,7 @@ function logDecisions(rows, { mode, game, h, extra = {} }) {
     const sp = nodeSpec(h, r.st);
     return { t, mode, game, street: r.st, cls: handClass(h.hole), hole: sp.hole, board: sp.board, dealer: sp.dealer, dead: sp.dead,
       pick: r.k, best: r.best, ev: Object.fromEntries(Object.entries(r.acts).map(([k, v]) => [k, r4(v)])), loss: r4(r.loss), gap: r4(r.gain), tough: r.tough, ...extra };
-  })).then(() => updateLeaks()); // may celebrate a fixed leak
+  })).then(() => updateLeaks({ fix: mode === 'quiz' || mode === 'tough' })); // a Practice hand is a checkpoint for fixes; daily and drill hands aren't
 }
 
 // a light tick on every tap of a button, card or option
@@ -1435,6 +1564,7 @@ function renderOpts() {
   if (APP.native) h += `<div class="opt wide"><label>Ads</label><div id="adsOpt"></div></div>`;
   h += `<div class="opt wide"><label>Practice score</label><div class="qbests" id="qBests"></div><button class="resetbtn" id="qResetBtn">Reset practice stats</button></div>`;
   h += `<div class="opt wide"><label>Saved hand history</label><div class="ptdesc" id="histInfo">Every hand you play in Practice and the Daily challenge is kept on this device for the leak finder.</div><button class="resetbtn danger" id="histWipeBtn">Delete hand history</button></div>`;
+  h += `<div class="opt wide"><label>Codes</label><div class="codebox"><input id="codeIn" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Enter a code"><button class="resetbtn" id="codeBtn">Apply</button></div><div class="ptdesc" id="codeMsg"></div></div>`;
   const el = document.getElementById('opts');
   el.innerHTML = h;
   if (typeof QZ !== 'undefined') renderQuizBests();
@@ -1445,6 +1575,8 @@ function renderOpts() {
   };
   el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); });
   renderHistInfo();
+  const ci = document.getElementById('codeIn'), go = () => applyCode(ci.value);
+  document.getElementById('codeBtn').onclick = go; ci.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); go(); } };
   document.getElementById('histWipeBtn').onclick = async () => {
     if (!confirm('Delete your whole hand history from this device?\n\nThe leak finder builds its picture of your mistakes from this history, so it will start over from zero. This can\'t be undone.\n\n(Practice stats and Daily challenge scores are kept.)')) return;
     await LOG.clear(); store.set('uth.handsLogged', 0); renderOpts(); dToast('Hand history deleted');
@@ -1741,6 +1873,7 @@ function ruleMissReason(R, ruleBet) {
   if (lnq >= 0.3) return `${f(lnq)} of your losses are to a dealer who doesn't qualify, which costs no more than folding`;
   return `your wins are worth enough (${money(G.win.v / G.win.n)} on average) to cover the losses`;
 }
+const listAnd = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
 const listJoin = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' or ' + a[a.length - 1];
 const SUIT_WORD = { s: 'spade', h: 'heart', d: 'diamond', c: 'club' };
 // Describe a group of dealer cards: "a 2, 3 or 4" / "any club, or a 7 or 4" / "a non-club A, K or 9".
@@ -1796,6 +1929,7 @@ function explainLogic() {
       out.push(`<b>Why fold ${boardOnly ? `the board's ${HAND_NAMES[R.cat].replace(/^an? /, '')}` : HAND_NAMES[R.cat]}?</b> ${boardOnly ? `The dealer has it too, so you're really playing your high cards against theirs. ` : ''}You win only ${pct(G.win.n / N)}${nq >= 0.3 ? `, and ${nq > 0.995 ? 'all' : pct(nq)} of those wins are against a dealer who doesn't qualify, so they pay just +1` : ''}; ${lossTxt}.`);
     }
     if (!sp.dealer.length) out.push(outsRule(R, net >= 0));
+    const th = thresholdLine(sp); if (th) out.push(th);
     return out;
   }
   // preflop / flop: raise now vs check
@@ -1812,13 +1946,83 @@ function explainLogic() {
   out.push(dFold > 0.0005
     ? `<b>Bottom line:</b> folding ${pct(c.riverFoldPct)} of the time also gives up ${amt(dFold)} of ante and ${sp2} that ${ACT_LABEL[mb].toLowerCase()} keeps. Play bet ${sg(bet.play)} vs ${sg(chk.play)}, folding ${sg(-dFold)} → ${win}.`
     : `<b>Bottom line:</b> ${c.riverFoldPct > 0.02 ? `the hands you'd fold lose the ante and ${sp2} anyway, so ` : ''}it comes down to the play bet: ${sg(bet.play)} vs ${sg(chk.play)} → ${win}.`);
-  if (sp.street === 'flop') out.push(...flopKicker(sp));
+  if (sp.street === 'flop') { const w = flopWetPair(sp, margin, c, o) || flopDrawLine(sp, margin, o); if (w) out.push(w); out.push(...flopTips(sp)); }
+  if (sp.street === 'preflop') { const th = thresholdLine(sp); if (th) out.push(th); }
   return out;
+}
+// Flop with a solid pair (the kind that's normally a bet) where checking is right because the flop is
+// full of draws. Count the turn-and-river run-outs that put a fourth suited card or four to a straight
+// on the board without giving you something better than two pair.
+function flopWetPair(sp, margin, c, o) {
+  if (margin >= 0 || !wetBoard(sp.board)) return null;
+  const hp = hiddenPair(sp.hole, sp.board);
+  if (!hp || catOf([...sp.hole, ...sp.board]) !== 1 || weakPair(sp.hole, sp.board)) return null;
+  const fs = [0, 1, 2, 3].find(su => sp.board.filter(x => sut(x) === su).length >= 2);
+  const flush = fs !== undefined ? sp.board.filter(x => sut(x) === fs).length : 0;
+  const rs = new Set(sp.board.map(rk)); if (rs.has(12)) rs.add(-1);
+  const run = lo => [0, 1, 2, 3, 4].filter(i => rs.has(lo + i)).length;
+  const straighty = [...Array(10).keys()].some(i => run(i - 1) >= 3);
+  const four = b => { const r = new Set(b.map(rk)); if (r.has(12)) r.add(-1);
+    return [0, 1, 2, 3].some(su => b.filter(x => sut(x) === su).length >= 4) || [...Array(10).keys()].some(i => [0, 1, 2, 3, 4].filter(k => r.has(i - 1 + k)).length >= 4); };
+  const used = new Set([...sp.hole, ...sp.board, ...sp.dealer, ...sp.dead]), deck = [...Array(52).keys()].filter(x => !used.has(x));
+  let n = 0, bad = 0;
+  for (let i = 0; i < deck.length; i++) for (let j = i + 1; j < deck.length; j++) {
+    const b = [...sp.board, deck[i], deck[j]]; n++;
+    if (four(b) && catOf([...sp.hole, ...b]) <= 2) bad++;
+  }
+  const what = [flush >= 3 ? `all ${SUIT_WORD[E.SUITS[fs]]}s` : flush === 2 ? `two ${SUIT_WORD[E.SUITS[fs]]}s` : '', straighty ? `${sp.board.map(rk).sort((x, y) => x - y).map(RANK_TXT).join('-')} is connected` : ''].filter(Boolean).join(' and ');
+  const pairTxt = hp.pocket ? `pocket ${pluralRank(hp.r)}` : `a pair of ${pluralRank(hp.r)} with a${/^[AE8]/.test(RANK_TXT(hp.kick)) ? 'n' : ''} ${RANK_TXT(hp.kick)} kicker`;
+  return `<b>Why not bet a pair here?</b> ${pairTxt[0].toUpperCase() + pairTxt.slice(1)} is usually a 2x bet, but this flop is ${what}, so the dealer has a lot of draws. `
+    + `${pct(bad / n)} of turn-and-river run-outs put ${[flush >= 2 ? `four ${SUIT_WORD[E.SUITS[fs]]}s` : '', straighty ? 'four to a straight' : ''].filter(Boolean).join(' or ')} on the board while you're still stuck with a pair or two pair, and then many dealer hands beat you. `
+    + (c.riverFoldPct < 0.1
+      ? `You'd still bet 1x on ${pct(c.riverBetPct)} of rivers, so this is really 2x now or 1x later. The extra unit only pays if you win clearly more often than you lose, ${o.win < o.lose ? `but with that many draws out there you'd lose more often (${pct(o.lose)}) than win (${pct(o.win)})` : `and with that many draws out there it's too close: you win ${pct(o.win)} and lose ${pct(o.lose)}`}, so keep the bet small.`
+      : `Checking lets you see both cards first: you'd bet 1x on ${pct(c.riverBetPct)} of rivers and fold the ${pct(c.riverFoldPct)} where the draws get there, instead of having 2x in already.`);
+}
+// Flop draws: four to a flush, or a straight draw (open-ended or inside), made with your hole cards.
+// Returns which ranks complete the straight and which hole cards the draws use.
+function drawInfo(hole, board) {
+  const all = [...hole, ...board], seen = new Set(all), hr = hole.map(rk);
+  const fs = [0, 1, 2, 3].find(su => all.filter(c => sut(c) === su).length === 4 && hole.some(c => sut(c) === su));
+  const rs = new Set(all.map(rk)), str = [], uses = new Set();
+  for (let r = 0; r < 13; r++) {
+    if (rs.has(r)) continue;
+    const set = new Set([...rs, r]); if (set.has(12)) set.add(-1);
+    for (let lo = -1; lo <= 8; lo++) {
+      const w = [0, 1, 2, 3, 4].map(i => lo + i), wr = w.map(x => x === -1 ? 12 : x);
+      if (w.every(x => set.has(x)) && wr.some(x => hr.includes(x))) { str.push(r); hole.forEach(c => { if (wr.includes(rk(c))) uses.add(c); }); break; }
+    }
+  }
+  const flush = fs !== undefined;
+  if (flush) hole.forEach(c => { if (sut(c) === fs) uses.add(c); });
+  return { flush, fs, flushOuts: flush ? 13 - all.filter(c => sut(c) === fs).length : 0, str, oesd: str.length >= 2, any: flush || str.length > 0, uses, seen };
+}
+function drawName(d) {
+  const st = d.str.length ? (d.oesd ? 'an open-ended straight draw' : 'an inside straight draw') : '';
+  return [d.flush ? 'a flush draw' : '', st].filter(Boolean).join(' and ');
+}
+// Why a draw bets (or doesn't) on the flop: what makes it, how often it gets there, and the win rate if you bet now
+function flopDrawLine(sp, margin, o) {
+  if (catOf([...sp.hole, ...sp.board]) !== 0) return null; // only when you have nothing made yet
+  const d = drawInfo(sp.hole, sp.board); if (!d.any) return null;
+  const used = new Set([...sp.hole, ...sp.board, ...sp.dealer, ...sp.dead]), deck = [...Array(52).keys()].filter(x => !used.has(x)), hr = sp.hole.map(rk);
+  let n = 0, made = 0, pair = 0;
+  for (let i = 0; i < deck.length; i++) for (let j = i + 1; j < deck.length; j++) {
+    n++; const cat = catOf([...sp.hole, ...sp.board, deck[i], deck[j]]);
+    if (cat >= 4) made++; else if (rk(deck[i]) === hr[0] || rk(deck[i]) === hr[1] || rk(deck[j]) === hr[0] || rk(deck[j]) === hr[1]) pair++;
+  }
+  const strTxt = d.str.length ? `any ${listJoin(d.str.sort((a, b) => b - a).map(RANK_TXT))} (${d.str.length * 4} cards) makes your straight` : '';
+  const flTxt = d.flush ? `any of the ${d.flushOuts} remaining ${SUIT_WORD[E.SUITS[d.fs]]}s makes your flush` : '';
+  const tex = { rainbow: new Set(sp.board.map(sut)).size === 3, two: [0, 1, 2, 3].find(su => sp.board.filter(c => sut(c) === su).length === 2 && !sp.hole.some(c => sut(c) === su)) };
+  const hi = Math.max(...hr), lo = Math.min(...hr), what = d.flush && d.str.length ? 'a straight or flush' : d.flush ? 'a flush or better' : 'a straight or better';
+  return `<b>Your draw:</b> you have ${drawName(d)} — ${[flTxt, strTxt].filter(Boolean).join(', and ')}. By the river you make ${what} ${pct(made / n)} of the time, and pair your ${RANK_TXT(hi)} or ${RANK_TXT(lo)} another ${pct(pair / n)}. `
+    + (margin >= 0
+      ? `Most draws are a check because they don't win often enough, but this one has ${RANK_TXT(hi)}-high behind it as well${tex.rainbow && !d.flush ? ', and with three suits on the flop the dealer has no flush draws' : ''}, so it wins ${pct(o.win)} if you bet now — enough for the 2x bet to pay.`
+      : `You'd win ${pct(o.win)} if you bet now, which isn't quite enough${tex.two !== undefined ? ` — the two ${SUIT_WORD[E.SUITS[tex.two]]}s on the flop give the dealer flush draws` : ''}. So it's a check: see the turn and river first, and bet 1x when your hand comes in.`);
 }
 // Flop with nothing paired from your hand (high card, or only the board's pair): the call usually comes
 // down to your second card. Re-solve the same flop with every other rank in its place and say where the
 // line is. On a paired board, spell out that it's a kicker battle against a dealer who always qualifies.
-function flopKicker(sp) {
+function flopKicker(sp, introOnly = false) {
   const out = [], br = sp.board.map(c => c >> 2), [a, b] = sp.hole;
   if ((a >> 2) === (b >> 2) || br.includes(a >> 2) || br.includes(b >> 2)) return out; // you've paired something
   const hi = (a >> 2) > (b >> 2) ? a : b, lo = hi === a ? b : a, hr = hi >> 2;
@@ -1827,9 +2031,10 @@ function flopKicker(sp) {
     const odd = br.find(r => r !== pr), higher = [...Array(13).keys()].filter(r => r > hr && r !== odd);
     out.push(`<b>Paired board:</b> the ${RANK_TXT(pr)}s are the dealer's pair too, so every dealer qualifies and your ante is always in play. `
       + `You're really holding ${RANK_TXT(pr)}s with ${RANK_TXT(hr)}-${RANK_TXT(lo >> 2)} as kickers, so it's a kicker battle: the dealer beats you with any card that pairs`
-      + `${higher.length ? `, any ${listJoin(higher.reverse().map(RANK_TXT))}` : ''}, or a ${RANK_TXT(hr)} with a better second card. `
-      + `A higher second card wins more of those ${RANK_TXT(hr)}-vs-${RANK_TXT(hr)} matchups, and when it pairs on the turn or river it makes a higher two pair.`);
+      + `${higher.length ? `, any ${listJoin(higher.reverse().map(RANK_TXT))}` : ''}, or a${/^[A8]/.test(RANK_TXT(hr)) ? "n" : ""} ${RANK_TXT(hr)} with a better second card. `
+      + `A higher second card wins more of those ${RANK_TXT(hr)}-vs-${RANK_TXT(hr)} matchups.`);
   }
+  if (introOnly) return out;
   const used = new Set([...sp.board, ...sp.dealer, ...sp.dead, hi]), res = [];
   for (let r = 0; r < 13; r++) {
     if (r >= hr || br.includes(r)) continue; // kickers below your high card that don't pair the board
@@ -1848,9 +2053,112 @@ function flopKicker(sp) {
   const close = res.filter(x => Math.abs(x.m) < 0.01).map(x => RANK_TXT(x.r));
   const bumpy = bet.some(r => chk.some(q => q > r));
   out.push(`<b>What decides it — your second card:</b> with the ${cardTxt(hi)} on this flop, bet 2x if your other card is ${listJoin(bet.map(RANK_TXT))}; check with ${listJoin(chk.map(RANK_TXT))}. `
-    + `Your ${RANK_TXT(lo >> 2)} is ${mine && mine.m >= 0 ? 'on the betting side' : 'on the checking side'}${mine && Math.abs(mine.m) < 0.01 ? ' — but only just' : ''}.`
+    + `Your ${RANK_TXT(lo >> 2)} is ${mine && mine.m >= 0 ? 'on the betting side' : 'on the checking side'}${mine && Math.abs(mine.m) < 0.01 ? ' — but only just' : ''}${(() => { const d = drawInfo(sp.hole, sp.board); return d.any && d.uses.has(lo) ? ` — it's the card that gives you ${drawName(d)}` : ''; })()}.`
     + (close.length ? ` (${listJoin(close)} ${close.length === 1 ? 'is' : 'are'} within 0.01 antes either way.)` : '')
     + (bumpy ? ' Some lower cards beat higher ones because they add a straight or flush draw.' : ''));
+  return out;
+}
+// What tips it: for the flop spots that go either way — a flush draw, an open-ended straight draw, or high
+// card on a paired board — re-solve the same flop with one thing changed at a time (your top card, your
+// second card, the other draws on this flop, the flop's suits) and say which way each one goes.
+function flopTips(sp) {
+  const br = sp.board.map(rk), [a, b] = sp.hole;
+  if (rk(a) === rk(b) || br.includes(rk(a)) || br.includes(rk(b))) return [];
+  const d = drawInfo(sp.hole, sp.board), pr = br.find((r, i) => br.indexOf(r) !== i), paired = pr !== undefined;
+  const type = d.flush ? 'flush' : d.oesd ? 'oesd' : paired ? 'paired' : null;
+  if (!type) return flopKicker(sp);
+  const out = type === 'paired' ? flopKicker(sp, true) : [];
+  const fixed = new Set([...sp.dealer, ...sp.dead]);
+  const M = (hole, board = sp.board) => { const A = E.solve({ ...sp, hole, board }, S.game, gameOpts()).actions; return A.bet2.total - A.check.total; };
+  const free = c => !fixed.has(c);
+  const pick = (r, suits, avoid) => { for (const su of suits) { const c = r * 4 + su; if (free(c) && !avoid.includes(c)) return c; } return null; };
+  const hi = rk(a) > rk(b) ? a : b, lo = hi === a ? b : a, mine = M(sp.hole);
+  const verb = m => m >= 0 ? 'bet 2x' : 'check';
+  // "bet with A or K; check with Q or lower" from a scan of ranks → margins
+  // "bet 2x with J or higher; check with 9 or lower — except a 7, which bets because it adds a straight draw"
+  const an = r => (/^[A8]/.test(r) ? 'an ' : 'a ') + r;
+  const scanTxt = res => {
+    res.sort((x, y) => y.r - x.r);
+    const bet = res.filter(x => x.m >= 0), chk = res.filter(x => x.m < 0);
+    if (!chk.length) return 'bet 2x whatever it is';
+    if (!bet.length) return 'check whatever it is';
+    let k = 0, best = Infinity; // the cut with the fewest exceptions
+    for (let i = 1; i < res.length; i++) { const e = res.slice(0, i).filter(x => x.m < 0).length + res.slice(i).filter(x => x.m >= 0).length; if (e < best) { best = e; k = i; } }
+    const top = res.slice(0, k), low = res.slice(k), R = x => RANK_TXT(x.r);
+    const part = (arr, word) => arr.length === 1 ? an(R(arr[0])) : `${R(arr[word === 'up' ? arr.length - 1 : 0])} or ${word === 'up' ? 'higher' : 'lower'}`;
+    const exc = [];
+    for (const x of low.filter(x => x.m >= 0)) { const di = drawInfo(x.h, sp.board); exc.push(`${an(R(x))}, which bets${di.any ? ` because it adds ${drawName(di).replace(/ and /, ' and ')}` : ''}`); }
+    for (const x of top.filter(x => x.m < 0)) exc.push(`${an(R(x))}, which checks`);
+    return `bet 2x with ${part(top, 'up')}; check with ${part(low, 'down')}${exc.length ? ` — except ${listAnd(exc)}` : ''}`;
+  };
+  const rankScan = (fix, vary, suits, ok) => {
+    const res = [];
+    for (let r = 12; r >= 0; r--) {
+      if (br.includes(r) || r === rk(fix) || !ok(r)) continue;
+      const c = r === rk(vary) ? vary : pick(r, suits, [fix, ...sp.board]); if (c === null) continue;
+      res.push({ r, m: r === rk(vary) ? mine : M([fix, c]), h: [fix, c] });
+    }
+    return res;
+  };
+  const items = [];
+  const otherSuits = (...cs) => [0, 1, 2, 3].sort((x, y) => cs.filter(c => sut(c) === x).length - cs.filter(c => sut(c) === y).length || sp.board.filter(c => sut(c) === x).length - sp.board.filter(c => sut(c) === y).length);
+  if (type === 'flush') {
+    const fs = d.fs, sw = SUIT_WORD[E.SUITS[fs]], two = sut(a) === fs && sut(b) === fs;
+    if (two) {
+      const topS = rankScan(lo, hi, [fs], r => r > rk(lo)), secS = rankScan(hi, lo, [fs], r => r < rk(hi));
+      const secSame = secS.every(x => (x.m >= 0) === (mine >= 0));
+      if (secSame) items.push(`<b>Your top ${sw} decides it:</b> ${scanTxt(topS)}. With your ${cardTxt(hi)} on top, your second ${sw} doesn't change it.`);
+      else { items.push(`<b>Your top ${sw}</b> (with your ${cardTxt(lo)}): ${scanTxt(topS)}.`); items.push(`<b>Your second ${sw}</b> (with your ${cardTxt(hi)}): ${scanTxt(secS)}.`); }
+    } else {
+      const f = sut(a) === fs ? a : b, o = f === a ? b : a;
+      items.push(`<b>Your ${sw}</b> (with your ${cardTxt(o)}): ${scanTxt(rankScan(o, f, [fs], () => true))}.`);
+      items.push(`<b>Your other card</b> (with your ${cardTxt(f)}): ${scanTxt(rankScan(f, o, otherSuits(f, o).filter(su => su !== fs), () => true))}.`);
+    }
+  } else if (type === 'oesd') {
+    // every open-ended draw you could hold on this flop (no pair, no flush draw)
+    const sibs = [];
+    for (let x = 12; x >= 0; x--) for (let y = x - 1; y >= 0; y--) {
+      if (br.includes(x) || br.includes(y)) continue;
+      const isMine = x === rk(hi) && y === rk(lo);
+      let h;
+      if (isMine) h = [hi, lo];
+      else { const sx = otherSuits().filter(su => sp.board.filter(c => sut(c) === su).length < 2); const cx = pick(x, sx, sp.board); const cy = cx === null ? null : pick(y, sx.filter(su => su !== sut(cx)), [...sp.board, cx]); if (cx === null || cy === null) continue; h = [cx, cy]; }
+      const di = drawInfo(h, sp.board); if (!di.oesd || di.flush) continue;
+      sibs.push({ x, y, m: isMine ? mine : M(h), mine: isMine });
+    }
+    const nm = z => `${RANK_TXT(z.x)}-${RANK_TXT(z.y)}`, bet = sibs.filter(z => z.m >= 0), chk = sibs.filter(z => z.m < 0);
+    if (sibs.length > 1) items.push(`<b>The other open-ended draws on this flop:</b> ${bet.length ? `${listAnd(bet.map(nm))} ${bet.length === 1 ? 'bets' : 'bet'}` : 'none of them bet'}${chk.length ? `; ${bet.length ? '' : ''}${listAnd(chk.map(nm))} ${chk.length === 1 ? 'checks' : 'check'}` : ''}. The higher your two cards, the more often you win even when the straight doesn't come.`);
+  } else {
+    // one ladder of hands: higher top cards (with your second card), your top card with each second card, lower top cards
+    const topS = rankScan(lo, hi, [sut(hi), ...otherSuits(lo)], r => r > rk(lo)).sort((x, y) => y.r - x.r);
+    const secS = rankScan(hi, lo, [sut(lo), ...otherSuits(hi)], r => r < rk(hi)).sort((x, y) => y.r - x.r);
+    const H = RANK_TXT(rk(hi)), L = RANK_TXT(rk(lo)), vb = (m, n) => m >= 0 ? (n > 1 ? 'bet' : 'bets') : (n > 1 ? 'check' : 'checks');
+    const group = (arr, dir) => { // runs of the same decision among other top cards
+      const out = []; for (const x of arr) { const last = out[out.length - 1]; if (last && (last.m >= 0) === (x.m >= 0)) last.xs.push(x); else out.push({ m: x.m, xs: [x] }); }
+      return out.map(g => g.xs.length === 1 ? `${RANK_TXT(g.xs[0].r)}-${L} ${vb(g.m, 1)}` : dir === 'up' ? `${RANK_TXT(g.xs[g.xs.length - 1].r)}-${L} and up ${vb(g.m, 2)}` : `${RANK_TXT(g.xs[0].r)}-${L} and lower ${vb(g.m, 2)}`);
+    };
+    const kb = secS.filter(x => x.m >= 0), kc = secS.filter(x => x.m < 0);
+    const mid = !kc.length ? `any ${H}-high bets` : !kb.length ? `any ${H}-high checks`
+      : secS.every((x, i) => i === 0 || !(x.m >= 0 && secS[i - 1].m < 0))
+        ? `${H}-${RANK_TXT(kb[kb.length - 1].r)}${kb.length > 1 ? ' or better' : ''} ${vb(1, 1)}, ${H}-${RANK_TXT(kc[0].r)}${kc.length > 1 ? ' or worse' : ''} ${vb(-1, 1)}`
+        : `${listAnd(kb.map(x => `${H}-${RANK_TXT(x.r)}`))} ${vb(1, kb.length)}, ${listAnd(kc.map(x => `${H}-${RANK_TXT(x.r)}`))} ${vb(-1, kc.length)}`;
+    const parts = [...group(topS.filter(x => x.r > rk(hi)), 'up'), mid, ...group(topS.filter(x => x.r < rk(hi)), 'down')];
+    items.push(`<b>Where the line is:</b> ${parts.join('; ')}.`);
+  }
+  if (type !== 'flush') { // the flop's suits: three suits vs two of a suit you don't hold
+    const hs = new Set(sp.hole.map(sut)), cnt = [0, 1, 2, 3].map(su => sp.board.filter(c => sut(c) === su).length);
+    const rainbow = cnt.filter(n => n > 0).length === 3, twoNot = cnt.some((n, su) => n === 2 && !hs.has(su));
+    const rebuild = suits => { const bd = sp.board.map((c, i) => rk(c) * 4 + suits[i]); return bd.every(c => free(c) && !sp.hole.includes(c)) && new Set(bd).size === 3 ? bd : null; };
+    const nh = [0, 1, 2, 3].filter(su => !hs.has(su)), anyS = [0, 1, 2, 3];
+    let alt = null, altName = '';
+    if (rainbow && nh.length) { const x = nh[0], y = anyS.find(su => su !== x); alt = rebuild([x, x, y]) || rebuild([x, y, x]) || rebuild([y, x, x]); altName = `two of a suit you don't hold (flush draws for the dealer)`; }
+    else if (!rainbow) { const order = [...nh, ...anyS.filter(su => hs.has(su))]; for (let i = 0; i < 4 && !alt; i++) for (let j = 0; j < 4 && !alt; j++) for (let k = 0; k < 4 && !alt; k++) { const t = [order[i], order[j], order[k]]; if (new Set(t).size === 3) alt = rebuild(t); } altName = 'three different suits'; }
+    if (alt && (pr === undefined || true)) {
+      const m1 = M(sp.hole, alt), cur = rainbow ? 'three different suits' : twoNot ? 'two of a suit you don\'t hold' : 'this flop';
+      items.push(`<b>The flop's suits:</b> ${(mine >= 0) === (m1 >= 0) ? `don't change it — with ${cur} or ${altName}, it's a ${verb(mine) === 'check' ? 'check' : 'bet'} either way` : `with ${cur} (as here) it's a ${mine >= 0 ? 'bet' : 'check'}; with ${altName} it would be a ${m1 >= 0 ? 'bet' : 'check'}`}.`);
+    }
+  }
+  if (items.length) out.push(`<b>What tips it:</b><ul>${items.map(x => `<li>${x}</li>`).join('')}</ul>Your hand: ${mine >= 0 ? 'a bet' : 'a check'} by ${Math.abs(mine).toFixed(3)} antes${Math.abs(mine) < 0.02 ? ' — a close call' : ''}.`);
   return out;
 }
 function explainKnown() {
@@ -2444,7 +2752,7 @@ function quizToAnalyzer(st) { handToAnalyzer(QZ.cur.h, st); }
 // Open a quiz/daily hand in Analyze at a street. Turns on the "I can see" settings the hand needs
 // (otherwise Analyze would ignore the dealer / flop / other players' cards).
 function handToAnalyzer(h, st, { daily = false } = {}) {
-  specToAnalyzer(nodeSpec(h, st), st); // phones go straight to the results, not the card picker
+  specToAnalyzer(nodeSpec(h, st), st, daily ? 'daily' : 'quiz'); // phones go straight to the results, not the card picker
   if (daily && S.game === 'wpt' && S.tables.badBeat !== DAILY_OPTS.wpt.badBeat) dToast(`Analyze uses your Bad Beat table (${S.tables.badBeat}); the daily uses ${DAILY_OPTS.wpt.badBeat}`);
 }
 function renderQuizBests() {
@@ -2473,7 +2781,7 @@ const boardAt = (h, st) => st === 'preflop' ? (h.peekF ? 1 : 0) : st === 'flop' 
 // Two rows, always: the board on top; your hand, the dealer's card and other players' hands below. The
 // bottom row has a fixed height and its cards shrink when it gets crowded (10 cards on a phone), so the
 // buttons underneath never move from hand to hand.
-function handTableHTML(h, st, { over = false, dealFrom = null, cls = '' } = {}) {
+function handTableHTML(h, st, { over = false, dealFrom = null, cls = '', dealer2 = null, dealerAnim = false } = {}) {
   const nBoard = over ? 5 : boardAt(h, st);
   const pc = (c, anim) => anim === null ? cardHTML(c) : cardHTML(c, `style="animation-delay:${anim * 0.18}s"`).replace('class="pc ', 'class="pc deal ');
   const pcs = arr => arr.map(c => c === 'h' ? '<div class="pc hidden"></div>' : cardHTML(c)).join('');
@@ -2483,6 +2791,7 @@ function handTableHTML(h, st, { over = false, dealFrom = null, cls = '' } = {}) 
       <div class="qgroup qboard"><div class="k">Board</div><div class="cards">${bd([0, 1, 2])}${pair}${bd([3, 4])}</div></div>
       <div class="qrow2">
         <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs([...h.hole].sort((x, y) => y - x))}</div></div>
+        ${dealer2 ? `<div class="qgroup qdealer"><div class="k">Dealer</div><div class="cards">${dealer2.map((c, i) => c === 'h' ? '<div class="pc hidden"></div>' : dealerAnim ? pc(c, (dealFrom !== null ? 5 - dealFrom : 0) + i + 1) : cardHTML(c)).join('')}</div></div>` : ''}
         ${h.dealer.length ? `<div class="qgroup qdealer"><div class="k">Dealer</div><div class="cards">${pcs([h.dealer[0], 'h'])}</div></div>` : ''}
         ${h.dead.length ? `<div class="qgroup qothers"><div class="k">Other players</div><div class="cards">${[0, 2, 4].filter(i => i < h.dead.length).map(i => pcs(h.dead.slice(i, i + 2).sort((x, y) => y - x))).join(pair)}</div></div>` : ''}
       </div>
@@ -2518,12 +2827,12 @@ function renderQuiz() {
       <div class="qres ${tone}">
       <div class="why">${g.lost < 1e-9 ? 'Every decision matched the best play.' : `You gave up <b>${money(g.lost).replace('+', '')}</b>${unitWord()} of EV this hand.`}
       ${offLine && g.bestEnd ? ` With best play you'd have made your bet ${g.bestEnd.st === 'preflop' ? 'preflop' : 'on the flop'} (<b>${ACT_LABEL[g.bestEnd.k]}</b>), before ${g.bestEnd.st === 'preflop' ? 'the flop came' : 'the turn and river came'}.` : ''}</div>
-      <table class="qgrade"><thead><tr><th>Street</th><th>You</th><th>Best</th><th>EV vs other play</th><th></th></tr></thead><tbody>
+      <table class="qgrade"><thead><tr><th>Street</th><th>You</th><th>Best</th><th>EV vs other play</th></tr></thead><tbody>
       ${g.rows.map(r => `<tr><td>${QNAME[r.st]}${r.tough ? ' <span class="qtough">tough spot</span>' : ''}</td>
         <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${ACT_LABEL[r.k]} ${r.loss < 1e-9 ? '✓' : '✗'}</td><td>${ACT_LABEL[r.best]}</td>
         <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${r.loss < 1e-9 ? '+' + money(r.gain).replace(/[+−]/, '') : '−' + money(r.loss).replace(/[+−]/, '')}</td>
-        <td><button class="linkbtn" data-an="${r.st}">Analyze</button></td></tr>
-        <tr class="qevs"><td colspan="5">${quizActions(r.st, S.game).map(k => `${ACT_LABEL[k]} <b>${money(r.acts[k])}</b>`).join(' · ')}</td></tr>`).join('')}
+        </tr>
+        <tr class="qevs"><td colspan="4"><div class="qevrow"><span>${quizActions(r.st, S.game).map(k => `${ACT_LABEL[k]} <b>${money(r.acts[k])}</b>`).join(' · ')}</span><button class="anbtn" data-an="${r.st}">Analyze</button></div></td></tr>`).join('')}
       </tbody></table></div>`;
   }
   el.innerHTML = x;
@@ -2695,7 +3004,7 @@ function dailyPick(a) {
 }
 function dailyNext() {
   const k = dKey(S.game, DL.date), p = dProg(k); if (!p || !p.over) return;
-  if (p.i >= 9) { p.done = true; p.playedOn = todayYmd(); DL.view = 'home'; dSave(k, p); renderDaily(); dailyCelebrate(p); leakNewsSoon(3500); return; }
+  if (p.i >= 9) { p.done = true; p.playedOn = todayYmd(); DL.view = 'home'; dSave(k, p); renderDaily(); dailyCelebrate(p); updateLeaks({ fix: true }).then(() => leakNewsSoon(3500)); return; }
   p.i++; p.stage = 'preflop'; p.picks = []; p.over = false; p.dealtAt = 0; dSave(k, p); renderDaily();
 }
 function dailyCelebrate(p) {
@@ -2724,11 +3033,12 @@ function dToast(msg) {
 }
 function dHandRows(h, rows, stake) {
   const m = x => dollars(x * stake);
-  return `<table class="qgrade"><thead><tr><th>Street</th><th>You</th><th>Best</th><th>vs other play</th><th></th></tr></thead><tbody>
+  const sd = x => (x < 0 ? '−' : '+') + dollars(x * stake); // signed dollars
+  return `<table class="qgrade"><thead><tr><th>Street</th><th>You</th><th>Best</th><th>vs other play</th></tr></thead><tbody>
     ${rows.map(r => `<tr><td>${QNAME[r.st]}${r.tough ? ' <span class="qtough">tough spot</span>' : ''}</td>
       <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${ACT_LABEL[r.k]} ${r.loss < 1e-9 ? '✓' : '✗'}</td><td>${ACT_LABEL[r.best]}</td>
-      <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${r.loss < 1e-9 ? '+' + m(r.gain) : '−' + m(r.loss)}</td>
-      <td><button class="linkbtn" data-dan="${r.st}">Analyze</button></td></tr>`).join('')}
+      <td class="${r.loss < 1e-9 ? 'pos' : 'neg'}">${r.loss < 1e-9 ? '+' + m(r.gain) : '−' + m(r.loss)}</td></tr>
+      <tr class="qevs"><td colspan="4"><div class="qevrow"><span>${dActs(r.st, h.game || S.game).map(k => `${ACT_LABEL[k]} <b>${sd(r.acts[k])}</b>`).join(' · ')}</span><button class="anbtn" data-dan="${r.st}">Analyze</button></div></td></tr>`).join('')}
     </tbody></table>`;
 }
 const VERDICT = { perfect: ['Perfect', 'ok'], leak: ['Small leak', 'no'], costly: ['Costly mistake', 'no'] };
@@ -2833,13 +3143,14 @@ function showLeakUnlock() {
   el.querySelector('#unlockLater').onclick = close;
   FX.play('fan3'); FX.buzz('streak');
 }
-function specToAnalyzer(sp, st) {
+function specToAnalyzer(sp, st, from = null) {
   const need = { peekDealer: sp.dealer.length > 0, peekFlop: st === 'preflop' && sp.board.length > 0, seeOthers: sp.dead.length > 0 };
   let changed = false;
   for (const [k, on] of Object.entries(need)) if (on && !S[k]) { S[k] = true; changed = true; }
   if (changed) { saveSettings(); renderOpts(); renderSetSum(); }
   S.hole = sp.hole.slice(); S.board = [...sp.board, null, null, null, null, null].slice(0, 5); S.dealer = [sp.dealer[0] ?? null]; S.dead = sp.dead.slice();
   S.active = 'board'; setMode('analyze'); setStreet(st); setTab('hand');
+  ANALYZE_FROM = from; renderBackBar();
   if (isMobile()) openSheet(true);
 }
 let LEAK_RECS = [];
@@ -2900,9 +3211,9 @@ const LEAK_CATS = [
     spot: r => !!hiddenPair(r.hole, r.board) && !weakPair(r.hole, r.board) && isBet(r.best), err: r => r.pick === 'check' },
   { id: 'flopWeak', st: 'flop', name: 'Betting weak pairs', tip: 'Underpairs, bottom pairs and pairs with a weak kicker (9 or lower) where checking was right.', family: 'flopWeak',
     spot: r => weakPair(r.hole, r.board) && r.best === 'check', err: r => isBet(r.pick) },
-  { id: 'flopPaired', st: 'flop', name: 'Paired boards', tip: 'Bets and checks on a paired flop.', family: 'flopPaired',
+  { id: 'flopPaired', st: 'flop', name: 'Paired boards', tip: 'Bets and checks on a paired flop.', family: 'flopPaired', either: true,
     spot: r => pairedBoard(r.board), err: r => r.pick !== r.best },
-  { id: 'flopDraw', st: 'flop', name: 'Playing draws', tip: 'Four to a flush or an open-ended straight draw, with no pair.', family: 'flopDraw',
+  { id: 'flopDraw', st: 'flop', name: 'Playing draws', tip: 'Four to a flush or an open-ended straight draw, with no pair.', family: 'flopDraw', either: true,
     spot: r => hasDraw(r.hole, r.board) && !hiddenPair(r.hole, r.board), err: r => r.pick !== r.best },
   { id: 'rivLoose', st: 'river', name: 'Betting too loose', tip: 'Hands that should fold but you bet 1x.', family: 'river',
     spot: r => r.best === 'fold', err: r => isBet(r.pick) },
@@ -2915,7 +3226,7 @@ const LEAK_CATS = [
   { id: 'bbFold', st: 'river', game: 'wpt', name: 'Folding a straight or better', tip: 'With a straight or better you win, or the Bad Beat bonus pays when you lose. Never fold it.', family: null, always: true,
     spot: r => catOf([...r.hole, ...r.board]) >= 4, err: r => r.pick === 'fold' },
   ...[['dealer', 'peekDealer', 'Ignoring the dealer\'s card'], ['flop', 'peekFlop', 'Ignoring the flop card you saw'], ['seen', 'seeOthers', 'Ignoring other players\' cards']].map(([kind, setting, name]) => ({
-    id: 'info-' + kind, kind, setting, st: null, name, tip: 'Spots where that card changed the best play, but you made the play that\'s right without it.', family: 'info-' + kind,
+    id: 'info-' + kind, kind, setting, st: null, name, tip: 'Spots where that card changed the best play, but you made the play that\'s right without it.', family: 'info-' + kind, either: true,
     spot: r => infoKinds(r).includes(kind) && NOINFO.get(noInfoKey(r)) !== undefined && NOINFO.get(noInfoKey(r)) !== r.best,
     err: r => r.pick === NOINFO.get(noInfoKey(r)) })),
 ];
@@ -2952,20 +3263,23 @@ function leakStats(game, recs) {
   });
 }
 // open / fixed per game and category, kept between visits so a fix can be celebrated
-function leakStatus(s, prev) {
+// `fix`: whether an open leak may be marked fixed now. Only at a checkpoint: after a Practice hand, when a
+// daily challenge is finished, or at the end of a drill you got 10/10 — never mid-drill or mid-daily.
+function leakStatus(s, prev, fix) {
+  if (prev === 'open' && !fix) return 'open';
   if (s.c.always) return s.wrong ? (s.rate <= LEAK_FIXED && prev === 'open' ? 'fixed' : 'open') : (prev === 'open' ? 'fixed' : prev || 'none');
   if (s.n < LEAK_MIN) return prev || 'none';
   if (s.rate > LEAK_OPEN) return 'open';
   if (prev === 'open') return s.rate <= LEAK_FIXED ? 'fixed' : 'open';
   return prev || 'none';
 }
-async function updateLeaks({ celebrate = true } = {}) {
+async function updateLeaks({ celebrate = true, fix = false } = {}) {
   const recs = await LOG.all() || []; LEAK_RECS = recs;
   const all = store.get('uth.leakState', {}), news = [];
   for (const game of ['uth', 'wpt']) {
     const st = all[game] ||= {};
     for (const s of leakStats(game, recs)) {
-      const prev = st[s.c.id]?.status, next = leakStatus(s, prev);
+      const prev = st[s.c.id]?.status, next = leakStatus(s, prev, fix);
       if (next !== prev) {
         st[s.c.id] = { status: next, at: Date.now() };
         if (next === 'fixed' && prev === 'open') news.push({ kind: 'fixed', game, id: s.c.id });
@@ -2987,8 +3301,12 @@ async function updateLeaks({ celebrate = true } = {}) {
 // until that's finished. After a Practice hand it shows once any streak card is closed. On the leak
 // finder page itself there's no popup; the page shows it.
 function leakNewsMoment() {
-  if (mode === 'leaks') { store.set('uth.leakNews', []); return false; }
+  if (mode === 'leaks') { // the page shows leaks itself; but a leak fixed during a drill still gets its moment
+    const q = store.get('uth.leakNews', []), keep = DR.active ? q.filter(x => x.kind === 'fixed') : [];
+    store.set('uth.leakNews', keep); return keep.length > 0 && !document.querySelector('.cele');
+  }
   if (mode === 'daily') { const p = DL.date && dProg(dKey(S.game, DL.date)); if (DL.view === 'play' && p && !p.done) return false; }
+  if (mode === 'casino' && (casActive() || CA.tally)) return false;
   return !document.querySelector('.cele') && !document.body.classList.contains('nav-open') && !document.body.classList.contains('set-open');
 }
 let leakNewsTimer = null;
@@ -2996,7 +3314,7 @@ function leakNewsSoon(delay = 1600) {
   clearTimeout(leakNewsTimer);
   leakNewsTimer = setTimeout(function tick() {
     const q = store.get('uth.leakNews', []); if (!q.length) return;
-    if (!leakNewsMoment()) { if (mode !== 'daily' || DL.view !== 'play') leakNewsTimer = setTimeout(tick, 800); return; } // a daily in progress: picked up when it ends
+    if (!leakNewsMoment()) { if ((mode !== 'daily' || DL.view !== 'play') && !(mode === 'casino' && casActive())) leakNewsTimer = setTimeout(tick, 800); return; } // a daily in progress: picked up when it ends
     store.set('uth.leakNews', []);
     const fixed = q.filter(x => x.kind === 'fixed'), spotted = q.filter(x => x.kind === 'open');
     if (spotted.length) showLeakSpotted(spotted); else if (fixed.length) celebrateFix({ game: fixed[0].game, c: LEAK_CATS.find(c => c.id === fixed[0].id) });
@@ -3009,7 +3327,7 @@ function showLeakSpotted(list) {
   if (!cats.length) return;
   const one = cats[0], other = g => g !== S.game ? ` (${GAME_NAME[g]})` : '';
   const el = document.createElement('div'); el.className = 'cele t2 unlock'; el.setAttribute('role', 'dialog');
-  el.innerHTML = `<div class="cele-card"><div class="unlock-ic spot">${ICON_LEAK}</div><div class="cele-title">${cats.length > 1 ? `${cats.length} leaks spotted` : 'Leak spotted'}</div>
+  el.innerHTML = `<div class="cele-card"><div class="unlock-ic warn">${ICON_LEAK}</div><div class="cele-title">${cats.length > 1 ? `${cats.length} leaks spotted` : 'Leak spotted'}</div>
     <div class="cele-sub">${cats.length > 1 ? cats.map(x => `<b>${leakLabel(x.c)}</b>${other(x.game)}`).join('<br>')
       : `<b>${leakLabel(one.c)}</b>${other(one.game)} — you've gotten this spot wrong ${one.wrong} of the last ${one.n} times. The leak finder shows where and lets you practice it.`}</div>
     <div class="unlock-btns"><button class="qact dgo" id="spotGo">Open leak finder</button><button class="linkbtn" id="spotLater">Later</button></div></div>`;
@@ -3067,29 +3385,30 @@ async function renderLeaks() {
   const open = stats.filter(s => state[s.c.id]?.status === 'open').sort((a, b) => b.per100 - a.per100);
   const fixed = stats.filter(s => state[s.c.id]?.status === 'fixed');
   const fmt = v => money(v).replace(/[+−]/, '');
-  x += `<div class="lhrow"><h3 class="lh">Your leaks</h3>${open.length > 1 ? `<button class="qact dgo lfix" data-drill="mix">Fix my leaks ▸</button>` : ''}</div>`;
-  if (!open.length) x += `<div class="lclean">No leaks right now — you're getting every type of spot right at least ${Math.round((1 - LEAK_OPEN) * 100)}% of the time.</div>`;
+  const nDrill = open.filter(s => s.c.family).length;
+  x += `<div class="lhrow"><h3 class="lh">Your leaks</h3>${nDrill > 1 ? `<button class="qact dgo lfix" data-drill="mix">${nDrill > 3 ? 'Practice top 3' : 'Practice all'} ▸</button>` : ''}</div>`;
+  if (open.length) x += `<div class="lsub">Improve your execution in these spots to plug the leaks!</div>`;
+  if (!open.length) x += `<div class="lclean">No leaks detected — keep playing to build up the data set.</div>`;
   for (const s of open) {
     x += `<div class="lcard"><div class="lctop"><span class="lst">${QNAME[s.c.st] || 'Extra info'}</span><b>${s.c.name}</b></div>
       <div class="ltip">${s.c.tip}</div>
       <div class="lmeta">Wrong <b>${s.wrong} of ${s.n}</b> times (${Math.round(s.rate * 100)}%) · costs about <b>${fmt(s.per100)}</b>${unitWord()} per 100 hands</div>
       ${s.examples.length ? `<div class="lex">${s.examples.map(r => `<div><span class="lcards">${[...r.hole].sort((a, b) => b - a).map(cardTxt).join('')}</span>${r.board.length ? `<small> on ${r.board.map(cardTxt).join(' ')}</small>` : ''}${r.dealer?.length ? `<small> · dealer ${cardTxt(r.dealer[0])}</small>` : ''}${r.dead?.length ? `<small> · others ${r.dead.map(cardTxt).join(' ')}</small>` : ''}
-        <span class="lpick">${ACT_LABEL[r.pick]} <span class="neg">✗</span> best ${ACT_LABEL[r.best]} <button class="linkbtn" data-lrec="${recs.indexOf(r)}">Analyze</button></span></div>`).join('')}</div>` : ''}
+        <span class="lpick">${s.c.either ? `<small>${r.pick === 'check' ? 'checked' : r.pick === 'fold' ? 'folded' : 'bet'}</small> ` : ''}<span class="neg">−${money(r.loss).replace(/[+−]/, '')}</span> <button class="anbtn" data-lrec="${recs.indexOf(r)}">Analyze</button></span></div>`).join('')}</div>` : ''}
       ${s.c.family ? `<button class="qact ldrill" data-drill="${s.c.id}">Practice this ▸</button>` : ''}</div>`;
   }
   // watch list: categories that need more spots before they can be judged
   if (fixed.length) x += `<h3 class="lh">Fixed</h3><div class="lfixed">${fixed.map(s => `<span>✓ ${leakLabel(s.c)}</span>`).join('')}</div>`;
   // where it goes, by street
-  const lost = mine.reduce((t, r) => t + r.loss, 0);
-  const rows = QSTREETS.map(st => { const rs = mine.filter(r => r.street === st), w = rs.filter(r => r.loss > 1e-9), l = rs.reduce((t, r) => t + r.loss, 0); return { st, n: rs.length, w: w.length, l }; }).filter(r => r.n);
+  const allMine = recs.filter(r => r.game === game), lost = allMine.reduce((t, r) => t + r.loss, 0); // drills included
+  const rows = QSTREETS.map(st => { const rs = allMine.filter(r => r.street === st), w = rs.filter(r => r.loss > 1e-9), l = rs.reduce((t, r) => t + r.loss, 0); return { st, n: rs.length, w: w.length, l }; }).filter(r => r.n);
   const worst = rows.slice().sort((a, b) => b.l - a.l)[0];
   x += `<h3 class="lh">By street</h3><table class="ltab"><thead><tr><th>Street</th><th class="lhide">Decisions</th><th>Mistakes</th><th>EV lost</th><th>Share</th></tr></thead><tbody>
     ${rows.map(r => `<tr class="${r === worst && r.l > 1e-9 ? 'worst' : ''}"><td>${QNAME[r.st]}</td><td class="lhide">${r.n}</td><td>${Math.round(r.w / r.n * 100)}%</td><td>${fmt(r.l / r.n)}<small class="lper"> / decision</small></td>
       <td><span class="lbar"><i style="width:${lost > 1e-9 ? r.l / lost * 100 : 0}%"></i></span>${lost > 1e-9 ? Math.round(r.l / lost * 100) : 0}%</td></tr>`).join('')}
     </tbody></table>`;
-  x += `<div class="note">A type of spot becomes a leak when you get it wrong more than ${Math.round(LEAK_OPEN * 100)}% of the time over your last ${LEAK_WINDOW} spots of that type (once it has come up at least ${LEAK_MIN} times), and it's fixed when that's down to ${Math.round(LEAK_FIXED * 100)}%. Practice, Daily and drill hands all count.</div>`;
   el.innerHTML = x;
-  el.querySelectorAll('[data-lrec]').forEach(b => b.onclick = () => { const r = LEAK_RECS[+b.dataset.lrec]; specToAnalyzer({ hole: r.hole, board: r.board, dealer: r.dealer || [], dead: r.dead || [] }, r.street); });
+  el.querySelectorAll('[data-lrec]').forEach(b => b.onclick = () => { const r = LEAK_RECS[+b.dataset.lrec]; specToAnalyzer({ hole: r.hole, board: r.board, dealer: r.dealer || [], dead: r.dead || [] }, r.street, 'leaks'); });
   el.querySelectorAll('[data-drill]').forEach(b => b.onclick = () => startDrill(b.dataset.drill === 'mix' ? open.filter(s => s.c.family).slice(0, 3).map(s => s.c.id) : [b.dataset.drill]));
 }
 
@@ -3100,6 +3419,16 @@ async function renderLeaks() {
 const DRILL_LEN = 10;
 const DR = { active: false, cats: [], i: 0, cur: null, next: null, results: [], want: { yes: 0, no: 0 } };
 const DRILL_CLOSE = { preflop: 0.12, flop: 0.45, river: 0.6 };
+// Realism: a drill spot is only reached by checking the earlier streets, so those checks must have been
+// right or only a small mistake (e.g. no AK on the river: it raises preflop). Antes given up by checking.
+const DRILL_REAL = { preflop: () => 0.04 * maxPreflopRaise(), flop: () => 0.2 };
+async function drillRealistic(h, st) {
+  for (const e of QSTREETS.slice(0, QSTREETS.indexOf(st))) {
+    const a = await nodeSolve(nodeSpec(h, e)), top = Math.max(...quizActions(e, S.game).map(k => a[k]));
+    if (top - a.check > DRILL_REAL[e]()) return false;
+  }
+  return true;
+}
 function drillFits(fam, h, st) {
   const hole = h.hole, board = st === 'preflop' ? [] : st === 'flop' ? h.board.slice(0, 3) : h.board;
   switch (fam) {
@@ -3130,7 +3459,9 @@ async function drillMake(catId, game, easy = false) {
       if (info === 'flop') h.peekF = true;
       if (info === 'seen') h.dead = deck.slice(1, 1 + 2 * (1 + Math.floor(Math.random() * 2)));
     }
-    const cands = batch.filter(h => info || drillFits(fam, h, st));
+    let cands = batch.filter(h => info || drillFits(fam, h, st));
+    // preflop realism first: without extra information it's an instant lookup
+    if (st !== 'preflop') cands = (await Promise.all(cands.map(async h => (await drillRealistic(h, 'flop')) ? h : null))).filter(Boolean);
     if (!cands.length) continue;
     const solved = await Promise.all(cands.map(async h => {
       const acts = await nodeSolve(nodeSpec(h, st));
@@ -3145,16 +3476,20 @@ async function drillMake(catId, game, easy = false) {
         if (qBest(base, st) === best && qGap(base, st) > DRILL_CLOSE[st]) continue;
       }
       if ((best !== 'check' && best !== 'fold') !== wantYes && tries < 300) continue; // hold out for the side we're short of
+      if (st === 'river' && !(await drillRealistic(h, 'river'))) continue; // the flop check too (preflop was checked above)
       // no repeats in a session: without extra information a preflop spot is just its hand type (K4o is K4o)
       const sp = nodeSpec(h, st), plain = st === 'preflop' && !sp.board.length && !sp.dealer.length && !sp.dead.length;
       const key = plain ? 'pre|' + handClass(h.hole) : [[...sp.hole].sort((a, b) => a - b), sp.board, sp.dealer, [...sp.dead].sort((a, b) => a - b)].join('|');
       if (DR.seen.has(key)) continue;
-      DR.seen.add(key);
+      // and no starting hand more than twice per drill (in Ultimate only 22 and 33 check preflop, so they'd crowd pair drills)
+      const hc = handClass(h.hole);
+      if ((DR.hands.get(hc) || 0) >= 2 && tries < 450) continue;
+      DR.seen.add(key); DR.hands.set(hc, (DR.hands.get(hc) || 0) + 1);
       const acts3 = {}; acts3[st] = acts;
       return { h: { ...h, acts: acts3 }, st, cat: catId, game };
     }
   }
-  return null;
+  return easy ? drillMake(catId, game, false) : null; // no clearer spot of this type to be found: a close one instead
 }
 function drillQueueNext() {
   const catId = DR.cats[(DR.i + 1) % DR.cats.length], game = S.game;
@@ -3163,7 +3498,7 @@ function drillQueueNext() {
 async function startDrill(cats) {
   // one or two clearer spots per session, at random places (never the first)
   const easyAt = new Set(); while (easyAt.size < 1 + (Math.random() < 0.5 ? 1 : 0)) easyAt.add(1 + Math.floor(Math.random() * (DRILL_LEN - 1)));
-  Object.assign(DR, { active: true, finished: false, seen: new Set(), easyAt, cats, i: 0, cur: null, next: null, results: [], want: { yes: 0, no: 0 }, seq: (DR.seq || 0) + 1 });
+  Object.assign(DR, { active: true, finished: false, seen: new Set(), hands: new Map(), easyAt, cats, i: 0, cur: null, next: null, results: [], want: { yes: 0, no: 0 }, seq: (DR.seq || 0) + 1 });
   setMode('leaks'); renderDrill();
   const seq = DR.seq;
   const d = await drillMake(cats[0], S.game); if (seq !== DR.seq) return;
@@ -3183,7 +3518,12 @@ function drillPick(k) {
 }
 async function drillNext() {
   if (!DR.cur?.done) return;
-  if (DR.i + 1 >= DRILL_LEN) { DR.cur = null; DR.finished = true; renderDrill(); return; }
+  if (DR.i + 1 >= DRILL_LEN) {
+    DR.cur = null; DR.finished = true; renderDrill();
+    // a drill can only clear a leak if every spot was right
+    if (DR.results.length === DRILL_LEN && DR.results.every(r => r.ok)) updateLeaks({ fix: true });
+    return;
+  }
   DR.i++; DR.cur = null; renderDrill();
   const seq = DR.seq, d = await DR.next; if (seq !== DR.seq) return;
   DR.cur = d ? { ...d, done: false } : null;
@@ -3219,13 +3559,14 @@ function renderDrill() {
     const ok = q.loss < 1e-9, acts = q.h.acts[q.st];
     x += `<div class="qprompt qverdict ${ok ? 'ok' : 'no'}"><b>${ok ? 'Right' : 'Not quite'}</b>${ok ? '' : `<span class="dlost">−${money(q.loss).replace(/[+−]/, '')}</span>`}</div>
       <div class="qacts"><button class="qact qnextbtn" id="drillNext">${DR.i + 1 >= DRILL_LEN ? 'See results ▸' : 'Next spot ▸'}</button></div>
-      <div class="qres ${ok ? 'ok' : 'no'}"><div class="why">Best: <b>${ACT_LABEL[q.best]}</b> · ${quizActions(q.st, S.game).map(k => `${ACT_LABEL[k]} <b>${money(acts[k])}</b>`).join(' · ')}
-        <button class="linkbtn" id="drillAn" style="margin-left:10px">Analyze</button></div></div>`;
+      <div class="qres ${ok ? 'ok' : 'no'}"><div class="drres"><div class="drevs">
+          ${quizActions(q.st, S.game).map(k => `<div><span>${ACT_LABEL[k]}${k === q.best ? ' ✓' : ''}</span><b class="${k === q.best ? 'pos' : ''}">${money(acts[k])}</b></div>`).join('')}
+        </div><button class="anbtn" id="drillAn">Analyze</button></div>${(() => { const t = thresholdLine(nodeSpec(q.h, q.st)); return t ? `<div class="drline">${t}</div>` : ''; })()}</div>`;
   }
   el.innerHTML = x;
   el.querySelectorAll('[data-dp]').forEach(b => b.onclick = () => drillPick(b.dataset.dp));
   document.getElementById('drillNext')?.addEventListener('click', drillNext);
-  document.getElementById('drillAn')?.addEventListener('click', () => specToAnalyzer(nodeSpec(q.h, q.st), q.st));
+  document.getElementById('drillAn')?.addEventListener('click', () => specToAnalyzer(nodeSpec(q.h, q.st), q.st, 'leaks'));
   document.getElementById('drillQuit').onclick = () => { DR.active = false; DR.seq++; renderLeaks(); };
 }
 document.addEventListener('keydown', e => {
@@ -3234,6 +3575,734 @@ document.addEventListener('keydown', e => {
   if (!q.done) { const acts = quizActions(q.st, S.game); if (/^[1-9]$/.test(e.key) && acts[+e.key - 1]) { e.preventDefault(); drillPick(acts[+e.key - 1]); } }
   else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drillNext(); }
 });
+
+// ── Casino trip ───────────────────────────────────────────────────────────
+// An hour at the tables: 30 hands (about two a minute), $1,000 in chips, your own bet sizes, real results
+// with the dealer's cards turned over. No grading while you play; when you cash out (or the chips or the
+// hour run out) every decision is checked: what perfect play would have made with the same cards and bets,
+// what your decisions cost on average, and your costliest mistakes, weighted toward the ones that also
+// cost you real money that night (so the lesson and the result line up).
+// Pay tables are your Settings at the start of the trip (a snapshot, so changing them mid-trip changes nothing).
+const CASINO_HANDS = 30, CASINO_BANK = 1000, CASINO_MIN = 5, CASINO_MAX = 100, CASINO_BONUS_MAX = 100;
+const CA = { tally: null, acts: new Map() }; // runtime only: solves in progress / done for the current trip
+const casAll = () => store.get('uth.casino', {});
+const casGet = (g = S.game) => casAll()[g] || null;
+function casSave(s, g = S.game) { const a = casAll(); a[g] = s; store.set('uth.casino', a); }
+const casHasPocket = g => true; // Heads-Up's Pocket Bonus; on Ultimate the pairs bonus (your Settings table, Ultimate Pairs by default)
+// what the hole cards pay on a pocket/pairs table: 4 rows (AA / A+face suited / offsuit / other pair) or 7 rows (Ultimate Pairs)
+function pocketPay(hole, t) {
+  if (t.length === 4) return E.pocketEV(hole, t);
+  const r1 = hole[0] >> 2, r2 = hole[1] >> 2, suited = (hole[0] & 3) === (hole[1] & 3), hi = Math.max(r1, r2), lo = Math.min(r1, r2);
+  if (r1 === r2) return r1 === 12 ? t[0] : r1 >= 9 ? t[4] : t[6];
+  if (hi === 12 && lo === 11) return suited ? t[1] : t[3];
+  if (hi === 12 && lo >= 9) return suited ? t[2] : t[5];
+  return -1;
+}
+const casPocketT = (g, opts) => opts.pocketT || (g === 'uth' ? UTH_POCKET[S.tables.uthPocket] : E.GAMES.wpt.pocket[opts.pocket || 'PB-1']);
+const casPocketName = (g, opts) => g === 'wpt' ? 'Pocket Bonus' : (opts?.pocketT || UTH_POCKET[S.tables.uthPocket]).length === 7 ? 'Pairs' : 'Pocket Bonus';
+const casUpfront = (b, g) => 2 * b.ante + (b.trips || 0) + (casHasPocket(g) ? b.pocket || 0 : 0); // ante + Blind/Odds + bonus bets
+const casNeed = (b, g) => casUpfront(b, g) + b.ante; // and always enough left for a 1x river bet
+const casBroke = s => s.bank < 3 * CASINO_MIN;
+const casActive = (g = S.game) => { const s = casGet(g); return !!s && !s.done; };
+function casClock(i) { const m = 20 * 60 + i * 2, h = Math.floor(m / 60), mm = m % 60; return `${h > 12 ? h - 12 : h}:${String(mm).padStart(2, '0')} pm`; }
+const casD = x => (x < 0 ? '−' : '') + '$' + Math.abs(Math.round(x)).toLocaleString('en-US');
+const casMade = (x, perfect) => x > 0.5 ? `made ${casD(x)}` : x < -0.5 ? `lost ${casD(-x)}` : perfect ? 'broken even' : 'broke even'; // "you made $95" — the word already says which way
+const casSD = x => (x > 0 ? '+' : x < 0 ? '−' : '') + '$' + Math.abs(Math.round(x)).toLocaleString('en-US');
+const casActs = (st, s) => st === 'flop' ? ['bet2', 'check'] : st === 'river' ? ['bet1', 'fold'] : ['bet' + s.maxRaise, 'check'];
+const casMult = k => +k.slice(3);
+// your casino record, per game: trips played, total won or lost, best cash-out (built from past trips the first time)
+function casStats(g) {
+  const all = store.get('uth.casinoStats', {});
+  if (!all[g]) { const hist = store.get('uth.casinoTrips', []).filter(t => t.game === g); all[g] = { trips: hist.length, total: hist.reduce((t, x) => t + (x.net || 0), 0), best: hist.length ? Math.max(...hist.map(x => x.end ?? CASINO_BANK + x.net)) : null }; }
+  return all[g];
+}
+function casStatsSave(g, st) { const all = store.get('uth.casinoStats', {}); all[g] = st; store.set('uth.casinoStats', all); }
+// trip setup: what you bring, what you can see, and whether the dealer makes mistakes
+const CAS_PCT = [0, 25, 50, 75, 100];
+const casSetupDefaults = () => ({ bring: CASINO_BANK, nb: 0, dflash: 0, fflash: 0, errors: false });
+const casMaxBring = g => Math.max(CASINO_BANK, Math.floor((CASINO_BANK + casStats(g).total) / 5) * 5);
+function casNewTrip(cfg) {
+  const g = S.game, old = casGet(g);
+  if (!cfg || !cfg.bring) { CA.setup = true; renderCasino(); return; } // open the setup first
+  if (old?.done && old.summary) { const hist = store.get('uth.casinoTrips', []); hist.unshift({ game: g, at: old.started, ...old.summary.brief }); store.set('uth.casinoTrips', hist.slice(0, 20)); }
+  const bets = { ante: 0, trips: 0, pocket: 0 }; // every trip starts with an empty table
+  CA.setup = false;
+  casSave({ bank: cfg.bring, buyIn: cfg.bring, cfg, bets, hands: [], cur: null, done: false, started: Date.now(), opts: { ...gameOpts(), pocketT: g === 'uth' ? UTH_POCKET[S.tables.uthPocket] : E.GAMES.wpt.pocket[S.tables.pocket] }, maxRaise: g === 'uth' ? 4 : maxPreflopRaise() }, g);
+  CA.acts.clear(); CA.tally = null; renderCasino();
+}
+const casBuyIn = s => s.buyIn || CASINO_BANK;
+function renderCasinoSetup(el, g) {
+  const st = { ...casSetupDefaults(), ...store.get('uth.casSetup', {}) }, max = casMaxBring(g);
+  st.bring = Math.max(100, Math.min(max, st.bring));
+  const seg = (k, vals, fmt) => `<div class="seg csg">${vals.map(v => `<button data-k="${k}" data-v="${v}" class="${st[k] === v ? 'on' : ''}">${fmt(v)}</button>`).join('')}</div>`;
+  el.innerHTML = `<div class="qhead">Plan your trip<small>${GAME_NAME[g]}</small></div>
+    <div class="dcard csetup">
+      <div class="crowset"><div><b>Buy-in</b><small>$100 up to ${casD(max)}${max > CASINO_BANK ? ' (your winnings raise the cap)' : ''}</small></div><b class="cbring" id="cBringV">${casD(st.bring)}</b></div>
+      <input type="range" id="cBring" min="100" max="${max}" step="${max > 2000 ? 50 : 25}" value="${st.bring}">
+      <div class="crowset"><div><b>Neighbors who show you their hand</b></div></div>${seg('nb', [0, 1, 2], v => v)}
+      <div class="crowset"><div><b>Dealer flashes a hole card</b><small>how often you see one of the dealer's cards</small></div></div>${seg('dflash', CAS_PCT, v => v + '%')}
+      <div class="crowset"><div><b>Flop card shown early</b><small>how often you see a flop card before you act</small></div></div>${seg('fflash', CAS_PCT, v => v + '%')}
+      <label class="crowset cchk"><div><b>Dealer mistakes</b><small>Dealer occasionally makes a mistake in your favor</small></div><input type="checkbox" id="cErr" ${st.errors ? 'checked' : ''}></label>
+      <div class="qacts"><button class="qact dgo" id="cGo">Start the trip ▸</button><button class="qact" id="cBack">Back</button></div>
+    </div>`;
+  const save = () => store.set('uth.casSetup', st);
+  const rng = document.getElementById('cBring');
+  rng.oninput = () => { st.bring = +rng.value; document.getElementById('cBringV').textContent = casD(st.bring); save(); };
+  el.querySelectorAll('.csg [data-k]').forEach(b => b.onclick = () => { st[b.dataset.k] = +b.dataset.v; save(); renderCasinoSetup(el, g); });
+  document.getElementById('cErr').onchange = e => { st.errors = e.target.checked; save(); };
+  document.getElementById('cGo').onclick = () => { const s0 = casGet(g); if (s0?.done) { s0.dismissed = true; casSave(s0, g); } casNewTrip({ ...st }); };
+  document.getElementById('cBack').onclick = () => { CA.setup = false; renderCasino(); };
+}
+// EV of every option at a node, split into ante / side (Blind or Odds) / play parts, per 1-unit ante.
+// Preflop with nothing extra known is a lookup; later streets are solved on a worker.
+// what you could see at each street: your cards, the board so far (or the flop card shown early), a flashed dealer card, neighbors' hands
+const casSpec = (h, st) => ({ hole: h.hole, board: st === 'preflop' ? (h.ff ? [h.board[0]] : []) : st === 'flop' ? h.board.slice(0, 3) : h.board.slice(), dealer: h.df ? [h.dc[0]] : [], dead: h.nb || [], street: st });
+async function casSolve(h, st, s, g) {
+  const sp = casSpec(h, st), plain = !sp.board.length && !sp.dealer.length && !sp.dead.length;
+  if (st === 'preflop' && !plain) { // with something seen, a preflop solve: totals only (the all-in case interpolates)
+    const r = await runJob({ type: 'solve', spec: sp, game: g, opts: s.opts }, { prio: 0 });
+    return Object.fromEntries(Object.entries(r.res.actions).map(([k, t]) => [k, { total: t }]));
+  }
+  if (st === 'preflop' && BASE) {
+    const b = BASE[handClass(h.hole)]?.games[g === 'uth' ? 'uth' : 'wpt:' + s.opts.badBeat];
+    if (b) return Object.fromEntries(Object.entries(b.actions).map(([k, x]) => [k, { ante: x.ante, side: x.side, play: x.play, total: x.total }]));
+  }
+  const r = await runJob({ type: 'full', spec: sp, game: g, opts: s.opts }, { prio: st === 'preflop' ? 0 : 1 });
+  return Object.fromEntries(Object.entries(r.res.actions).map(([k, x]) => [k, { ante: x.ante, side: x.side, play: x.play, total: x.total }]));
+}
+function casPrefetch(i, h, s, g) {
+  const key = g + '|' + s.started + '|' + i; if (CA.acts.has(key)) return CA.acts.get(key);
+  const p = Promise.all(QSTREETS.map(st => casSolve(h, st, s, g))).then(a => Object.fromEntries(QSTREETS.map((st, j) => [st, a[j]])));
+  p.catch(() => CA.acts.delete(key)); CA.acts.set(key, p); return p;
+}
+// What one node's options are worth for you: the full raise when you can cover it, otherwise all-in
+// for what's left (same ante and Blind outcome, play bet scaled down).
+function casOptions(acts, st, s, rem, ante) {
+  const [bk, pk] = casActs(st, s), M = casMult(bk), R = acts[bk];
+  const out = {};
+  if (rem >= M * ante) out[bk] = { units: M, ev: R.total };
+  else { const m = Math.floor(rem / CASINO_MIN) * CASINO_MIN / ante; out.allin = { units: m, ev: R.play !== undefined ? R.ante + R.side + R.play * m / M : acts[pk].total + (R.total - acts[pk].total) * m / M }; }
+  out[pk] = { units: 0, ev: acts[pk].total };
+  return out;
+}
+// Pay out a finished hand, in dollars per betting spot.
+// Dealer mistakes (when the trip has them on): rolled at the deal, 1% each, and only ever in your favour —
+// you'd point out anything else. A straight or flush that needs both dealer cards goes unseen; the ante is
+// paid instead of pushed when the dealer doesn't qualify and you win; your counterfeited two pair is paid as a win.
+function casBest5(cards, skip) { let best = -1; for (let a = 0; a < 7; a++) for (let b = a + 1; b < 7; b++) { const f = cards.filter((_, i) => i !== a && i !== b); if (skip && skip(f)) continue; const v = E.eval7(f); if (v > best) best = v; } return best; }
+function casDealerMiss(h) { // the dealer's value if they miss a straight/flush that uses both their cards (else null)
+  const all = [...h.dc, ...h.board], dv = E.eval7(all), cat = Math.floor(dv / E.B16);
+  if (![4, 5, 8].includes(cat)) return null;
+  const both = f => f.includes(h.dc[0]) && f.includes(h.dc[1]);
+  if (Math.floor(casBest5(all, f => both(f)) / E.B16) >= cat) return null; // they'd have it without both cards
+  return casBest5(all, f => both(f) && [4, 5, 8].includes(Math.floor(E.eval7(f) / E.B16)));
+}
+function casCounterfeit(h) { // your two pair from your hole cards got counterfeited by the board's two pairs
+  const pv = E.eval7([...h.hole, ...h.board]); if (Math.floor(pv / E.B16) !== 2) return false;
+  const k = i => Math.floor(pv / Math.pow(16, 4 - i)) % 16, pairs = [k(0), k(1)], br = h.board.map(rk), hr = h.hole.map(rk);
+  const holePairs = hr[0] === hr[1] ? [hr[0]] : hr.filter(r => br.includes(r));
+  return holePairs.length > 0 && holePairs.every(r => !pairs.includes(r)) && pairs.every(r => br.filter(x => x === r).length >= 2);
+}
+function casSettle(g, opts, h, units, folded, b) {
+  let pv = E.eval7([...h.hole, ...h.board]), dv = E.eval7([...h.dc, ...h.board]); const cat = E.pcatOf(pv);
+  let error = null;
+  if (h.err && !folded) {
+    if (h.err.miss && dv >= pv) { const v = casDealerMiss(h); if (v !== null && v < pv) { dv = v; error = 'miss'; } }
+    if (!error && h.err.cf && dv >= pv && casCounterfeit(h)) { pv = dv + 1; error = 'cf'; }
+  }
+  const win = pv > dv, lose = pv < dv, q = dv >= E.B16, A = b.ante, r = { cat, dcat: E.pcatOf(dv), win, lose, q, error };
+  if (folded) { r.ante = -A; r.blind = -A; r.play = 0; }
+  else {
+    r.ante = q ? (win ? A : lose ? -A : 0) : 0;
+    if (!q && win && h.err?.ante && !error) { r.ante = A; r.error = 'ante'; }
+    if (g === 'uth') r.blind = win ? A * E.GAMES.uth.blind[cat] : lose ? -A : 0;
+    else r.blind = win ? A * E.GAMES.wpt.odds[cat] : lose ? A * (cat >= 4 ? E.GAMES.wpt.badBeat[opts.badBeat || 'BB-1'][cat] : -1) : 0;
+    r.play = win ? units * A : lose ? -units * A : 0;
+  }
+  const tt = E.GAMES[g].trips[opts.trips || Object.keys(E.GAMES[g].trips)[0]];
+  r.trips = b.trips ? b.trips * tt[cat] : 0;
+  r.pocket = b.pocket ? b.pocket * pocketPay(h.hole, casPocketT(g, opts)) : 0;
+  r.net = r.ante + r.blind + r.play + r.trips + r.pocket;
+  return r;
+}
+// ── Casino table (play) ───────────────────────────────────────────────────
+// Looks and plays like a table-game app: a felt with the dealer's cards, the board, betting circles and
+// your cards; a chip rack to bet with (pick a chip, tap a circle); chips fly to the circles, get paid
+// from the dealer's tray or swept away, and come back to your stack. No hand numbers: a clock runs from
+// 8:00 pm, two minutes a hand, and at 9:00 your hour is up.
+const CHIP_DENOMS = [5, 25, 100];
+const casChip = () => CHIP_DENOMS.includes(store.get('uth.casChip', 5)) ? store.get('uth.casChip', 5) : 5;
+function chipList(amount) { // denominations making up an amount, biggest first (what a dealer would stack)
+  const out = []; let a = Math.round(amount);
+  for (const d of [...CHIP_DENOMS].reverse()) while (a >= d) { out.push(d); a -= d; }
+  if (a > 0) out.push(5);
+  return out;
+}
+// a stack drawn chip by chip with explicit positions (no flex tricks, so every browser draws it the same)
+function casStk(denoms, cls = '', step = 5, h = 10) {
+  return `<div class="cstk ${cls}" style="height:${(denoms.length - 1) * step + h}px">${denoms.map((d, i) => `<i class="k${d}" style="bottom:${i * step}px"></i>`).join('')}</div>`;
+}
+function chipStackHTML(amount, cls = '') {
+  if (!(amount > 0)) return '';
+  const list = chipList(amount), shown = list.slice(0, 8);
+  return casStk(shown, cls);
+}
+// fly a few chips from one element to another (an overlay; the real state is drawn after)
+function casFly(from, to, amount, { dur = 520, stagger = 60, delay = 0 } = {}) {
+  if (!from || !to || reduceMotion() || !(amount > 0)) return Promise.resolve();
+  const a = from.getBoundingClientRect(), b = to.getBoundingClientRect(), list = chipList(amount).slice(0, 6);
+  return Promise.all(list.map((d, i) => new Promise(res => {
+    const el = document.createElement('div'); el.className = 'cfly k' + d;
+    el.style.left = (a.left + a.width / 2 - 13) + 'px'; el.style.top = (a.top + a.height / 2 - 13) + 'px';
+    document.body.appendChild(el);
+    const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2) - i * 3;
+    const an = el.animate([{ transform: 'translate(0,0) scale(.9)', opacity: 0 }, { opacity: 1, offset: 0.15 }, { transform: `translate(${dx}px,${dy}px) scale(1)`, opacity: 1 }],
+      { duration: dur, delay: delay + i * stagger, easing: 'cubic-bezier(.3,.7,.2,1)', fill: 'forwards' });
+    an.onfinish = () => { el.remove(); res(); }; an.oncancel = () => { el.remove(); res(); };
+  })));
+}
+const casSpotEl = k => document.getElementById('cs-' + k);
+// "a pair of 9s", "Kings full of 9s", "a Queen-high straight" … from a 7-card value
+const RANK_WORD = r => ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'][r];
+const RANK_PL = r => ['2s', '3s', '4s', '5s', '6s', '7s', '8s', '9s', '10s', 'Jacks', 'Queens', 'Kings', 'Aces'][r];
+function handWords(v) {
+  const cat = Math.floor(v / E.B16), k = i => Math.floor(v / Math.pow(16, 4 - i)) % 16;
+  switch (cat) {
+    case 0: return `${RANK_WORD(k(0))}-${RANK_WORD(k(1))} high`;
+    case 1: return `a pair of ${RANK_PL(k(0))}`;
+    case 2: return `two pair, ${RANK_PL(k(0))} and ${RANK_PL(k(1))}`;
+    case 3: return `three ${RANK_PL(k(0))}`;
+    case 4: return `a${k(0) === 12 ? 'n' : ''} ${k(0) === 3 ? '5' : RANK_WORD(k(0))}-high straight`;
+    case 5: return `a${k(0) === 12 || k(0) === 6 ? 'n' : ''} ${RANK_WORD(k(0))}-high flush`;
+    case 6: return `${RANK_PL(k(0))} full of ${RANK_PL(k(1))}`;
+    case 7: return `four ${RANK_PL(k(0))}`;
+    default: return k(0) === 12 ? 'a royal flush' : `a ${k(0) === 3 ? '5' : RANK_WORD(k(0))}-high straight flush`;
+  }
+}
+const CAS_ERR = { miss: 'the dealer missed their own straight or flush', ante: 'the dealer paid your ante though they didn\'t qualify', cf: 'the dealer missed that your two pair was counterfeited' };
+const casLastText = (h, r, folded) => {
+  const pv = E.eval7([...h.hole, ...h.board]), dv = E.eval7([...h.dc, ...h.board]);
+  let you = handWords(pv), dl = handWords(dv);
+  if (you === dl && pv !== dv) { // same hand on paper: the kicker decides, so name it
+    const k = (v, i) => Math.floor(v / Math.pow(16, 4 - i)) % 16;
+    for (let i = 1; i < 5; i++) if (k(pv, i) !== k(dv, i)) { you += `, ${RANK_WORD(k(pv, i))} kicker`; dl += `, ${RANK_WORD(k(dv, i))} kicker`; break; }
+  }
+  return `${you[0].toUpperCase() + you.slice(1)} vs the dealer's ${dl.replace(/^an? /, '')}${!folded && !r.q ? ' (doesn\'t qualify)' : ''}`;
+};
+const casBankEl = () => document.getElementById('cMine') || document.getElementById('cBank');
+// your chips on the felt: towers of $100s, $25s and $5s (ten to a tower)
+function casStackHTML(amount) {
+  let a = Math.max(0, Math.round(amount)); const n100 = Math.floor(a / 100); a -= n100 * 100; const n25 = Math.floor(a / 25); a -= n25 * 25; const n5 = Math.round(a / 5);
+  const towers = [];
+  for (let n = n100; n > 0 && towers.length < 3; n -= 10) towers.push([100, Math.min(10, n)]);
+  if (n25) towers.push([25, n25]); if (n5) towers.push([5, n5]);
+  return `<div class="cmine" id="cMine">${towers.map(([d, n]) => casStk(Array(n).fill(d), 'mine', 4, 8)).join('')}</div>`;
+}
+function casTableBets(s, g) { return s.cur ? s.cur.bets : s.timeUp ? { ante: 0, trips: 0, pocket: 0 } : s.bets; }
+function casOnTable(s, g) { // chips sitting in the circles right now
+  if (!s.cur) return s.timeUp ? 0 : casUpfront(s.bets, g);
+  return casUpfront(s.cur.bets, g) + s.cur.picks.reduce((t, p) => t + p.units * s.cur.bets.ante, 0);
+}
+function casAddBet(key) {
+  const g = S.game, s = casGet(g); if (!s || s.cur || s.done || s.timeUp || key === 'play') return;
+  const d = casChip(), max = key === 'ante' ? CASINO_MAX : CASINO_BONUS_MAX, k = key === 'blind' ? 'ante' : key;
+  const nb = { ...s.bets, [k]: Math.min(max, (s.bets[k] || 0) + d) };
+  if (nb[k] === (s.bets[k] || 0)) { dToast(`Table max is $${max}`); return; }
+  if (casNeed({ ...nb, ante: Math.max(nb.ante, CASINO_MIN) }, g) > s.bank) { dToast('Not enough chips for that'); return; }
+  const from = document.getElementById('crk-' + d);
+  s.bets = nb; s.lastDim = true; casSave(s, g);
+  FX.play('chip'); FX.buzz('tap');
+  const targets = k === 'ante' ? ['ante', 'blind'] : [k];
+  Promise.all(targets.map(t => casFly(from, casSpotEl(t), d, { dur: 380 }))).then(() => renderCasino());
+}
+function casClear() {
+  const g = S.game, s = casGet(g); if (!s || s.cur) return;
+  const bank = casBankEl();
+  Promise.all(['ante', 'blind', 'trips', 'pocket'].map(k => casFly(casSpotEl(k), bank, k === 'blind' ? s.bets.ante : s.bets[k] || 0, { dur: 380 })));
+  s.bets = { ante: 0, trips: 0, pocket: 0 }; casSave(s, g); FX.play('chip'); setTimeout(renderCasino, 300);
+}
+function casDeal() {
+  const g = S.game, s = casGet(g); if (!s || s.done || s.cur || s.timeUp || CA.seq) return;
+  if (s.bets.ante < CASINO_MIN) { dToast('Put chips on the Ante to play'); return; }
+  if (s.bank < casNeed(s.bets, g)) { dToast('Not enough chips for these bets'); return; }
+  const d = [...Array(52).keys()];
+  for (let i = 51; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [d[i], d[j]] = [d[j], d[i]]; }
+  const cfg = s.cfg || casSetupDefaults(), roll = p => Math.random() * 100 < p;
+  const h = { hole: [d[0], d[1]], dc: [d[2], d[3]], board: d.slice(4, 9), nb: d.slice(9, 9 + 2 * (cfg.nb || 0)), df: roll(cfg.dflash || 0), ff: roll(cfg.fflash || 0),
+    err: cfg.errors ? { miss: Math.random() < 0.01, ante: Math.random() < 0.01, cf: Math.random() < 0.01 } : null };
+  s.cur = { h, bets: { ...s.bets, pocket: casHasPocket(g) ? s.bets.pocket : 0 }, stage: 'preflop', picks: [], over: false, dealtAt: Date.now(), fresh: 'deal' };
+  s.lastDim = false; casSave(s, g); casPrefetch(s.hands.length, h, s, g);
+  FX.play('chip'); renderCasino();
+}
+function casRem(s, g) { // chips left for play bets this hand
+  const c = s.cur; return s.bank - casUpfront(c.bets, g) - c.picks.reduce((t, p) => t + p.units * c.bets.ante, 0);
+}
+function casPick(k) {
+  const g = S.game, s = casGet(g), c = s?.cur; if (!c || c.over || CA.seq) return;
+  const [bk, pk] = casActs(c.stage, s), rem = casRem(s, g), M = casMult(bk);
+  let units = 0;
+  if (k === bk) { if (rem < M * c.bets.ante) return; units = M; }
+  else if (k === 'allin') { if (rem >= M * c.bets.ante) return; units = Math.floor(rem / CASINO_MIN) * CASINO_MIN / c.bets.ante; }
+  else if (k !== pk) return;
+  c.picks.push({ st: c.stage, k, units, rem });
+  const finish = () => {
+    if (k !== 'check') { // the hand is over: a bet (no more decisions) or a river fold
+      const folded = k === 'fold';
+      c.res = casSettle(g, s.opts, c.h, units, folded, c.bets); c.folded = folded;
+      c.over = true; c.runFrom = c.stage === 'preflop' && c.h.ff ? 1 : boardAt({ peekF: false }, c.stage); c.fresh = 'reveal'; c.collected = false;
+      casSave(s, g); casShowdown(g); renderCasino();
+    } else { c.dealFrom = c.stage === 'preflop' && c.h.ff ? 1 : boardAt({ peekF: false }, c.stage); c.stage = QSTREETS[QSTREETS.indexOf(c.stage) + 1]; c.fresh = 'street'; casSave(s, g); renderCasino(); }
+  };
+  if (units) { FX.play('chips'); FX.buzz('tap'); casFly(casBankEl(), casSpotEl('play'), units * c.bets.ante).then(finish); }
+  else { FX.buzz('beat'); finish(); } // a knock on the felt
+}
+const casRevealDelay = c => +(((5 - c.runFrom) + 3) * 0.18 + 0.25).toFixed(2); // after the run-out and both dealer cards
+// Showdown: cards are turned over (drawn by renderCasino), then each circle is settled — losing chips go
+// to the dealer, winners get paid from the tray, pushes stay — then everything left comes back to you.
+async function casShowdown(g) {
+  const s = casGet(g), c = s?.cur; if (!c?.over) return;
+  const seq = CA.seq = (CA.seqN = (CA.seqN || 0) + 1);
+  const wait = ms => new Promise(r => setTimeout(r, reduceMotion() ? 0 : ms));
+  await wait(casRevealDelay(c) * 1000); if (CA.seq !== seq) return;
+  // like How to Play: your best five, then the dealer's, then both while the bets are settled
+  for (const st of ['you', 'dealer']) { CA.hl = st; renderCasino(); await wait(950); if (CA.seq !== seq) return; }
+  CA.hl = 'both'; renderCasino();
+  const r = c.res, tray = document.getElementById('cTray'), spots = casSpotsOf(c, g);
+  const flights = [];
+  for (const sp of spots) {
+    if (sp.v < 0) flights.push(casFly(casSpotEl(sp.k), tray, -sp.v));
+    else if (sp.v > 0) flights.push(casFly(tray, casSpotEl(sp.k), sp.v, { delay: 250 }));
+  }
+  if (r.net > 0) FX.play('chips', 0.25); else if (r.net < 0) FX.play('chip');
+  await Promise.all(flights); if (CA.seq !== seq) return;
+  { const s2 = casGet(g); if (s2?.cur) { s2.cur.settled = true; casSave(s2, g); } } renderCasino(); // fresh copy: never save back the old 'just dealt' flags (they replay the card animations)
+  if (r.error) dToast('Dealer mistake — in your favour!');
+  const big = r.net >= 10 * c.bets.ante;
+  if (r.net > 0) { FX.play(big ? 'fan3' : 'fan1'); FX.buzz(big ? 'streak' : 'perfect'); if (big && !reduceMotion()) confetti(70, 3); }
+  else if (r.net < 0) { FX.play('hit'); FX.buzz('beat'); }
+  await wait(1700); if (CA.seq !== seq) return;
+  // sweep what's left in the circles back to your stack
+  const bank = casBankEl();
+  const back = spots.filter(sp => sp.stake + sp.v > 0);
+  if (back.length) FX.play('chips');
+  await Promise.all(back.map(sp => casFly(casSpotEl(sp.k), bank, sp.stake + sp.v))); if (CA.seq !== seq) return;
+  CA.seq = null; CA.hl = null; casNext();
+}
+function casSpotsOf(c, g) { // each circle: what was in it and what it won (+) or lost (−)
+  const b = c.bets, r = c.res, play = c.picks.reduce((t, p) => t + p.units * b.ante, 0);
+  return [['ante', b.ante, r.ante], ['blind', b.ante, r.blind], ['play', play, r.play], ['trips', b.trips || 0, r.trips], ['pocket', b.pocket || 0, r.pocket]]
+    .filter(([, stake]) => stake > 0).map(([k, stake, v]) => ({ k, stake, v }));
+}
+function casNext() {
+  const g = S.game, s = casGet(g), c = s?.cur; if (!c?.over) return;
+  CA.seq = null;
+  s.hands.push({ h: c.h, bets: c.bets, picks: c.picks, folded: !!c.folded, res: c.res });
+  s.bank += c.res.net; s.cur = null; s.lastDim = false;
+  // keep your bets if you can still cover them; otherwise the biggest ante you can (bonus bets off)
+  if (s.bank < casNeed(s.bets, g)) { s.bets.trips = 0; s.bets.pocket = 0; while (s.bets.ante > CASINO_MIN && s.bank < casNeed(s.bets, g)) s.bets.ante -= 5; }
+  if (s.hands.length >= CASINO_HANDS) s.timeUp = 'time';
+  else if (casBroke(s) || s.bank < casNeed({ ante: CASINO_MIN, trips: 0, pocket: 0 }, g)) s.timeUp = 'broke';
+  casSave(s, g); renderCasino(true);
+}
+function casCashOut() {
+  const g = S.game, s = casGet(g); if (!s || s.done || s.cur) return;
+  s.done = true; s.cashedOut = !s.timeUp && s.hands.length < CASINO_HANDS; casSave(s, g); renderCasino(); casFinish(g);
+}
+function casCardsHTML(cards, show, { fresh = false, delay0 = 0, dim = false, hl = null } = {}) {
+  return cards.map((c, i) => !show[i] ? '<div class="pc back"></div>'
+    : cardHTML(c, fresh && fresh[i] ? `style="animation-delay:${(delay0 + fresh[i] - 1) * 0.18}s"` : '').replace('class="pc ', `class="pc ${fresh && fresh[i] ? 'deal ' : ''}${dim ? 'cdim ' : ''}${hl ? hl(c) + ' ' : ''}`)).join('');
+}
+function casSpotHTML(k, label, stake, { res = null, settled = false, shape = '' } = {}) {
+  let chips = chipStackHTML(stake), tag = stake ? `$${stake}` : '';
+  if (settled && res !== null && (stake > 0 || res !== 0)) {
+    if (res < 0) { chips = ''; tag = `<em class="l">−$${-res}</em>`; }
+    else if (res > 0) { chips = chipStackHTML(stake) + chipStackHTML(res, 'paid'); tag = `<em class="w">+$${res}</em>`; }
+    else tag = `<em class="p">push</em>`;
+  }
+  return `<button class="cspotb ${shape}" id="cs-${k}" data-spot="${k}"><span class="cring2">${chips}</span><span class="clab">${label}</span><span class="camt">${tag || '&nbsp;'}</span></button>`;
+}
+function renderCasinoTable(s, g, x) {
+  const c = s.cur, last = !c && s.hands.length ? s.hands[s.hands.length - 1] : null;
+  const shown = c || last, h = shown?.h;
+  const b = casTableBets(s, g), over = c?.over, settled = over && c.settled;
+  const pl = E.GAMES[g].playName, s2 = E.GAMES[g].spot2;
+  const playStake = c ? c.picks.reduce((t, p) => t + p.units * c.bets.ante, 0) : 0;
+  const R = settled ? c.res : null;
+  // cards
+  let dealerShow = [false, false], boardShow = [false, false, false, false, false], youShow = [false, false];
+  let fDealer = null, fBoard = null, fYou = null, delayD = 0;
+  if (c) {
+    youShow = [true, true];
+    const nb = over ? 5 : boardAt({ peekF: false }, c.stage); boardShow = boardShow.map((_, i) => i < nb);
+    if (over) dealerShow = [true, true]; else if (c.h.df) dealerShow = [true, false];
+    if (!over && c.stage === 'preflop' && c.h.ff) boardShow[0] = true;
+    if (c.fresh === 'deal') fYou = [1, 2];
+    if (c.fresh === 'street') fBoard = boardShow.map((v, i) => v && i >= c.dealFrom ? i - c.dealFrom + 1 : 0);
+    if (c.fresh === 'reveal') { fBoard = boardShow.map((v, i) => i >= c.runFrom ? i - c.runFrom + 1 : 0); delayD = 5 - c.runFrom; fDealer = [1, 2]; }
+  } else if (last) { youShow = [true, true]; boardShow = boardShow.map(() => true); dealerShow = [true, true]; }
+  const dim = !c && !!last; // the last hand stays readable, greyed out, until the next deal
+  // highlight the best five cards at showdown: yours (gold), the dealer's (blue), or both
+  let hl = null;
+  if (over && CA.hl && h) {
+    const yb = new Set(bestFive([...h.hole, ...h.board]).cards), db = new Set(bestFive([...h.dc, ...h.board]).cards), m = CA.hl;
+    hl = x => { const y = (m === 'you' || m === 'both') && yb.has(x), d = (m === 'dealer' || m === 'both') && db.has(x); return y && d ? 'lit-b' : y ? 'lit-y' : d ? 'lit-d' : 'hdim'; };
+  }
+  const cards = (arr, show, f, d0 = 0) => arr ? casCardsHTML(arr, show, { fresh: f, delay0: d0, dim, hl }) : casCardsHTML([0, 0], [false, false]);
+  const rv = (k, v) => R ? v : null;
+  const sp = (k, label, stake, v, shape) => casSpotHTML(k, label, stake, { res: rv(k, v), settled, shape });
+  const bonus = g === 'uth'
+    ? `<div class="crow3 two">${sp('trips', 'Trips', b.trips || 0, R?.trips)}${sp('pocket', casPocketName(g, s.opts), b.pocket || 0, R?.pocket)}</div>`
+    : `<div class="crow3 two">${sp('trips', 'Trips Plus', b.trips || 0, R?.trips)}${sp('pocket', 'Pocket Bonus', b.pocket || 0, R?.pocket)}</div>`;
+  x += `<div class="ctable ${c && !over ? 'live' : ''}">
+    <div class="ctray" id="cTray"><span></span><span></span><span></span><span></span></div>
+    <div class="cdeal"><div class="clbl2">Dealer</div><div class="crowc">${cards(h?.dc, dealerShow, fDealer, delayD)}</div></div>
+    <div class="crowc cboard">${h ? casCardsHTML(h.board, boardShow, { fresh: fBoard, dim, hl }) : casCardsHTML([0, 0, 0, 0, 0], boardShow)}</div>
+    <div class="carc">Dealer needs a pair or better to qualify · ${s2} pays on straight or better</div>
+    ${h?.nb?.length ? `<div class="cnb"><span class="clbl2">Neighbors</span>${[0, 2].filter(i => i < h.nb.length).map(i => `<div class="crowc">${casCardsHTML(h.nb.slice(i, i + 2), [true, true], { dim: dim || !!hl })}</div>`).join('')}</div>` : (s.cfg?.nb ? `<div class="cnb"><span class="clbl2">Neighbors</span>${Array.from({ length: s.cfg.nb }, () => `<div class="crowc">${casCardsHTML([0, 0], [false, false])}</div>`).join('')}</div>` : '')}
+    <div class="clow">
+      <div class="cspots">${bonus}
+        <div class="cgrid">${sp('ante', 'Ante', b.ante || 0, R?.ante)}<span class="ceq2">=</span>${sp('blind', s2, b.ante || 0, R?.blind)}${sp('play', pl, playStake, R?.play, 'play')}</div>
+      </div>
+      <div class="cyou2"><div class="crowc">${cards(h?.hole ? [...h.hole].sort((p, q) => q - p) : null, youShow, fYou)}</div><div class="clbl2">You</div>${casStackHTML(s.bank - casOnTable(s, g) + (over && settled ? 0 : 0))}</div>
+    </div>
+    ${settled ? `<div class="cbanner ${R.net > 0 ? 'w' : R.net < 0 ? 'l' : ''}"><b>${c.folded ? 'Folded' : R.win ? 'You win' : R.lose ? 'Dealer wins' : 'Push'}</b><span>${casSD(R.net)}</span><small>${casLastText(c.h, R, c.folded)}</small>${R.error ? `<em class="cerr">Dealer mistake: ${CAS_ERR[R.error]}!</em>` : ''}</div>` : ''}
+  </div>`;
+  // controls under the table
+  // under the felt, always in the same place: a line of text, then the two main buttons (act, or Deal),
+  // then the chip rack between hands — so Deal and the plays never move
+  const ctl = (line, btns, extra = '', cls = '') => `<div class="cctl ${cls}"><div class="clast ${line[1] || ''}">${line[0]}</div><div class="qacts crow2">${btns}</div>${extra}</div>`;
+  if (c && !over) {
+    const [bk, pk] = casActs(c.stage, s), rem = casRem(s, g), M = casMult(bk), A = c.bets.ante;
+    const raise = rem >= M * A ? `<button class="qact cgo" data-ca="${bk}">${ACT_LABEL[bk]}<small>$${M * A}</small></button>`
+      : `<button class="qact cgo" data-ca="allin">All-in<small>$${Math.floor(rem / CASINO_MIN) * CASINO_MIN}</small></button>`;
+    x += ctl(['Your move'], `${raise}<button class="qact" data-ca="${pk}">${ACT_LABEL[pk]}${pk === 'fold' ? `<small>lose $${2 * A}</small>` : ''}</button>`);
+  } else if (over) {
+    const cap = w => w[0].toUpperCase() + w.slice(1);
+    x += ctl([settled ? '&nbsp;' : CA.hl === 'you' ? `<span class="cy">Your best five:</span> ${cap(handWords(E.eval7([...c.h.hole, ...c.h.board])))}` : CA.hl === 'dealer' ? `<span class="cd">Dealer's best five:</span> ${cap(handWords(E.eval7([...c.h.dc, ...c.h.board])))}` : CA.hl === 'both' ? '&nbsp;' : 'Dealer turns over…'], `<button class="qact cgo" disabled>&nbsp;</button><button class="qact" disabled>&nbsp;</button>`, '', 'cbusy');
+  } else if (s.timeUp) {
+    x += ctl([s.timeUp === 'time' ? `It's 9:00 pm — that's your hour.` : `You're out of chips for tonight.`, 'cendl'], `<button class="qact cgo cwide" id="cOut2">See how you did ▸</button>`);
+  } else {
+    const ch = casChip(), ok = b.ante >= CASINO_MIN && s.bank >= casNeed(b, g);
+    const line = last ? [`Last hand ${casSD(last.res.net)} · ${casLastText(last.h, last.res, last.folded)}${last.res.error ? ' · dealer mistake' : ''}`, last.res.net > 0 ? 'pos' : last.res.net < 0 ? 'neg' : ''] : ['Pick a chip, then tap a circle to bet.'];
+    x += ctl(line, `<button class="qact cgo cdealbtn" id="cDeal" ${ok ? '' : 'disabled'}>Deal<small>${b.ante ? `$${casUpfront(b, g)}` : 'place a bet'}</small></button><button class="qact cout" id="cOut">Cash out<small>${s.hands.length ? 'end the trip' : 'leave'}</small></button>`,
+      `<div class="crack">${CHIP_DENOMS.map(d => `<button class="rchip k${d} ${d === ch ? 'on' : ''}" id="crk-${d}" data-chip="${d}"><span>$${d}</span></button>`).join('')}
+        <button class="cclear" id="cClear" ${casUpfront(b, g) ? '' : 'disabled'}>Clear</button></div>`);
+  }
+  return x;
+}
+function renderCasinoPlay(s, g, el) {
+  const c = s.cur;
+  if (c?.over && !CA.seq) { casNext(); return; } // reloaded (or came back) mid-showdown: settle it straight away
+  const onTable = casOnTable(s, g);
+  let x = `<div class="ctop2"><span class="cclock"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${casClock(s.hands.length - (c ? 0 : 0))}</span>
+    <span class="cbank" id="cBank"><small>Chips</small><b>${casD(s.bank - onTable)}</b><small class="cin">${onTable ? `$${onTable} in play` : '&nbsp;'}</small></span></div>`;
+  x = renderCasinoTable(s, g, x);
+  el.innerHTML = x;
+  if (c) { if (c.fresh) { c.fresh = null; c.shownAt = Date.now(); casSave(s, g); } }
+  el.querySelectorAll('[data-ca]').forEach(b => b.onclick = () => casPick(b.dataset.ca));
+  el.querySelectorAll('[data-chip]').forEach(b => b.onclick = () => { store.set('uth.casChip', +b.dataset.chip); FX.buzz('tap'); renderCasino(); });
+  el.querySelectorAll('[data-spot]').forEach(b => b.onclick = () => { if (!s.cur) casAddBet(b.dataset.spot); });
+  document.getElementById('cDeal')?.addEventListener('click', casDeal);
+  document.getElementById('cClear')?.addEventListener('click', casClear);
+  document.getElementById('cOut2')?.addEventListener('click', casCashOut);
+  document.getElementById('cOut')?.addEventListener('click', () => { const b = document.getElementById('cOut'); if (b.dataset.sure) casCashOut(); else { b.dataset.sure = 1; b.classList.add('sure'); b.innerHTML = 'Sure?<small>tap again to cash out</small>'; } });
+}
+// The tally: every decision against the options you actually had; perfect play on the same cards and
+// bets (full raises, it never runs short), settled against the real dealer hand.
+async function casFinish(g) {
+  const s = casGet(g); if (!s?.done || s.summary || CA.tally === s.started) return;
+  CA.tally = s.started; renderCasino();
+  try {
+    let done = 0;
+    const allActs = await Promise.all(s.hands.map((hd, i) => casPrefetch(i, hd.h, s, g).then(a => { done++; CA.tallyDone = done; if (mode === 'casino') renderCasinoProgress(done, s.hands.length); return a; })));
+    const hands = s.hands.map((hd, i) => {
+      const acts = allActs[i], A = hd.bets.ante;
+      const rows = hd.picks.map(p => {
+        const o = casOptions(acts[p.st], p.st, s, p.rem, A), best = Object.keys(o).reduce((a, k) => o[k].ev > o[a].ev ? k : a);
+        return { st: p.st, k: p.k, units: p.units, best, loss: Math.max(0, o[best].ev - o[p.k].ev), opts: o };
+      });
+      // perfect line
+      let st = 'preflop', units = 0, folded = false; const line = [];
+      for (;;) {
+        const [bk, pk] = casActs(st, s), a = acts[st], k = a[bk].total >= a[pk].total ? bk : pk; line.push({ st, k });
+        if (k === bk) { units = casMult(bk); break; }
+        if (k === 'fold') { folded = true; break; }
+        st = QSTREETS[QSTREETS.indexOf(st) + 1];
+      }
+      const pres = casSettle(g, s.opts, hd.h, units, folded, hd.bets);
+      const evLost = rows.reduce((t, r) => t + r.loss, 0) * A;
+      return { i, rows, line, perfectNet: pres.net, net: hd.res.net, evLost, real: pres.net - hd.res.net, acts };
+    });
+    const nDec = hands.reduce((t, x) => t + x.rows.length, 0), nOk = hands.reduce((t, x) => t + x.rows.filter(r => r.loss < 1e-9).length, 0);
+    const evLost = hands.reduce((t, x) => t + x.evLost, 0), perfect = hands.reduce((t, x) => t + x.perfectNet, 0);
+    const antes = s.hands.reduce((t, hd) => t + hd.bets.ante, 0), perAnte = antes ? evLost / antes : 0;
+    // costliest mistakes, a hand at a time; ones that really cost money that night count double, ones that happened to win count half
+    const flagged = hands.filter(x => x.evLost > 0.005).map(x => ({ ...x, w: x.evLost * (x.real > 0.5 ? 2 : x.real < -0.5 ? 0.5 : 1) })).sort((a, b) => b.w - a.w).slice(0, 5)
+      .map(x => ({ i: x.i, evLost: x.evLost, real: x.real, net: x.net, perfectNet: x.perfectNet, rows: x.rows.filter(r => r.loss > 1e-9).map(r => ({ st: r.st, k: r.k, best: r.best, loss: r.loss })) }));
+    const net = s.bank - casBuyIn(s);
+    s.summary = { net, perfect, evLost, perAnte, nDec, nOk, flagged, perHand: hands.map(x => ({ net: x.net, perfectNet: x.perfectNet, evLost: x.evLost, mis: x.rows.find(r => r.loss > 1e-9)?.st || null })),
+      brief: { end: s.bank, net, perfect, evLost, hands: s.hands.length } };
+    // where the money went: the main game vs each bonus bet
+    const sum = k => s.hands.reduce((t, hd) => t + (hd.res[k] || 0), 0), wag = k => s.hands.reduce((t, hd) => t + (hd.bets[k] || 0), 0);
+    s.summary.split = { main: sum('ante') + sum('blind') + sum('play'), trips: sum('trips'), tripsW: wag('trips'), pocket: sum('pocket'), pocketW: wag('pocket') };
+    // the record: all trips, and a new best cash-out (celebrated when an old best is passed)
+    const st = casStats(g), newBest = st.best !== null && s.bank > st.best;
+    s.summary.prevBest = st.best; s.summary.newBest = newBest;
+    casStatsSave(g, { trips: st.trips + 1, total: st.total + net, best: st.best === null ? s.bank : Math.max(st.best, s.bank) });
+    casSave(s, g);
+    casLog(g, s, hands);
+    if (newBest) { FX.play('fan4', 0.2); FX.buzz('streak'); if (!reduceMotion()) confetti(170, 5); }
+    else { FX.play(net > 0 ? 'fan3' : 'fan1', 0.2); if (net >= 250 && !reduceMotion()) confetti(120, 4); }
+  } catch (e) { console.error(e); }
+  CA.tally = null; if (mode === 'casino') renderCasino();
+}
+// the trip's decisions go into the hand history (leak finder), like Practice and Daily; the end of a trip is a checkpoint for fixes
+function casLog(g, s, hands) {
+  const t0 = Date.now(), r4 = x => Math.round(x * 1e4) / 1e4, recs = [];
+  hands.forEach((x, i) => {
+    const hd = s.hands[i];
+    for (const r of x.rows) {
+      if (!casActs(r.st, s).includes(r.k) || !Object.keys(r.opts).every(k => casActs(r.st, s).includes(k))) continue; // short-stacked spots aren't standard
+      const a = x.acts[r.st], ev = Object.fromEntries(casActs(r.st, s).map(k => [k, r4(a[k].total)]));
+      const gap = Math.abs(ev[casActs(r.st, s)[0]] - ev[casActs(r.st, s)[1]]);
+      const sp = casSpec(hd.h, r.st);
+      recs.push({ t: t0 - (hands.length - i) * 120000, mode: 'casino', game: g, street: r.st, cls: handClass(hd.h.hole), hole: sp.hole, board: sp.board, dealer: sp.dealer, dead: sp.dead,
+        pick: r.k, best: r.best, ev, loss: r4(r.loss), gap: r4(gap), tough: gap < toughLimit(r.st), stake: hd.bets.ante });
+    }
+  });
+  if (!recs.length) return;
+  const was = store.get('uth.handsLogged', 0), n = new Set(recs.map(r => r.t)).size;
+  store.set('uth.handsLogged', was + n);
+  if (was < LEAK_HANDS && was + n >= LEAK_HANDS) setTimeout(showLeakUnlock, 4000);
+  LOG.add(recs).then(() => updateLeaks({ fix: true })).then(() => leakNewsSoon(4500));
+  renderLeakNav?.();
+}
+function renderCasinoProgress(done, n) { const el = document.getElementById('casProg'); if (el) el.textContent = `${done} of ${n} hands checked`; }
+function renderCasino() {
+  const el = document.getElementById('cBody'); if (!el || mode !== 'casino') return;
+  const g = S.game, s = casGet(g);
+  let x = '';
+  if (CA.setup) { renderCasinoSetup(el, g); return; }
+  if (!s || (s.done && s.dismissed)) { // start screen
+    const hist = store.get('uth.casinoTrips', []).filter(t => t.game === g);
+    x += `<div class="qhead">Casino trip<small>${GAME_NAME[g]}</small></div>
+      <div class="dcard ctrip"><div class="dtitle">An hour at the tables</div>
+      <div class="dmeta">8:00–9:00 pm · buy in up to ${casD(casMaxBring(g))} · your bets</div>
+      <p class="cintro">Play it like a real night out: put your chips down, make your plays, and see the dealer's cards. About 30 hands in the hour. No hints or grades along the way — when you cash out you'll see what perfect play would have made with the same cards and bets, and your biggest mistakes.</p>
+      <div class="qacts"><button class="qact dgo" id="cStart">Head to the casino ▸</button></div></div>`;
+    const rec = casStats(g);
+    if (rec.trips) x += `<div class="crec"><div><span>Casino trips</span><b>${rec.trips}</b></div><div><span>All casino trips</span><b class="${rec.total >= 0 ? 'pos' : 'neg'}">${casSD(rec.total)}</b></div><div><span>Best cash-out</span><b>${casD(rec.best)}</b></div></div>`;
+    if (hist.length) x += `<h3 class="lh">Past trips</h3><table class="dlist ctrips"><thead><tr><th>Date</th><th>Hands</th><th>You</th><th>Perfect play</th></tr></thead><tbody>${hist.slice(0, 8).map(t => `<tr><td>${new Date(t.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td><td>${t.hands}</td><td class="${t.net >= 0 ? 'pos' : 'neg'}">${casSD(t.net)}</td><td class="${t.perfect >= 0 ? 'pos' : 'neg'}">${casSD(t.perfect)}</td></tr>`).join('')}</tbody></table>`;
+    x += `<div class="note">Pay tables come from your Settings (${g === 'uth' ? `Trips ${S.tables.uthTrips}` : `Bad Beat ${S.tables.badBeat} · Trips Plus ${S.tables.wptTrips} · Pocket Bonus ${S.tables.pocket}`}). Table limits: $5–$100 ante, bonus bets up to $100.</div>`;
+    el.innerHTML = x;
+    document.getElementById('cStart').onclick = () => casNewTrip();
+    return;
+  }
+  if (s.done) { // the tally
+    const sm = s.summary;
+    if (!sm && CA.tally !== s.started) setTimeout(() => casFinish(g));
+    x += `<div class="qhead">Trip over<small>${GAME_NAME[g]} · 8:00–${casClock(s.hands.length)}${s.cashedOut ? ' · cashed out early' : s.timeUp === 'broke' ? ' · out of chips' : ''}</small></div>`;
+    if (!sm) { x += `<div class="empty"><div class="big">Tallying up…</div><span id="casProg">Checking every decision</span></div>`; el.innerHTML = x; return; }
+    const ok = sm.nOk === sm.nDec, word = sm.perAnte < 1e-6 ? 'Flawless' : sm.perAnte < 0.02 ? 'Sharp' : sm.perAnte < 0.06 ? 'Solid' : sm.perAnte < 0.15 ? 'Leaky' : 'Costly';
+    const diff = sm.net - sm.perfect;
+    const rec = casStats(g);
+    if (sm.newBest) x += `<div class="cbest">New best cash-out! <b>${casD(s.bank)}</b><small>beats your old best of ${casD(sm.prevBest)}</small></div>`;
+    x += `<div class="dcard csum"><div class="cres"><div><span>You walked away with</span><b>${casD(s.bank)}</b><small class="${sm.net >= 0 ? 'pos' : 'neg'}">${casSD(sm.net)}</small></div>
+        <div><span>Perfect play, same cards &amp; bets</span><b>${casD(casBuyIn(s) + sm.perfect)}</b><small class="${sm.perfect >= 0 ? 'pos' : 'neg'}">${casSD(sm.perfect)}</small></div></div>
+      <div class="cverdict"><b class="${ok ? 'pos' : sm.perAnte < 0.06 ? '' : 'neg'}">${word}</b> · ${sm.nOk} of ${sm.nDec} decisions right${sm.evLost > 0.005 ? ` · your mistakes cost <b>${dollars(sm.evLost)}</b> on average` : ''}</div>
+      ${sm.split && (sm.split.tripsW || sm.split.pocketW) ? `<div class="csplit"><span>Main game <b class="${sm.split.main >= 0 ? 'pos' : 'neg'}">${casSD(sm.split.main)}</b></span>${sm.split.tripsW ? `<span>${g === 'uth' ? 'Trips' : 'Trips Plus'} <b class="${sm.split.trips >= 0 ? 'pos' : 'neg'}">${casSD(sm.split.trips)}</b> <small>of $${sm.split.tripsW} bet</small></span>` : ''}${sm.split.pocketW ? `<span>${casPocketName(g, s.opts)} <b class="${sm.split.pocket >= 0 ? 'pos' : 'neg'}">${casSD(sm.split.pocket)}</b> <small>of $${sm.split.pocketW} bet</small></span>` : ''}</div>` : ''}
+      <div class="cnote">${Math.abs(diff) < 0.5 ? 'You matched perfect play to the dollar.' : diff > 0 ? `You finished ${casD(diff)} ahead of perfect play — the cards were kind to your mistakes tonight${sm.evLost > 0.005 ? `, but over time they cost you ${dollars(sm.evLost)} a trip like this` : ''}.` : `Your decisions cost you ${casD(-diff)} tonight${sm.evLost > 0.005 ? ` (${dollars(sm.evLost)} on average — the rest was how the cards fell)` : ''}.`}</div></div>`;
+    if (sm.flagged.length) {
+      x += `<h3 class="lh">Biggest mistake${sm.flagged.length === 1 ? '' : 's'}</h3>`;
+      for (const f of sm.flagged) {
+        const hd = s.hands[f.i];
+        x += `<div class="lcard cmis"><div class="lctop"><span class="lst">${casClock(f.i)}</span><b>${[...hd.h.hole].sort((a, b) => b - a).map(cardTxt).join('')}</b><small class="cmeta">$${hd.bets.ante} ante</small></div>
+          <div class="ccards">Board ${hd.h.board.map(cardTxt).join(' ')} · dealer ${hd.h.dc.map(cardTxt).join('')}</div>
+          ${f.rows.map(r => `<div class="crow"><span>${QNAME[r.st]}: you ${r.k === 'check' ? 'checked' : r.k === 'fold' ? 'folded' : r.k === 'allin' ? 'went all-in' : `bet ${r.k.slice(3)}x`}, best was <b>${r.best === 'allin' ? 'all-in' : ACT_LABEL[r.best]}</b></span><span class="neg">−${dollars(r.loss * hd.bets.ante)}</span><button class="anbtn" data-can="${f.i}|${r.st}">Analyze</button></div>`).join('')}
+          <div class="creal ${f.real > 0.5 ? 'neg' : f.real < -0.5 ? 'pos' : ''}">${f.real > 0.5 ? `This one cost you ${casD(f.real)}: you ${casMade(f.net)}, the right play would have ${casMade(f.perfectNet, true)}.` : f.real < -0.5 ? `It worked out this time: you ${casMade(f.net)}, the right play would have ${casMade(f.perfectNet, true)}. Don't count on it.` : `Same result either way this time: you ${casMade(f.net)}.`}</div></div>`;
+      }
+    } else x += `<div class="lclean">Every decision matched the best play — nothing to flag.</div>`;
+    x += `<div class="crec"><div><span>Casino trips</span><b>${rec.trips}</b></div><div><span>All casino trips</span><b class="${rec.total >= 0 ? 'pos' : 'neg'}">${casSD(rec.total)}</b></div><div><span>Best cash-out</span><b>${casD(rec.best ?? s.bank)}</b></div></div>`;
+    x += `<details class="clog"><summary>Every hand</summary><table class="dlist"><thead><tr><th>Time</th><th></th><th>Hand</th><th>You</th><th>Perfect play</th><th></th></tr></thead><tbody>${s.hands.map((hd, i) => `<tr><td>${casClock(i)}</td><td class="cx">${sm.perHand[i].evLost > 0.005 ? '✗' : ''}</td><td>${[...hd.h.hole].sort((a, b) => b - a).map(cardTxt).join('')} <small>$${hd.bets.ante}${hd.res.error ? ' · dealer mistake' : ''}</small></td><td class="${hd.res.net >= 0 ? 'pos' : 'neg'}">${casSD(hd.res.net)}</td><td class="${sm.perHand[i].perfectNet >= 0 ? 'pos' : 'neg'}">${casSD(sm.perHand[i].perfectNet)}</td><td><button class="anbtn" data-can="${i}|${sm.perHand[i].mis || hd.picks[hd.picks.length - 1].st}">Analyze</button></td></tr>`).join('')}</tbody></table></details>`;
+    x += `<div class="qacts"><button class="qact dgo" id="cAgain">New trip ▸</button></div>`;
+    el.innerHTML = x;
+    el.querySelectorAll('[data-can]').forEach(b => b.onclick = () => { const [i, st] = b.dataset.can.split('|'), hd = s.hands[+i]; const sp = casSpec(hd.h, st); specToAnalyzer({ hole: sp.hole, board: sp.board, dealer: sp.dealer, dead: sp.dead }, st, 'casino'); });
+    document.getElementById('cAgain').onclick = () => casNewTrip();
+    return;
+  }
+  renderCasinoPlay(s, g, el);
+}
+document.addEventListener('keydown', e => {
+  if (mode !== 'casino' || e.target.matches('input:not([type=checkbox]), select, textarea')) return;
+  const s = casGet(); if (!s || s.done) return;
+  const c = s.cur;
+  if (c && !c.over) { const b = document.querySelectorAll('#cBody [data-ca]'); if (/^[12]$/.test(e.key) && b[+e.key - 1]) { e.preventDefault(); b[+e.key - 1].click(); } }
+  else if (!c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); s.timeUp ? casCashOut() : casDeal(); }
+});
+
+// ── Codes (Settings) ──────────────────────────────────────────────────────
+// Test codes replace the hand history of the selected game with a known setup (real dealt and solved
+// hands, no extra information, with chosen mistakes planted). A friend code removes ads for free.
+// Friend codes are stored as hashes so they don't sit in the page as plain text.
+const codeHash = s => { let h = 2166136261; for (const ch of s) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; } return h.toString(36); };
+const FRIEND_CODES = new Set([codeHash('BUNZFRIEND')]);
+const TEST_CODES = {
+  'TEST-RESET': { hands: 0, note: 'Hand history cleared — the leak finder is locked again.' },
+  'TEST-99': { hands: 99, note: '99 clean hands — your next hand unlocks the leak finder.' },
+  'TEST-CLEAN': { hands: 150, note: '150 clean hands — the leak finder is open with no leaks.' },
+  'TEST-LEAKS': { hands: 200, note: '200 hands with several leaks: preflop checking too tight, paired boards, draws, river folding too tight (and any spots those overlap).' },
+  'TEST-FLOPPAIR': { hands: 200, note: '200 hands with one leak: flop not betting pair or better (paired boards can show up too, since the spots overlap).' },
+  'TEST-NEARLEAK': { hands: 120, note: 'Preflop checking-too-tight sits at the 10% line — check one hand that should raise and the leak is spotted.' },
+  'TEST-NEARFIX': { hands: 150, note: 'River folding-too-tight is an open leak just above 5% — bet the next river that should bet and it\'s fixed.' },
+};
+// clean hands: deal, solve every street, play the best line, record each decision like Practice does
+async function genCleanHands(n, game, onProgress) {
+  const recs = [], t0 = Date.now() - n * 60000, r4 = x => Math.round(x * 1e4) / 1e4;
+  let done = 0;
+  const one = async i => {
+    const h = quizDeal(); h.dealer = []; h.dead = []; h.peekF = false;
+    const acts = {}; const sol = await Promise.all(QSTREETS.map(st => nodeSolve(nodeSpec(h, st)))); QSTREETS.forEach((st, j) => acts[st] = sol[j]);
+    const out = [];
+    for (const st of QSTREETS) {
+      const a = acts[st], best = qBest(a, st), sp = nodeSpec(h, st);
+      out.push({ t: t0 + i * 60000, mode: 'quiz', game, street: st, cls: handClass(h.hole), hole: sp.hole, board: sp.board, dealer: [], dead: [], pick: best, best,
+        ev: Object.fromEntries(Object.entries(a).map(([k, v]) => [k, r4(v)])), loss: 0, gap: r4(qGap(a, st)), tough: qGap(a, st) < toughLimit(st), test: true });
+      if (endsHand(best, st)) break;
+    }
+    onProgress?.(++done, n); return out;
+  };
+  for (let i = 0; i < n; i += NW * 2) recs.push(...(await Promise.all(Array.from({ length: Math.min(NW * 2, n - i) }, (_, j) => one(i + j)))).flat());
+  return recs;
+}
+// turn a correct decision into the mistake (the other option)
+function plantMistake(r) {
+  const other = quizActions(r.street, r.game).find(k => k !== r.best);
+  r.pick = other; r.loss = Math.round(Math.max(0, r.ev[r.best] - r.ev[other]) * 1e4) / 1e4;
+}
+async function applyTestCode(code, say) {
+  const game = S.game, cfg = TEST_CODES[code];
+  say(cfg.hands ? `Dealing and solving ${cfg.hands} hands… 0%` : 'Clearing…');
+  const recs = cfg.hands ? await genCleanHands(cfg.hands, game, (d, n) => say(`Dealing and solving ${n} hands… ${Math.round(d / n * 100)}%`)) : [];
+  const cat = id => LEAK_CATS.find(c => c.id === id), spots = id => recs.filter(r => r.street === cat(id).st && cat(id).spot(r));
+  if (code === 'TEST-LEAKS') {
+    spots('preTight').forEach((r, i) => { if (i % 3 === 0) plantMistake(r); });
+    spots('flopPaired').forEach((r, i) => { if (i % 3 === 0) plantMistake(r); });
+    spots('flopDraw').forEach((r, i) => { if (i % 3 === 0) plantMistake(r); });
+    spots('rivTight').forEach((r, i) => { if (i % 3 === 0) plantMistake(r); });
+  }
+  if (code === 'TEST-FLOPPAIR') spots('flopPair').forEach((r, i) => { if (i % 2 === 0) plantMistake(r); });
+  if (code === 'TEST-NEARLEAK') { // exactly 10% wrong (not over it): one more mistake tips it over
+    const s = spots('preTight'), e = Math.floor(s.length * LEAK_OPEN);
+    for (let k = 0; k < e; k++) plantMistake(s[Math.floor((k + 0.5) * s.length / e)]);
+  }
+  let nearFix = false;
+  if (code === 'TEST-NEARFIX') { // n spots with n+1 a multiple of 20 and (n+1)/20 mistakes: one more right answer brings it to 5%
+    let s = spots('rivTight'); const keep = s.length - ((s.length + 1) % 20);
+    const drop = new Set(s.slice(0, s.length - keep)); for (let i = recs.length - 1; i >= 0; i--) if (drop.has(recs[i])) recs.splice(i, 1);
+    s = spots('rivTight'); const e = (s.length + 1) / 20; s.slice(0, e).forEach(plantMistake); nearFix = e >= 1;
+  }
+  // replace this game's history; the other game's stays
+  const keepOther = (await LOG.all() || []).filter(r => r.game !== game);
+  await LOG.clear(); if (keepOther.length || recs.length) await LOG.add([...keepOther, ...recs]);
+  store.set('uth.handsLogged', new Set([...keepOther, ...recs].filter(r => r.mode !== 'drill').map(r => r.t)).size);
+  const st = store.get('uth.leakState', {}); st[game] = {}; store.set('uth.leakState', st); store.set('uth.leakNews', []);
+  await updateLeaks({ celebrate: false });
+  if (nearFix) { const s2 = store.get('uth.leakState', {}); s2[game].rivTight = { status: 'open', at: Date.now() }; store.set('uth.leakState', s2); }
+  renderHistInfo(); renderLeakNav?.();
+  if (mode === 'leaks') renderLeaks();
+  say(`${cfg.note} (${GAME_NAME[game]})`);
+}
+async function applyCode(raw) {
+  const code = raw.trim().toUpperCase(), say = t => { const el = document.getElementById('codeMsg'); if (el) el.textContent = t; };
+  if (!code) return;
+  if (FRIEND_CODES.has(codeHash(code))) { await adsOff(); say(APP.native ? 'Ads removed — enjoy!' : 'Code accepted — ads will be off in the app on this device.'); return; }
+  if (code === 'TEST-ADS') { APP.adsRemoved = false; try { localStorage.removeItem('uth.adsRemoved'); } catch (_) {} if (APP.native) startAds(); renderAdsOpt(); say('Ads are back on (testing).'); return; }
+  const sm = code.replace(/\s+/g, '').match(/^TEST-SETPRACTICESTREAK(\d{1,5})$/);
+  if (sm) { // sets the current streak of the selected game and practice mode (all hands / tough spots), to test milestones
+    const st = statsFor(S.game, QZ.tough), n = +sm[1];
+    st.streak = n; st.best = Math.max(st.best, n); saveQuiz(); renderQuizScore();
+    say(`Practice streak set to ${n} (${GAME_NAME[S.game]}, ${QZ.tough ? 'tough spots' : 'all hands'}).`); return;
+  }
+  if (TEST_CODES[code]) { try { await applyTestCode(code, say); } catch (e) { say('Something went wrong: ' + e.message); } return; }
+  say('That code isn\'t valid.');
+}
+
+// ── "Where the line is" ───────────────────────────────────────────────────
+// River: sort every hand you could hold here by strength, group them ("J high", "a pair of 4s", "two pair"
+// …), and work out bet vs fold for a typical hand of each group: the weakest group that should still bet
+// is the line. Preflop (nothing extra known): the weakest kicker with your high card (same suitedness),
+// or the smallest pair, that still raises.
+const pluralRank = r => RANK_TXT(r) + 's';
+function riverHandWord(hole, board) {
+  const cat = catOf([...hole, ...board]);
+  const hi = Math.max(rk(hole[0]), rk(hole[1])), lo = Math.min(rk(hole[0]), rk(hole[1]));
+  if (cat === 0) return { w: `${RANK_TXT(hi)}-${RANK_TXT(lo)} high`, cat };
+  if (cat === 1) {
+    const hp = hiddenPair(hole, board);
+    if (hp) return { w: `a pair of ${pluralRank(hp.r)}`, cat };
+    return { w: `${RANK_TXT(hi)}-${RANK_TXT(lo)} high (board pair)`, cat };
+  }
+  return { w: HAND_NAMES[cat], cat };
+}
+const RIVER_LINE = new Map();
+function riverLine(sp) {
+  const key = [sp.board, sp.dealer, sp.dead, S.game, S.game === 'wpt' ? S.tables.badBeat : ''].join('|');
+  if (RIVER_LINE.has(key)) return RIVER_LINE.get(key);
+  const used = new Set([...sp.board, ...sp.dealer, ...sp.dead]), deck = [...Array(52).keys()].filter(c => !used.has(c));
+  const groups = new Map();
+  for (let i = 0; i < deck.length; i++) for (let j = i + 1; j < deck.length; j++) {
+    const hole = [deck[i], deck[j]], v = E.eval7([...hole, ...sp.board]), { w } = riverHandWord(hole, sp.board);
+    if (!groups.has(w)) groups.set(w, []); groups.get(w).push({ hole, v });
+  }
+  const list = [...groups].map(([w, hs]) => { hs.sort((a, b) => a.v - b.v); return { w, hs, mid: hs[hs.length >> 1] }; }).sort((a, b) => a.mid.v - b.mid.v);
+  for (const g of list) { const R = riverGroups({ ...sp, hole: g.mid.hole }), ev = Object.values(R.G).reduce((t, x) => t + x.v, 0) / R.N; g.bet = ev > -2; }
+  let line = list.findIndex((g, i) => g.bet && list.slice(i).filter(x => x.bet).length >= 0.8 * (list.length - i));
+  const res = { list, line, exceptions: line >= 0 && list.slice(line).some(g => !g.bet) };
+  RIVER_LINE.set(key, res); return res;
+}
+function thresholdLine(sp) {
+  try {
+    if (sp.street === 'river') {
+      const L = riverLine(sp), mine = riverHandWord(sp.hole, sp.board).w, mi = L.list.findIndex(g => g.w === mine);
+      const R0 = riverGroups(sp), myBet = Object.values(R0.G).reduce((t, x) => t + x.v, 0) / R0.N > -2, your = mine.replace(/^a /, '');
+      if (L.line < 0) return `<b>Where the line is:</b> no hand is worth a bet here — fold everything.`;
+      if (L.line === 0) return `<b>Where the line is:</b> every hand should bet 1x here, even the weakest.`;
+      const at = L.list[L.line].w, below = L.list[L.line - 1].w;
+      const pos = mi < 0 ? null : mi > L.line ? 'above' : mi === L.line ? 'right on' : mi === L.line - 1 ? 'just below' : 'below';
+      const where = !pos ? '' : ` Your <b>${your}</b> is ${pos} the line${(mi >= L.line) === myBet ? ` — ${myBet ? 'a bet' : 'a fold'}.` : `, but it's ${myBet ? 'still a bet' : 'a fold'} — your exact cards change the dealer's hands that beat or tie you.`}`;
+      return `<b>Where the line is:</b> on this board, bet 1x with <b>${at}</b> or better; with <b>${below}</b> or weaker, fold${L.exceptions ? ' (with a few exceptions)' : ''}.${where}`;
+    }
+    if (sp.street === 'preflop' && !sp.board.length && !sp.dealer.length && !sp.dead.length && BASE) {
+      const gk = S.game === 'uth' ? 'uth' : 'wpt:' + S.tables.badBeat, raise = S.game === 'uth' ? 'bet4' : 'bet3';
+      const raises = cls => { const a = BASE[cls]?.games[gk]?.actions; return a ? a[raise].total > a.check.total : null; };
+      const cls = handClass(sp.hole), R = [...E.RANKS];
+      if (cls.length === 2) { // pairs
+        const pairs = R.map(r => r + r), lo = pairs.findIndex((c, i) => pairs.slice(i).every(raises));
+        if (lo <= 0) return `<b>Where the line is:</b> raise every pair.`;
+        return `<b>Where the line is:</b> raise any pair from <b>${pairs[lo]}</b> up; ${lo === 1 ? `${pairs[0]} checks` : `${pairs[lo - 1]} and below check`}.${raises(cls) ? '' : ` Your ${cls} is below the line — a check.`}`;
+      }
+      const hi = cls[0], kind = cls[2], kick = R.slice(0, R.indexOf(hi)).map(k => hi + k + kind);
+      const lo = kick.findIndex((c, i) => kick.slice(i).every(raises)), word = kind === 's' ? 'suited' : 'offsuit';
+      if (lo === 0) return `<b>Where the line is:</b> every ${hi}-x ${word} hand raises.`;
+      if (lo < 0) return `<b>Where the line is:</b> no ${hi}-x ${word} hand raises unless something extra tips it.`;
+      const mine = kick.indexOf(cls);
+      return `<b>Where the line is:</b> with a${/^[AE8]/.test(hi) ? 'n' : ''} ${hi} and ${kind === 's' ? 'a suited' : 'an offsuit'} kicker, raise <b>${kick[lo]}</b> or better; ${lo === 1 ? `${kick[0]} checks` : `${kick[lo - 1]} and below check`}.`
+        + (mine < 0 ? '' : mine >= lo ? ` Your ${cls} is ${mine === lo ? 'right on' : 'above'} the line — a raise.` : ` Your ${cls} is ${mine === lo - 1 ? 'just below' : 'below'} the line — a check.`);
+    }
+  } catch (_) {}
+  return null;
+}
+// Analyze remembers where you came from: closing the results sheet (phones) or the back bar returns there
+let ANALYZE_FROM = null;
+const FROM_NAME = { leaks: 'Leak finder', quiz: 'Practice', daily: 'Daily challenge', casino: 'Casino trip' };
+function renderBackBar() {
+  const el = document.getElementById('backBar'); if (!el) return;
+  const on = mode === 'analyze' && ANALYZE_FROM;
+  el.style.display = on ? '' : 'none';
+  if (on) el.innerHTML = `<button class="anbtn" id="backBtn">‹ Back to ${FROM_NAME[ANALYZE_FROM]}</button>`;
+  document.getElementById('backBtn')?.addEventListener('click', analyzeBack);
+}
+function analyzeBack() { const to = ANALYZE_FROM; ANALYZE_FROM = null; if (to) { openSheet(false); setMode(to); } }
 
 // ── Streak celebrations ───────────────────────────────────────────────────
 // Milestones in perfect hands in a row; each tier is bigger: a toast, then a card, then confetti that
@@ -3563,13 +4632,16 @@ if (mode === 'leaks' && store.get('uth.handsLogged', 0) < 100) mode = 'analyze';
 function setMode(m) {
   mode = m; store.set('uth.mode', m);
   document.querySelectorAll('.navitem[data-m]').forEach(x => x.classList.toggle('on', x.dataset.m === m));
-  document.getElementById('pageName').textContent = { analyze: 'Analyze', quiz: 'Practice', daily: 'Daily challenge', guide: 'How to Play', leaks: 'Leak finder' }[m];
+  if (m !== 'analyze') ANALYZE_FROM = null; renderBackBar?.();
+  document.getElementById('pageName').textContent = { analyze: 'Analyze', quiz: 'Practice', daily: 'Daily challenge', guide: 'How to Play', leaks: 'Leak finder', casino: 'Casino trip' }[m];
   openNav(false);
   document.body.classList.toggle('quiz-mode', m === 'quiz');
   document.body.classList.toggle('guide-mode', m === 'guide');
   document.body.classList.toggle('daily-mode', m === 'daily');
   document.body.classList.toggle('leaks-mode', m === 'leaks');
+  document.body.classList.toggle('casino-mode', m === 'casino');
   if (m === 'leaks') renderLeaks();
+  if (m === 'casino') renderCasino();
   if (m === 'daily') dailyOpen(DL.date || todayYmd());
   if (m === 'guide') { renderGuide(); if (DEMO.step === 0) demoPlay(true); } else clearTimeout(DEMO.timer);
   if (m === 'quiz') { if (!QZ.cur || QZ.cur.key !== quizKey()) { QZ.next = null; quizNew(); } else renderQuiz(); }
@@ -3597,6 +4669,7 @@ function setGame(g) {
   if (mode === 'quiz' && (!QZ.cur?.picks.length || QZ.cur?.done)) { QZ.next = null; quizNew(); }
   if (mode === 'daily') dailyOpen(DL.date || todayYmd());
   if (mode === 'leaks') renderLeaks();
+  if (mode === 'casino') renderCasino();
 }
 function setStreet(s, quiet) {
   S.street = s; saveSettings();
@@ -3628,7 +4701,7 @@ function openSheet(open) { document.getElementById('pane').classList.toggle('ope
     if (y0 === null) return;
     const fast = dy > 30 && dy / Math.max(1, performance.now() - t0) > 0.6;
     pane.style.transition = ''; pane.style.transform = '';
-    if (dy > 90 || fast) openSheet(false);
+    if (dy > 90 || fast) { openSheet(false); if (ANALYZE_FROM) analyzeBack(); }
     y0 = null; dy = 0;
   };
   pane.addEventListener('touchend', end); pane.addEventListener('touchcancel', end);
@@ -3638,7 +4711,7 @@ document.querySelectorAll('#streetSeg button').forEach(b => b.onclick = () => se
 document.querySelectorAll('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.t));
 document.querySelectorAll('.navitem[data-m]').forEach(b => b.onclick = () => {
   if (b.dataset.m === 'leaks' && !leakReady()) { const left = LEAK_HANDS - store.get('uth.handsLogged', 0); dToast(`${left} more hand${left === 1 ? '' : 's'} to unlock the leak finder`); return; }
-  setMode(b.dataset.m);
+  ANALYZE_FROM = null; setMode(b.dataset.m);
 });
 // page menu
 const LEAK_HANDS = 100; // the leak finder unlocks once this many practice/daily hands are on record
@@ -3669,7 +4742,7 @@ document.getElementById('setClose').onclick = () => { openSettings(false); openN
 document.getElementById('setBg').onclick = () => { openSettings(false); openNav(false); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('set-open')) { e.stopImmediatePropagation(); openSettings(false); } }, true);
 document.getElementById('mbar').onclick = () => openSheet(true);
-document.getElementById('sheetClose').onclick = () => openSheet(false);
+document.getElementById('sheetClose').onclick = () => { openSheet(false); if (ANALYZE_FROM) analyzeBack(); };
 document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.board = [null, null, null, null, null]; S.dealer = [null]; S.dead = []; S.active = 'hole'; render(); onCardsChanged(); };
 
 (async () => {
