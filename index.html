@@ -31,8 +31,11 @@
     background: radial-gradient(ellipse 90% 520px at 50% -10%, #17463a 0%, transparent 70%), linear-gradient(180deg, var(--felt) 0%, var(--felt-deep) 700px);
   }
   button { font-family: inherit; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 18px 60px; }
-  header { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px 60px; }
+  /* the header stays put while the page scrolls under it; it also covers the phone's status-bar space */
+  header { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 0 -18px 18px; padding: calc(var(--sat, 0px) + 14px) 18px 10px;
+    position: sticky; top: 0; z-index: 35; background: #0e2d22; border-bottom: 1px solid transparent; transition: border-color .2s, box-shadow .2s; }
+  body.scrolled header { border-bottom-color: var(--line); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
   .brand { flex: 1; min-width: 0; }
   .pnrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .dailydue { margin-top: 4px; border: 1px solid var(--gold); background: rgba(230,192,106,.12); color: var(--gold); border-radius: 99px; padding: 1px 9px; font: 700 10.5px var(--sans); cursor: pointer; white-space: nowrap; animation: duepulse 2.4s ease-in-out infinite; }
@@ -218,7 +221,10 @@
   /* Settings */
   /* Phone status bar / gesture bar (the Android app draws edge to edge): keep content clear of them */
   :root { --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); }
-  body { padding-top: var(--sat); padding-bottom: calc(var(--ad-h, 0px) + var(--sab)); }
+  body { padding-bottom: calc(var(--ad-h, 0px) + var(--sab)); } /* the header pads for the status bar itself */
+  /* an opaque strip behind the ad banner and the gesture bar, so nothing shows through underneath */
+  body::after { content: ''; position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--ad-h, 0px) + var(--sab)); background: #06140f; z-index: 60; pointer-events: none; }
+  .drawer, .navdrawer { padding-bottom: calc(30px + var(--ad-h, 0px) + var(--sab)) !important; }
   footer .disclaim { flex-basis: 100%; font-size: 11px; color: var(--faint); }
   #adsOpt .ptdesc { margin-bottom: 8px; } #adsOpt button.buy { background: var(--gold); color: #1c1606; border: 0; border-radius: 9px; padding: 9px 14px; font: 700 14px var(--sans); cursor: pointer; }
   /* Game badges: plain flag-stripe and chip shapes with the name in plain type (deliberately not the games' logos) */
@@ -324,6 +330,7 @@
   .crow { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 14px; } .crow > span:first-child { flex: 1; } .crow .neg { font-variant-numeric: tabular-nums; white-space: nowrap; }
   .ctheo { display: grid; justify-items: end; line-height: 1.15; } .ctheo small { font-size: 10.5px; color: var(--faint); font-weight: 500; white-space: nowrap; }
   .creal { font-size: 13.5px; margin-top: 6px; color: var(--dim); } .creal.neg { color: var(--bad); } .creal.pos { color: var(--good); }
+  .cbank0 { display: flex; flex-direction: column; align-items: center; padding: 4px 0 14px; margin-bottom: 12px; border-bottom: 1px solid var(--line); } .cbank0 span { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); } .cbank0 b { font: 700 38px var(--sans); color: var(--gold); letter-spacing: -0.01em; } .cbank0 .linkbtn { font-size: 13px; margin-top: 2px; }
   .cbr { display: flex; justify-content: space-between; align-items: center; color: var(--dim); font-size: 14px; margin: -4px 2px 6px; }
   .cwarn { color: var(--bad); font-size: 13.5px; margin: 6px 0; }
   @media (max-width: 520px) { .crec { grid-template-columns: repeat(2, 1fr); } }
@@ -591,7 +598,7 @@
   .dcap .cy { color: var(--gold); } .dcap .cd { color: #7fb3ff; } .dcap .r-win { color: var(--good); } .dcap .r-lose { color: var(--bad); } .dcap .r-tie { color: var(--ink); }
   .dctl { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 6px; font-size: 13px; }
   .dctl button { border: 1px solid var(--line); background: var(--felt-2); color: var(--ink); border-radius: 8px; padding: 5px 12px; font: 600 13px var(--sans); cursor: pointer; }
-  .dctl span { color: var(--faint); margin-left: 4px; }
+  .dctl span { color: var(--faint); flex-basis: 100%; text-align: center; margin-top: 2px; }
   @media (prefers-reduced-motion: reduce) { .demo .pc { animation: none; transition: none; } }
   .note-strong { border-left: 3px solid var(--gold); padding: 8px 12px; margin: 6px 0 8px; background: rgba(230,192,106,.07); border-radius: 0 8px 8px 0; }
   .qsegrow { display: flex; align-items: center; gap: 6px; }
@@ -629,6 +636,9 @@
   .qrow2 .slotcards .gap { width: 4px; }
   .qtable .qrow2 .qgroup:first-child { flex-shrink: 0; margin-right: 18px; } @media (max-width: 860px) { .qtable .qrow2 .qgroup:first-child { margin-right: 10px; } } @media (max-width: 400px) { .qtable .qrow2 .qgroup:first-child { margin-right: 8px; } } /* a little extra room after your own hand */
   .qtable .qrow2 .qgroup:first-child .pc { flex-shrink: 0; } /* your own hand never shrinks */
+  .qtable .qrow2 .qgroup + .qgroup { border-left: 1px solid var(--line); padding-left: 10px; } .qtable .qrow2 .qgroup:first-child { margin-right: 0 !important; }
+  .qtable .qrow2 .cards { align-items: flex-start; } .qtable .qrow2 .slotcards { min-height: 0; }
+  .qtable .qrow2 .qgroup:not(:first-child) .pc { flex: 0 0 var(--oc, 46px); width: var(--oc, 46px); height: max(38px, calc(var(--oc, 46px) * 64 / 46)); aspect-ratio: auto; } /* dealer and other players: one size, so they line up */
   @media (max-width: 400px) { .qrow2 { gap: 10px !important; } .qtable .qrow2 .cards { gap: 3px; } }
   @media (max-width: 860px) { .qrow2 { gap: 14px; min-height: 79px; } .qtable .qrow2 .pc { flex-basis: 40px; height: auto; font-size: clamp(11px, 5.4cqw, 18px); } .qrow2 .cards { gap: 4px; } }
   .qgroup .pc.deal { animation: dealin .38s cubic-bezier(.2,.9,.3,1.2) both; }
@@ -741,6 +751,7 @@
     .pane { position: fixed; left: 0; right: 0; bottom: calc(var(--ad-h, 0px) + var(--sab)); top: max(7vh, calc(var(--sat) + 10px)); z-index: 50; border-radius: 18px 18px 0 0; overflow-y: auto; padding: 0 14px 30px;
             transform: translateY(105%); transition: transform .25s ease; background: #0b1f18; border: 1px solid var(--line); -webkit-overflow-scrolling: touch; }
     .pane.open { transform: none; box-shadow: 0 -10px 40px rgba(0,0,0,.6); }
+    .pane:not(.open) { transform: translateY(calc(100% + var(--ad-h, 0px) + var(--sab) + 40px)); visibility: hidden; transition: transform .25s ease, visibility 0s .25s; } /* nothing peeks out below the ad */
     .sheet-head { display: block; position: relative; height: 14px; }
     .tabrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; position: sticky; top: 0; background: #0b1f18; padding: 4px 0 10px; z-index: 2; }
     .tabrow .seg.tabs { margin: 0; flex: none; } .tabrow .seg.tabs button { white-space: nowrap; } .tabrow .sheet-close { display: inline-block; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
@@ -847,7 +858,7 @@
 
 
   <footer>
-    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-29 19:02</span>
+    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-29 19:31</span>
     <span class="disclaim">Strategy trainer only — no real-money play. Not affiliated with or endorsed by Light &amp; Wonder or the World Poker Tour.</span>
   </footer>
 </div>
@@ -867,7 +878,7 @@
 </nav>
 <div class="drawer-bg" id="setBg"></div>
 <aside class="drawer" id="setDrawer" aria-label="Settings">
-  <div class="dhead"><button id="setBack" class="dback" aria-label="Back to the menu">‹ Menu</button><b>Settings</b><button id="setClose" aria-label="Close settings">✕</button></div>
+  <div class="dhead"><b>Settings</b><button id="setClose" aria-label="Close settings">✕</button></div>
   <div class="opts" id="opts"></div>
 </aside>
 <div class="pset-bg" id="psetBg" hidden><div class="pset" role="dialog" aria-modal="true" aria-label="Practice and Analyze settings">
@@ -2987,9 +2998,12 @@ function handTableHTML(h, st, { over = false, dealFrom = null, cls = '', dealer2
   const pcs = arr => arr.map(c => c === 'h' ? '<div class="pc hidden"></div>' : cardHTML(c)).join('');
   const bd = idx => idx.map(i => i >= nBoard ? '<div class="pc hidden"></div>' : pc(h.board[i], dealFrom !== null && i >= dealFrom ? i - dealFrom : null)).join('');
   const pair = '<span class="slotcards"><span class="gap"></span></span>';
+  // the dealer's and other players' cards share one size that fits the row (never bigger than a normal card)
+  const nOther = (dealer2 || h.dealer.length ? 2 : 0) + h.dead.length, nGroups = (dealer2 || h.dealer.length ? 1 : 0) + (h.dead.length ? 1 : 0);
+  const oc = nOther ? `style="--oc: min(46px, calc((100cqw - 104px - ${nGroups * 26 + nOther * 4 + Math.max(0, h.dead.length / 2 - 1) * 4}px) / ${nOther}))"` : '';
   return `<div class="qtable ${cls}">
       <div class="qgroup qboard"><div class="k">Board</div><div class="cards">${bd([0, 1, 2])}${pair}${bd([3, 4])}</div></div>
-      <div class="qrow2">
+      <div class="qrow2" ${oc}>
         <div class="qgroup"><div class="k">Your hand</div><div class="cards">${pcs([...h.hole].sort((x, y) => y - x))}</div></div>
         ${dealer2 ? `<div class="qgroup qdealer"><div class="k">Dealer</div><div class="cards">${dealer2.map((c, i) => c === 'h' ? '<div class="pc hidden"></div>' : dealerAnim ? pc(c, (dealFrom !== null ? 5 - dealFrom : 0) + i + 1) : cardHTML(c)).join('')}</div></div>` : ''}
         ${h.dealer.length ? `<div class="qgroup qdealer"><div class="k">Dealer</div><div class="cards">${pcs([h.dealer[0], 'h'])}</div></div>` : ''}
@@ -3889,9 +3903,9 @@ function casStats(g) {
   if (!all[g]) { const hist = store.get('uth.casinoTrips', []).filter(t => t.game === g); all[g] = { trips: hist.length, total: hist.reduce((t, x) => t + (x.net || 0), 0), best: hist.length ? Math.max(...hist.map(x => x.end ?? CASINO_BANK + x.net)) : null }; }
   return all[g];
 }
-function casRecHTML(g) {
+function casRecHTML(g, noBank = false) { // noBank: the bankroll is already shown big above
   const rec = casStats(g), br = BR.get();
-  return `<div class="crec"><div><span>Bankroll</span><b>${casD(br.bal)}</b></div><div><span>Highest bankroll</span><b>${casD(br.best)}</b></div><div><span>Casino trips</span><b>${rec.trips}</b></div><div><span>All casino trips</span><b class="${rec.total >= 0 ? 'pos' : 'neg'}">${casSD(rec.total)}</b></div></div>`;
+  return `<div class="crec">${noBank ? '' : `<div><span>Bankroll</span><b>${casD(br.bal)}</b></div>`}<div><span>Highest bankroll</span><b>${casD(br.best)}</b></div><div><span>Casino trips</span><b>${rec.trips}</b></div><div><span>All casino trips</span><b class="${rec.total >= 0 ? 'pos' : 'neg'}">${casSD(rec.total)}</b></div></div>`;
 }
 function casStatsSave(g, st) { const all = store.get('uth.casinoStats', {}); all[g] = st; store.set('uth.casinoStats', all); }
 // trip setup: what you bring, what you can see, and whether the dealer makes mistakes
@@ -3912,7 +3926,7 @@ function casNewTrip(cfg) {
   CA.setup = false;
   const br = BR.get(); br.bal -= cfg.bring; BR.set(br); // the buy-in leaves your bankroll
   casSave({ bank: cfg.bring, buyIn: cfg.bring, table: cfg.table, cfg, bets, hands: [], cur: null, done: false, started: Date.now(), opts: { ...gameOpts(), pocketT: g === 'uth' ? UTH_POCKET[S.tables.uthPocket] : E.GAMES.wpt.pocket[S.tables.pocket] }, maxRaise: g === 'uth' ? 4 : maxPreflopRaise() }, g);
-  CA.acts.clear(); CA.tally = null; renderCasino();
+  CA.acts.clear(); CA.tally = null; renderCasino(); window.scrollTo(0, 0); // from wherever the setup was scrolled to
 }
 const casBuyIn = s => s.buyIn || CASINO_BANK;
 // the collapsed Advantages line: what's switched on, or that it's a straight game
@@ -4473,14 +4487,14 @@ function renderCasino() {
   if (!s || (s.done && s.dismissed)) { // start screen
     const hist = store.get('uth.casinoTrips', []).filter(t => t.game === g);
     x += `<div class="qhead">Casino simulator<small>${GAME_NAME[g]}</small></div>
-      <div class="dcard ctrip"><div class="dtitle">An hour at the tables</div>
-      <div class="dmeta">1 to 8 simulated hours · bankroll ${casD(BR.get().bal)} · your bets</div>
-      <p class="cintro">Play it like a real night out: put your chips down, make your plays, and see the dealer's cards. About 30 hands in the hour. No hints or grades along the way — when you cash out you'll see what perfect play would have won with the same cards and bets, and your biggest mistakes.</p>
+      <div class="dcard ctrip"><div class="cbank0"><span>Your bankroll</span><b>${casD(BR.get().bal)}</b>${BR.get().bal !== CASINO_BANK ? '<button class="linkbtn" id="cReset">Reset to $1,000</button>' : ''}</div>
+      <div class="dtitle">A night at the tables</div>
+      <p class="cintro">Play it like a real night out: put your chips down, make your plays, and see the dealer's cards. About 30 hands an hour, for as many hours as you choose. No hints or grades along the way — when you cash out you'll see what perfect play would have won with the same cards and bets, and your biggest mistakes.</p>
       <div class="qacts"><button class="qact dgo" id="cStart">Head to the casino ▸</button></div></div>`;
     const rec = casStats(g);
-    if (rec.trips || BR.get().bal !== CASINO_BANK) x += casRecHTML(g);
+    if (rec.trips || BR.get().bal !== CASINO_BANK) x += casRecHTML(g, true);
     const brNow = BR.get().bal;
-    x += `<div class="cbr"><span>Bankroll ${casD(brNow)}</span>${brNow !== CASINO_BANK ? '<button class="linkbtn" id="cReset">Reset to $1,000</button>' : ''}</div>${brNow < 100 ? `<div class="cwarn">Your bankroll is below the smallest buy-in ($100). Reset it to keep playing.</div>` : ''}`;
+    x += `${brNow < 100 ? `<div class="cwarn">Your bankroll is below the smallest buy-in ($100). Reset it to keep playing.</div>` : ''}`;
     if (hist.length) x += `<h3 class="lh">Past trips</h3><table class="dlist ctrips"><thead><tr><th>Date</th><th>Hands</th><th>You</th><th>Perfect play</th></tr></thead><tbody>${hist.slice(0, 8).map(t => `<tr><td>${new Date(t.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td><td>${t.hands}</td><td class="${t.net >= 0 ? 'pos' : 'neg'}">${casSD(t.net)}</td><td class="${t.perfect >= 0 ? 'pos' : 'neg'}">${casSD(t.perfect)}</td></tr>`).join('')}</tbody></table>`;
     x += `<div class="note">Pay tables come from your Settings (${g === 'uth' ? `Trips ${S.tables.uthTrips}` : `Bad Beat ${S.tables.badBeat} · Trips Plus ${S.tables.wptTrips} · Pocket Bonus ${S.tables.pocket}`}). Tables run from $5–$50 up to $100–$2,500; the bigger tables open up as your bankroll grows.</div>`;
     el.innerHTML = x;
@@ -5402,7 +5416,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.b
 const openSettings = open => { document.body.classList.toggle('set-open', open); if (open) { renderEdgeCard(); renderHistInfo(); renderQuizBests(); } };
 // Settings opens from the menu and slides in over it: "‹ Menu" goes back, ✕ / the backdrop close both.
 document.getElementById('navSettings').onclick = () => openSettings(true);
-document.getElementById('setBack').onclick = () => openSettings(false);
+
+window.addEventListener('scroll', () => document.body.classList.toggle('scrolled', window.scrollY > 4), { passive: true }); // the header gets its edge once content is under it
 document.getElementById('setClose').onclick = () => { openSettings(false); openNav(false); };
 document.getElementById('setBg').onclick = () => { openSettings(false); openNav(false); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('set-open')) { e.stopImmediatePropagation(); openSettings(false); } }, true);
