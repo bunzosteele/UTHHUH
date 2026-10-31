@@ -25,15 +25,15 @@
     --sans: 'IBM Plex Sans', system-ui, sans-serif; /* bets and numbers: Fraunces' digits (the 4 especially) are too decorative */
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { background: var(--felt-deep); min-height: 100%; }
+  html { background: var(--felt-deep); min-height: 100%; overflow-x: clip; overscroll-behavior: none; }
   body {
-    font-family: 'IBM Plex Sans', system-ui, sans-serif; color: var(--ink); font-size: 15px; line-height: 1.45; min-height: 100vh;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif; color: var(--ink); font-size: 15px; line-height: 1.45; min-height: 100vh; min-height: 100dvh; overflow-x: clip; overscroll-behavior: none;
     background: radial-gradient(ellipse 90% 520px at 50% -10%, #17463a 0%, transparent 70%), linear-gradient(180deg, var(--felt) 0%, var(--felt-deep) 700px);
   }
   button { font-family: inherit; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px 60px; }
+  .wrap { --wp: 18px; max-width: 1180px; margin: 0 auto; padding: 0 var(--wp) 60px; }
   /* the header stays put while the page scrolls under it; it also covers the phone's status-bar space */
-  header { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 0 -18px 18px; padding: calc(var(--sat, 0px) + 14px) 18px 10px;
+  header { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 0 calc(-1 * var(--wp)) 18px; padding: calc(var(--sat, 0px) + 14px) var(--wp) 10px;
     position: sticky; top: 0; z-index: 35; background: #0e2d22; border-bottom: 1px solid transparent; transition: border-color .2s, box-shadow .2s; }
   body.scrolled header { border-bottom-color: var(--line); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
   .brand { flex: 1; min-width: 0; }
@@ -756,10 +756,11 @@
   .qnext button.primary { background: var(--gold); color: #1c1606; border-color: var(--gold); }
 
   @media (max-width: 380px) { header h1 { font-size: 17px !important; } header { gap: 5px !important; } .burger { width: 32px !important; height: 32px !important; } #gameSeg .gbadge { width: clamp(58px, calc((100vw - 232px) / 2), 74px) !important; } }
-  @media (max-width: 340px) { header h1 { font-size: 13.5px !important; } #gameSeg .gbadge { width: 48px !important; } .burger { width: 30px !important; height: 30px !important; } .wrap { padding-left: 8px !important; padding-right: 8px !important; } }
+  @media (max-width: 340px) { header h1 { font-size: 13.5px !important; } #gameSeg .gbadge { width: 48px !important; } .burger { width: 30px !important; height: 30px !important; } .wrap { --wp: 8px; padding-left: 8px !important; padding-right: 8px !important; } }
   /* ── Mobile: one column; results become a bottom sheet ── */
   @media (max-width: 860px) {
-    .wrap { padding: 16px 12px 96px; }
+    .wrap { --wp: 12px; padding: 0 var(--wp) 96px; }
+    body:is(.quiz-mode, .daily-mode, .casino-mode, .guide-mode, .leaks-mode, .ach-mode) .wrap { padding-bottom: 16px; } /* only Analyze has the results bar at the bottom */
     h1 { font-size: 26px; }
     header { margin-bottom: 12px; display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; }
     .burger { width: 36px; height: 36px; } .pagename { font-size: 10px; margin-top: 3px; }
@@ -908,7 +909,7 @@
 <aside class="drawer" id="setDrawer" aria-label="Settings">
   <div class="dhead"><b>Settings</b><button id="setClose" aria-label="Close settings">✕</button></div>
   <div class="opts" id="opts"></div>
-  <footer class="setfoot"><span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-30 17:13</span></footer>
+  <footer class="setfoot"><span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-30 17:42</span></footer>
 </aside>
 <div class="pset-bg" id="psetBg" hidden><div class="pset" role="dialog" aria-modal="true" aria-label="Practice and Analyze settings">
   <div class="dhead"><b>Practice &amp; Analyze</b><button id="psetClose" aria-label="Close">✕</button></div>
