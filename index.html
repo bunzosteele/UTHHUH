@@ -225,7 +225,8 @@
   /* an opaque strip behind the ad banner and the gesture bar, so nothing shows through underneath */
   body::after { content: ''; position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--ad-h, 0px) + var(--sab)); background: #06140f; z-index: 60; pointer-events: none; }
   .drawer, .navdrawer { padding-bottom: calc(30px + var(--ad-h, 0px) + var(--sab)) !important; }
-  footer .disclaim { flex-basis: 100%; font-size: 11px; color: var(--faint); }
+  footer.setfoot { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); justify-content: center; }
+  .navdisc { margin: auto 6px 0; padding-top: 18px; font-size: 11px; line-height: 1.45; color: var(--faint); }
   #adsOpt .ptdesc { margin-bottom: 8px; } #adsOpt button.buy { background: var(--gold); color: #1c1606; border: 0; border-radius: 9px; padding: 9px 14px; font: 700 14px var(--sans); cursor: pointer; }
   /* Game badges: plain flag-stripe and chip shapes with the name in plain type (deliberately not the games' logos) */
   #gameSeg button { padding: 4px 6px; display: grid; place-items: center; }
@@ -244,13 +245,37 @@
   .dedge .ek { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
   .dedge .ev { font: 700 30px var(--sans); letter-spacing: -0.02em; } .dedge .ev.neg { color: var(--bad); } .dedge .ev.pos { color: var(--good); }
   .dedge .ed { font-size: 13px; color: var(--dim); margin-top: 3px; } .dedge .ed b { color: var(--ink); } .dedge .foot { margin-top: 8px; color: var(--faint); }
-  .drawer .opts { grid-template-columns: 1fr; }
-  .setsec { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; }
-  .setsec > summary { list-style: none; cursor: pointer; padding: 12px 0; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .drawer .opts { display: block; margin-top: 4px; }
+  .sgrp { margin-top: 18px; } .sgrp:first-child { margin-top: 6px; }
+  .sgh { margin: 0 4px 7px; font: 600 11px var(--sans); text-transform: uppercase; letter-spacing: .09em; color: var(--faint); }
+  .scard { background: var(--felt); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .srow { display: flex; align-items: center; gap: 14px; padding: 13px 14px; min-height: 54px; } .scard > * + *, #adsOpt > * + * { border-top: 1px solid var(--line); }
+  label.srow { cursor: pointer; }
+  .srt { flex: 1; min-width: 0; display: grid; gap: 2px; } .srt b { font: 600 15px var(--sans); color: var(--ink); } .srt small { font-size: 12.5px; color: var(--dim); line-height: 1.4; } .srt small b { font: 600 12.5px var(--mono); }
+  .sctl { flex: none; display: flex; align-items: center; } .sctl .resetbtn, .sctl .buy { min-width: 78px; }
+  .scard .resetbtn { padding: 8px 14px; font-size: 14px; }
+  .scard .buy { background: var(--gold); color: #1c1606; border: 0; border-radius: 9px; padding: 9px 14px; font: 700 14px var(--sans); cursor: pointer; }
+  input[type=checkbox].sw { border: 0; display: block; appearance: none; -webkit-appearance: none; flex: none; width: 46px; height: 28px; border-radius: 14px; background: #2a4639; position: relative; cursor: pointer; transition: background .18s; margin: 0; }
+  input[type=checkbox].sw::after { content: ''; border: 0; margin: 0; transform: none; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #dfe8e2; box-shadow: 0 1px 3px rgba(0,0,0,.4); transition: transform .18s; }
+  input[type=checkbox].sw:checked { background: var(--gold); } input[type=checkbox].sw:checked::after { transform: translateX(18px); background: #fff; }
+  input[type=checkbox].sw:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .snote { margin: 7px 4px 0; font-size: 12.5px; color: var(--faint); line-height: 1.45; }
+  .sdol { color: var(--dim); margin-right: 6px; font: 600 15px var(--mono); }
+  .scard input.sante { width: 84px; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--felt-deep); color: var(--ink); font: 600 15px var(--mono); text-align: right; }
+  .srow.sstats { display: block; overflow-x: auto; } .sstats table.sbest { width: 100%; }
+  .sbest thead tr:first-child th { color: var(--dim); font-size: 11px; text-align: center; padding-bottom: 2px; } .sbest tr.sub th { padding: 0 0 6px 8px; }
+  .scard .sbest tbody td { padding: 6px 0; border-top: 1px solid var(--line) !important; } .sbest td + td { padding-left: 8px; }
+  .sbest td b { font-size: 13.5px; }
+  .pset .opts { display: block; margin-top: 0; } .pset .sgrp:first-child { margin-top: 0; } .pset { background: #0b1f18; }
+  table.sbest { border-collapse: collapse; font-size: 13px; } .sbest th { font: 600 10.5px var(--sans); text-transform: uppercase; letter-spacing: .06em; color: var(--faint); padding: 0 0 4px 14px; text-align: right; }
+  .sbest td { color: var(--dim); padding: 2px 0; text-align: right; } .sbest td:first-child { text-align: left; } .sbest td + td { padding-left: 14px; } .sbest b { color: var(--ink); font: 600 14px var(--mono); }
+  .scard #codeMsg:empty { display: none; } .scard table.sbest td, .scard table.sbest th { border: 0; background: none; } .scard table.sbest td { font: 500 13px var(--sans); }
+  .srow.scode { display: block; } .scard .codebox input { padding: 9px 11px; }
+  .schev { width: 9px; height: 9px; border-right: 2px solid var(--faint); border-bottom: 2px solid var(--faint); transform: rotate(45deg); margin: 0 4px 4px 0; transition: transform .18s; flex: none; } .setsec[open] .schev { transform: rotate(225deg); margin: 4px 4px 0 0; }
+  .ptblk { border-top: 1px solid var(--line); padding-top: 12px; }
+  .setsec > summary { list-style: none; cursor: pointer; padding: 13px 14px; min-height: 54px; display: flex; align-items: center; gap: 14px; }
   .setsec > summary::-webkit-details-marker { display: none; }
-  .setsec > summary::before { content: '▸'; color: var(--gold); display: inline-block; transition: transform .15s; } .setsec[open] > summary::before { transform: rotate(90deg); }
-  .setsec > summary b { font-size: 15px; } .setsec > summary small { color: var(--faint); font-size: 12.5px; }
-  .setsecb { display: grid; gap: 12px; padding-bottom: 12px; }
+  .setsecb { display: grid; gap: 12px; padding: 0 14px 14px; }
   .drawer .opt .chk { display: flex; margin: 4px 0; }
   .ptdesc { font-size: 12.5px; color: var(--dim); margin-top: 6px; line-height: 1.5; } .ptdesc b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
   .ptnote { font-size: 12.5px; color: var(--faint); }
@@ -365,6 +390,7 @@
   .cerr { display: block; font-style: normal; color: var(--gold); font-size: 12.5px; margin-top: 2px; }
   .crec { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; } .crec div { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: rgba(0,0,0,.12); display: grid; gap: 2px; }
   @media (max-width: 560px) { .crec { grid-template-columns: repeat(2, 1fr); } }
+  .crec.three { grid-template-columns: repeat(3, 1fr) !important; } @media (max-width: 420px) { .crec.three b { font-size: 17px; } .crec.three div { padding: 9px 10px; } }
   .crec div { grid-template-rows: 1fr auto; } .crec span { align-self: start; } .crec b { align-self: end; }
   .cdelta { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); } .cdelta span { color: var(--dim); font-size: 14px; } .cdelta b { font: 700 22px var(--sans); font-variant-numeric: tabular-nums; }
   .crow2 .cdealbtn { grid-column: 1 / -1; }
@@ -376,13 +402,13 @@
   @keyframes cpop2 { from { transform: scale(.7); opacity: 0; } to { transform: none; opacity: 1; } } .clog summary { cursor: pointer; color: var(--gold); font-weight: 600; }
   .casino .qacts { margin-top: 12px; }
   #cBody { max-width: 560px; margin: 0 auto; }
-  .ctop2 { display: flex; justify-content: space-between; align-items: center; margin: 0 2px 10px; }
-  .cclock { display: inline-flex; align-items: center; gap: 7px; font: 700 20px var(--sans); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .ctop2 { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0 2px 8px; min-height: 36px; } .ctop2 .cout { padding: 6px 14px; font-size: 14px; }
+  .cclock { display: inline-flex; align-items: center; gap: 7px; font: 700 18px var(--sans); color: var(--ink); font-variant-numeric: tabular-nums; }
   .cclock svg { width: 20px; height: 20px; fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; }
   .cbank { display: grid; justify-items: end; line-height: 1.1; } .cbank small { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; }
-  .cbank b { font: 700 24px var(--sans); color: var(--gold); font-variant-numeric: tabular-nums; } .cbank small.cin { text-transform: none; letter-spacing: 0; font-size: 12px; color: var(--dim); }
+  .cbank b { font: 700 21px var(--sans); color: var(--gold); font-variant-numeric: tabular-nums; } .cbank small.cin { text-transform: none; letter-spacing: 0; font-size: 12px; color: var(--dim); }
   .ctable { position: relative; min-width: 0; background: radial-gradient(ellipse at 50% 38%, #217049, #0e3324 78%); border: 2px solid #5a3b1c; box-shadow: inset 0 0 0 6px #3b2611, inset 0 0 40px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.4);
-    border-radius: 26px 26px 120px 120px / 26px 26px 70px 70px; padding: 16px 12px 26px; display: grid; justify-items: center; gap: 8px; overflow: hidden; }
+    border-radius: 26px 26px 110px 110px / 26px 26px 48px 48px; padding: 14px 12px 18px; display: grid; justify-items: center; gap: 6px; overflow: hidden; }
   .ctable .pc { width: 46px; height: 64px; font-size: 20px; cursor: default; box-shadow: 0 3px 8px rgba(0,0,0,.35); }
   .ctable .pc .x { display: none !important; }
   .ctable .pc.back { background: repeating-linear-gradient(45deg, #7a2b2b 0 5px, #6a2222 5px 10px); border: 2px solid #efe4c4; }
@@ -397,7 +423,10 @@
   .cdeal { display: grid; justify-items: center; gap: 4px; }
   .ctname { position: absolute; top: 12px; left: 16px; font: 700 10.5px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: #efe4c4; opacity: .55; }
   .ctray { position: absolute; top: 10px; right: 14px; display: flex; gap: 2px; opacity: .55; } .ctray span { width: 7px; height: 22px; border-radius: 3px; background: linear-gradient(#c43b3b, #8f2525); } .ctray span:nth-child(2) { background: linear-gradient(#2f8f5b, #1d6640); } .ctray span:nth-child(3) { background: linear-gradient(#333, #111); } .ctray span:nth-child(4) { background: linear-gradient(#c43b3b, #8f2525); }
-  .carc { font-family: var(--serif); font-size: 12.5px; color: #efe4c4; opacity: .7; text-align: center; margin: 2px 0; }
+  .carc { font-family: var(--serif); font-size: 12px; line-height: 1.3; color: #efe4c4; opacity: .7; text-align: center; margin: 2px 0; }
+  .clow2 { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: center; justify-items: center; gap: 2px 16px; width: 100%; }
+  .cgrid.c4 { grid-template-columns: auto 14px auto auto; gap: 2px 0; } .cgrid.c4 .cspotb.play { margin-left: 8px; }
+  .clow2 > * { min-width: 0; } .cyc { display: grid; justify-items: center; gap: 4px; } .cyou3 { align-self: start; } .cyou3 .cmine { margin-top: 4px; }
   .clow { display: flex; align-items: center; justify-content: center; gap: 18px; width: 100%; margin-top: 4px; }
   .cspots { display: grid; gap: 4px; justify-items: center; }
   .cgrid { display: grid; grid-template-columns: auto 18px auto; justify-items: center; align-items: start; gap: 2px 0; }
@@ -427,12 +456,12 @@
   .cbanner b { font: 700 22px var(--serif); color: var(--ink); } .cbanner span { font: 700 26px var(--sans); color: var(--ink); } .cbanner small { font-size: 12.5px; color: var(--dim); }
   .cbanner.w { border-color: var(--good); } .cbanner.w span { color: var(--good); } .cbanner.l { border-color: var(--bad); } .cbanner.l span { color: var(--bad); }
   @keyframes cpop { from { transform: translate(-50%, -50%) scale(.6); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
-  .cctl { margin-top: 12px; }
-  .cctl .clast { min-height: 38px; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 19px; }
-  .crow2 { grid-template-columns: 1fr 1fr; } .crow2 .qact { min-height: 70px; } .crow2 .cwide { grid-column: 1 / -1; }
+  .cctl { margin-top: 8px; }
+  .cctl .clast { min-height: 19px; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; line-height: 19px; }
+  .crow2 { grid-template-columns: 1fr 1fr; } .crow2 .qact { min-height: 56px; } .crow2 .cwide { grid-column: 1 / -1; }
   .cbusy .qact { opacity: .35; } .cctl .clast.cendl { font: 600 17px var(--serif); color: var(--ink); }
   .qact.cout.sure { border-color: var(--bad); color: var(--bad); }
-  .cctl .crack { margin: 16px 0 4px; }
+  .cctl .crack { margin: 10px 0 2px; }
   .cctl .qact.cgo { background: var(--gold); border-color: var(--gold); color: #13261e; } .cctl .qact.cgo small { color: #3b3216; }
   .cwait { text-align: center; color: var(--dim); padding: 20px 0; }
   .clast { text-align: center; font-size: 13.5px; color: var(--dim); min-height: 20px; margin-bottom: 10px; } .clast.pos { color: var(--good); } .clast.neg { color: var(--bad); }
@@ -443,7 +472,7 @@
   .cclear { border: 1px solid var(--line); background: var(--felt-2); color: var(--ink); border-radius: 10px; padding: 9px 14px; font: 600 14px var(--sans); cursor: pointer; } .cclear:disabled { opacity: .4; cursor: default; }
   .cdealbtn:disabled { opacity: .5; }
   .cend { text-align: center; } .cendmsg { font: 600 20px var(--serif); margin: 10px 0 14px; }
-  @media (max-width: 380px) { .ctable .pc { width: 40px; height: 56px; font-size: 18px; } .cring2 { width: 50px; height: 50px; } .clow { gap: 10px; } }
+  @media (max-width: 380px) { .ctable .pc { width: 40px; height: 56px; font-size: 18px; } .cring2 { width: 50px; height: 50px; } .clow { gap: 10px; } .clow2 { column-gap: 8px; } .clow2 .cring2 { width: 46px; height: 46px; } .ctable { padding-left: 8px; padding-right: 8px; } .cgrid.c4 .cspotb.play { margin-left: 4px; } .ctop2 .cout { padding: 5px 10px; } }
   .casino .dlost.pos { color: var(--good); }
   .clate { opacity: 0; animation: clate .35s ease-out forwards; } @keyframes clate { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .clate { animation: none; opacity: 1; } }
@@ -613,7 +642,7 @@
   .qopts { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
   .qlbl { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.06em; }
   .qscore { display: flex; justify-content: center; gap: 22px; align-items: center; font-size: 13px; color: var(--dim); flex-basis: 100%; order: 3; }
-  .qscore:not(:empty) { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
+  .qscore { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
   #quiz .qopts { display: contents; } #quiz .qbar { flex-wrap: wrap; row-gap: 8px; }
   .qst { display: flex; flex-direction: column; align-items: center; line-height: 1.1; } .qst small { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--faint); margin-top: 3px; white-space: nowrap; }
   @media (max-width: 420px) { .qscore { gap: 0; justify-content: space-between; } .qst small { font-size: 9px; letter-spacing: .02em; } .qst b { font-size: 14px !important; } }
@@ -636,9 +665,10 @@
   .qrow2 .slotcards .gap { width: 4px; }
   .qtable .qrow2 .qgroup:first-child { flex-shrink: 0; margin-right: 18px; } @media (max-width: 860px) { .qtable .qrow2 .qgroup:first-child { margin-right: 10px; } } @media (max-width: 400px) { .qtable .qrow2 .qgroup:first-child { margin-right: 8px; } } /* a little extra room after your own hand */
   .qtable .qrow2 .qgroup:first-child .pc { flex-shrink: 0; } /* your own hand never shrinks */
+  .qrow2 { --hw: 46px; } @media (max-width: 860px) { .qrow2 { --hw: 40px; } } /* your own cards' width: nobody else's cards get bigger */
   .qtable .qrow2 .qgroup + .qgroup { border-left: 1px solid var(--line); padding-left: 10px; } .qtable .qrow2 .qgroup:first-child { margin-right: 0 !important; }
   .qtable .qrow2 .cards { align-items: flex-start; } .qtable .qrow2 .slotcards { min-height: 0; }
-  .qtable .qrow2 .qgroup:not(:first-child) .pc { flex: 0 0 var(--oc, 46px); width: var(--oc, 46px); height: max(38px, calc(var(--oc, 46px) * 64 / 46)); aspect-ratio: auto; } /* dealer and other players: one size, so they line up */
+  .qtable .qrow2 .qgroup:not(:first-child) .pc { flex: 0 0 var(--oc, 46px); width: var(--oc, 46px); height: max(38px, calc(var(--oc, 46px) * 64 / 46)); aspect-ratio: auto; max-width: var(--hw, 46px); } /* dealer and other players: one size, so they line up */
   @media (max-width: 400px) { .qrow2 { gap: 10px !important; } .qtable .qrow2 .cards { gap: 3px; } }
   @media (max-width: 860px) { .qrow2 { gap: 14px; min-height: 79px; } .qtable .qrow2 .pc { flex-basis: 40px; height: auto; font-size: clamp(11px, 5.4cqw, 18px); } .qrow2 .cards { gap: 4px; } }
   .qgroup .pc.deal { animation: dealin .38s cubic-bezier(.2,.9,.3,1.2) both; }
@@ -781,6 +811,8 @@
   .ddrow { cursor: pointer; } .ddrow:hover td { background: rgba(255,255,255,.025); }
   .ddrev { display: inline-block; transition: transform .15s; } .ddrow.open .ddrev { transform: rotate(90deg); }
   table.dlist.ddl > tbody > tr.ddx > td { white-space: normal; padding: 4px 0 14px; text-align: left; width: auto; } .ddx .qtable { margin-top: 6px; width: 100%; } .ddx .qrow2 { width: 100%; } .ddx table.qgrade { width: 100%; }
+  .adoffer { position: fixed; left: 12px; right: 12px; bottom: calc(14px + var(--ad-h, 0px) + var(--sab)); z-index: 70; background: #0f2a20; border: 1px solid var(--gold-dim); border-radius: 14px; padding: 12px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; box-shadow: 0 10px 30px rgba(0,0,0,.5); transform: translateY(140%); transition: transform .25s ease; max-width: 520px; margin: 0 auto; }
+  .adoffer.show { transform: none; } .adoffer span { flex-basis: 100%; color: var(--dim); font-size: 14px; } .adoffer .buy { background: var(--gold); color: #1c1606; border: 0; border-radius: 9px; padding: 9px 14px; font: 700 14px var(--sans); cursor: pointer; }
 </style>
 </head>
 <body>
@@ -856,11 +888,6 @@
     <div class="note" id="qNote"></div>
   </section>
 
-
-  <footer>
-    <span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-29 19:31</span>
-    <span class="disclaim">Strategy trainer only — no real-money play. Not affiliated with or endorsed by Light &amp; Wonder or the World Poker Tour.</span>
-  </footer>
 </div>
 <div class="mbar" id="mbar"></div>
 <div class="drawer-bg" id="navBg"></div>
@@ -875,11 +902,13 @@
   <button class="navitem" data-m="guide"><svg viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></svg><span><b>How to Play</b><small>Rules, bets and simple strategy</small></span></button>
   <button class="navitem" data-m="ach"><span class="navicon" id="achIcon"></span><span><b>Achievements</b><small id="achSub"></small></span></button>
   <button class="navitem" id="navSettings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span><b>Settings</b><small>Pay tables, sounds, saved data</small></span></button>
+  <p class="navdisc">Strategy trainer only — no real-money play. Not affiliated with or endorsed by Light &amp; Wonder or the World Poker Tour.</p>
 </nav>
 <div class="drawer-bg" id="setBg"></div>
 <aside class="drawer" id="setDrawer" aria-label="Settings">
   <div class="dhead"><b>Settings</b><button id="setClose" aria-label="Close settings">✕</button></div>
   <div class="opts" id="opts"></div>
+  <footer class="setfoot"><span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-30 17:13</span></footer>
 </aside>
 <div class="pset-bg" id="psetBg" hidden><div class="pset" role="dialog" aria-modal="true" aria-label="Practice and Analyze settings">
   <div class="dhead"><b>Practice &amp; Analyze</b><button id="psetClose" aria-label="Close">✕</button></div>
@@ -1652,44 +1681,42 @@ function ptTable(key, t) {
 function renderHistInfo() {
   const el = document.getElementById('histInfo'); if (!el) return;
   const n = store.get('uth.handsLogged', 0);
-  el.textContent = n ? `${n} hand${n === 1 ? '' : 's'} from Practice and the Daily challenge ${n === 1 ? 'is' : 'are'} saved on this device for the leak finder.`
-    : 'Every hand you play in Practice and the Daily challenge is saved on this device for the leak finder.';
+  el.textContent = n ? `${n.toLocaleString()} hand${n === 1 ? '' : 's'} from Practice and the Daily challenge, kept on this device for the leak finder`
+    : 'Hands from Practice and the Daily challenge, kept on this device for the leak finder';
 }
 function renderOpts() {
   // bonus: 'trips' / 'pocket' shows that bet's house edge for the chosen pay table
-  const pick = (key, label, tabs, help, bonus, edge) => `<div class="opt wide"><label>${label}</label><div class="ptpick">${Object.keys(tabs).map(k => `<button class="${S.tables[key] === k ? 'on' : ''}" data-pt="${key}" data-v="${k}">${k}</button>`).join('')}</div>
+  const pick = (key, label, tabs, help, bonus, edge) => `<div class="opt wide ptblk"><label>${label}</label><div class="ptpick">${Object.keys(tabs).map(k => `<button class="${S.tables[key] === k ? 'on' : ''}" data-pt="${key}" data-v="${k}">${k}</button>`).join('')}</div>
     ${help ? `<div class="ptdesc">${help}</div>` : ''}${ptTable(key, tabs[S.tables[key]])}
     ${bonus ? `<div class="ptdesc">House edge on this bet: <b>${pctE(edge(tabs[S.tables[key]]))}</b></div>
       ` : ''}</div>`;
   let h = '';
   // pay tables: one collapsible section (closed by default; stays open while you pick, this visit only)
   const ptSum = S.game === 'uth' ? `Trips ${S.tables.uthTrips} · Pocket ${S.tables.uthPocket}` : `Trips Plus ${S.tables.wptTrips} · Pocket ${S.tables.pocket} · Bad Beat ${S.tables.badBeat}`;
-  h += `<details class="opt wide setsec" id="ptSec" ${window.PT_OPEN ? 'open' : ''}><summary><b>Pay tables</b><small>${ptSum}</small></summary><div class="setsecb">`;
-  h += `<div class="opt wide"><div class="ptnote">Pay tables vary by casino — match the one printed on your table.</div></div>`;
+  const row = (title, desc, ctl = '', cls = '') => `<div class="srow ${cls}"><div class="srt"><b>${title}</b>${desc ? `<small>${desc}</small>` : ''}</div>${ctl ? `<div class="sctl">${ctl}</div>` : ''}</div>`;
+  const grp = (head, body) => `<section class="sgrp"><h3 class="sgh">${head}</h3><div class="scard">${body}</div></section>`;
+  const sw = (id, on) => `<input type="checkbox" class="sw" id="${id}" ${on ? 'checked' : ''}>`;
+  // pay tables: one collapsible row (closed by default; stays open while you pick, this visit only)
+  let pt = `<details class="setsec" id="ptSec" ${window.PT_OPEN ? 'open' : ''}><summary><span class="srt"><b>Pay tables</b><small>${ptSum}</small></span><span class="schev"></span></summary><div class="setsecb">`;
+  pt += `<div class="ptnote">Pay tables vary by casino — match the one printed on your table.</div>`;
   if (S.game === 'uth') {
-    h += pick('uthTrips', 'Trips bonus', E.GAMES.uth.trips, 'Pays on your final hand, whatever the dealer has:', 'trips', sideEdge);
-    h += pick('uthPocket', 'Pocket Bonus (where offered)', UTH_POCKET, 'Pays on your two starting cards. Some tables offer this as a hole-card or "pairs" bonus:', 'pocket', pocketEdge);
+    pt += pick('uthTrips', 'Trips bonus', E.GAMES.uth.trips, 'Pays on your final hand, whatever the dealer has:', 'trips', sideEdge);
+    pt += pick('uthPocket', 'Pocket Bonus (where offered)', UTH_POCKET, 'Pays on your two starting cards. Some tables offer this as a hole-card or "pairs" bonus:', 'pocket', pocketEdge);
   } else {
-    h += pick('wptTrips', 'Trips Plus bonus', E.GAMES.wpt.trips, 'Pays on your final hand, whatever the dealer has:', 'trips', sideEdge);
-    h += pick('pocket', 'Pocket Bonus', E.GAMES.wpt.pocket, 'Pays on your two starting cards:', 'pocket', pocketEdge);
-    h += pick('badBeat', 'Bad Beat (on the Odds bet)', E.GAMES.wpt.badBeat, 'Your Odds bet pays this when you lose with a straight or better:');
+    pt += pick('wptTrips', 'Trips Plus bonus', E.GAMES.wpt.trips, 'Pays on your final hand, whatever the dealer has:', 'trips', sideEdge);
+    pt += pick('pocket', 'Pocket Bonus', E.GAMES.wpt.pocket, 'Pays on your two starting cards:', 'pocket', pocketEdge);
+    pt += pick('badBeat', 'Bad Beat (on the Odds bet)', E.GAMES.wpt.badBeat, 'Your Odds bet pays this when you lose with a straight or better:');
   }
-  h += `</div></details>`;
-  h += `<div class="opt wide"><label>Sound &amp; feel</label>
-      <label class="chk"><input type="checkbox" id="soundIn" ${S.sound ? 'checked' : ''}> Sound effects</label>
-      ${FX.canBuzz() ? `<label class="chk"><input type="checkbox" id="hapticsIn" ${S.haptics ? 'checked' : ''}> Vibrate on taps</label>` : ''}</div>`;
-  if (APP.native) h += `<div class="opt wide"><label>Ads</label><div id="adsOpt"></div></div>`;
-  h += `<div class="opt wide"><label>Practice score</label><div class="qbests" id="qBests"></div><button class="resetbtn" id="qResetBtn">Reset practice stats</button></div>`;
-  h += `<div class="opt wide"><label>Saved hand history</label><div class="ptdesc" id="histInfo">Every hand you play in Practice and the Daily challenge is kept on this device for the leak finder.</div><button class="resetbtn danger" id="histWipeBtn">Delete hand history</button></div>`;
-  h += `<div class="opt wide"><label>Codes</label><div class="codebox"><input id="codeIn" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Enter a code"><button class="resetbtn" id="codeBtn">Apply</button></div><div class="ptdesc" id="codeMsg"></div></div>`;
+  pt += `</div></details>`;
+  h += grp(S.game === 'uth' ? 'Ultimate Texas Hold\'em' : 'WPT Heads-Up Hold\'em', pt);
+  h += grp('Sound &amp; feel', `<label class="srow"><div class="srt"><b>Sound effects</b><small>Cards, chips and wins</small></div>${sw('soundIn', S.sound)}</label>`
+    + (FX.canBuzz() ? `<label class="srow"><div class="srt"><b>Vibrate on taps</b><small>A light buzz on each button</small></div>${sw('hapticsIn', S.haptics)}</label>` : ''));
+  if (APP.native) h += grp('Ads', `<div id="adsOpt"></div>`);
+  h += grp('Your data', row('Hand history', '<span id="histInfo"></span>', '<button class="resetbtn danger" id="histWipeBtn">Delete</button>'));
+  h += grp('Codes', `<div class="srow scode"><div class="codebox"><input id="codeIn" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Enter a code"><button class="resetbtn" id="codeBtn">Apply</button></div><div class="ptdesc" id="codeMsg"></div></div>`);
   const el = document.getElementById('opts');
   el.innerHTML = h;
-  if (typeof QZ !== 'undefined') renderQuizBests();
   renderAdsOpt();
-  document.getElementById('qResetBtn').onclick = () => {
-    if (!confirm('Reset your practice stats for both games and both modes (hands, perfect %, streaks, EV lost)? Your hand history for the leak finder is kept.')) return;
-    QZ.statsBy = emptyStatsBy(); saveQuiz(); renderQuizScore();
-  };
   const ptSec = document.getElementById('ptSec'); ptSec.ontoggle = () => { window.PT_OPEN = ptSec.open; };
   el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); });
   renderHistInfo();
@@ -1781,13 +1808,20 @@ function renderEdgeCard() {
 // Opened from the gear on the Practice and Analyze pages (shared by both).
 function renderPset() {
   const el = document.getElementById('psetBody');
-  el.innerHTML = `<div class="opt wide"><label>Before the flop I can see</label>
-      <label class="chk"><input type="checkbox" id="seeOthersIn" ${S.seeOthers ? 'checked' : ''}> other players' cards</label>
-      <label class="chk"><input type="checkbox" id="peekDealerIn" ${S.peekDealer ? 'checked' : ''}> the dealer's card</label>
-      <label class="chk"><input type="checkbox" id="peekFlopIn" ${S.peekFlop ? 'checked' : ''}> a flop card</label>
-      <div class="ptdesc">In Practice, you'll sometimes be given spots with the extra information you've selected.</div></div>
-    <div class="opt wide"><label>Ante</label><input class="money" id="anteIn" inputmode="decimal" placeholder="Blank = show EV in antes" value="${S.ante || ''}">
-      <div class="ptdesc">Shows EVs in dollars at this ante.</div></div>`;
+  const sw = (id, on) => `<input type="checkbox" class="sw" id="${id}" ${on ? 'checked' : ''}>`;
+  const tog = (id, on, title) => `<label class="srow"><div class="srt"><b>${title}</b></div>${sw(id, on)}</label>`;
+  const grp = (head, body, note = '') => `<section class="sgrp"><h3 class="sgh">${head}</h3><div class="scard">${body}</div>${note ? `<p class="snote">${note}</p>` : ''}</section>`;
+  let x = grp('Before the flop I can see', tog('seeOthersIn', S.seeOthers, "Other players' cards") + tog('peekDealerIn', S.peekDealer, "The dealer's card") + tog('peekFlopIn', S.peekFlop, 'A flop card'),
+    "In Practice, you'll sometimes be given spots with the extra information you've selected.");
+  x += grp('Ante', `<div class="srow"><div class="srt"><b>Show EVs in dollars</b><small>Leave blank to show EVs in antes</small></div><div class="sctl"><span class="sdol">$</span><input class="money sante" id="anteIn" inputmode="decimal" placeholder="—" value="${S.ante || ''}"></div></div>`);
+  if (mode === 'quiz') x += grp('Practice stats', `<div class="srow sstats" id="qBests"></div>
+      <div class="srow"><div class="srt"><b>Reset practice stats</b><small>Both games, all hands and tough spots. Your hand history is kept.</small></div><div class="sctl"><button class="resetbtn" id="qResetBtn">Reset</button></div></div>`);
+  el.innerHTML = x;
+  renderQuizBests();
+  document.getElementById('qResetBtn')?.addEventListener('click', () => {
+    if (!confirm('Reset your practice stats for both games and both modes (hands, perfect %, streaks, EV lost)? Your hand history for the leak finder is kept.')) return;
+    QZ.statsBy = emptyStatsBy(); saveQuiz(); renderQuizScore();
+  });
   const peekChanged = () => { saveSettings(); renderSetSum(); if ((!S.peekDealer && S.active === 'dealer') || (!S.seeOthers && S.active === 'dead')) S.active = 'hole'; render(); onCardsChanged(); };
   document.getElementById('peekDealerIn').onchange = e => { S.peekDealer = e.target.checked; peekChanged(); };
   document.getElementById('peekFlopIn').onchange = e => { S.peekFlop = e.target.checked; peekChanged(); };
@@ -2966,18 +3000,25 @@ function handToAnalyzer(h, st, { daily = false } = {}) {
   specToAnalyzer(nodeSpec(h, st), st, daily ? 'daily' : 'quiz'); // phones go straight to the results, not the card picker
   if (daily && S.game === 'wpt' && S.tables.badBeat !== DAILY_OPTS.wpt.badBeat) dToast(`Analyze uses your Bad Beat table (${S.tables.badBeat}); the daily uses ${DAILY_OPTS.wpt.badBeat}`);
 }
-function renderQuizBests() {
-  const el = document.getElementById('qBests');
-  const B = QZ.statsBy, row = (g, name) => `${name}: <b>${B[g].normal.best}</b> all · <b>${B[g].tough.best}</b> tough`;
-  if (el) el.innerHTML = `Best streaks<br>${row('uth', 'Ultimate')}<br>${row('wpt', 'Heads-Up')}`;
+function renderQuizBests() { // every practice stat, both games and both modes (the Practice gear panel)
+  const el = document.getElementById('qBests'); if (!el) return;
+  const B = QZ.statsBy, cols = [B.uth.normal, B.uth.tough, B.wpt.normal, B.wpt.tough];
+  const line = (name, f) => `<tr><td>${name}</td>${cols.map(s => `<td>${s.n ? f(s) : '–'}</td>`).join('')}</tr>`;
+  el.innerHTML = `<table class="sbest"><thead><tr><th></th><th colspan="2">Ultimate</th><th colspan="2">Heads-Up</th></tr>
+      <tr class="sub"><th></th><th>All</th><th>Tough</th><th>All</th><th>Tough</th></tr></thead><tbody>
+    ${line('Hands', s => `<b>${s.n.toLocaleString()}</b>`)}
+    ${line('Perfect', s => `<b>${Math.round(s.perfect / s.n * 100)}%</b>`)}
+    ${line('Streak', s => `<b>${s.streak}</b>`)}
+    ${line('Best streak', s => `<b>${s.best}</b>`)}
+    ${line('EV lost/hand', s => `<b>${money(s.lost / s.n).replace('+', '')}</b>`)}</tbody></table>`;
 }
 function renderQuizScore() {
   const st = statsFor(S.game, QZ.tough);
   renderQuizBests();
   // all the stats as small tiles, centered on their own row under the controls
-  document.getElementById('qScore').innerHTML = st.n
-    ? `<span class="qst qs-n"><b>${st.n}</b><small>hands</small></span><span class="qst"><b>${Math.round(st.perfect / st.n * 100)}%</b><small>perfect</small></span><span class="qst" title="Best streak ${st.best}"><b>${st.streak}</b><small>streak</small></span><span class="qst qs-b"><b>${st.best}</b><small>best</small></span><span class="qst qs-ev"><b>${money(st.lost / st.n).replace('+', '')}</b><small>EV lost/hand</small></span>`
-    : '';
+  // always shown (dashes before the first hand), so nothing moves when the numbers arrive
+  const has = st.n > 0;
+  document.getElementById('qScore').innerHTML = `<span class="qst qs-n"><b>${st.n}</b><small>hands</small></span><span class="qst"><b>${has ? Math.round(st.perfect / st.n * 100) + '%' : '–'}</b><small>perfect</small></span><span class="qst" title="Best streak ${st.best}"><b>${st.streak}</b><small>streak</small></span><span class="qst qs-b"><b>${st.best}</b><small>best</small></span><span class="qst qs-ev"><b>${has ? money(st.lost / st.n).replace('+', '') : '–'}</b><small>EV lost/hand</small></span>`;
 }
 function gradeWord(lost) {
   if (lost < 1e-9) return ['Perfect hand', 'ok'];
@@ -3000,7 +3041,7 @@ function handTableHTML(h, st, { over = false, dealFrom = null, cls = '', dealer2
   const pair = '<span class="slotcards"><span class="gap"></span></span>';
   // the dealer's and other players' cards share one size that fits the row (never bigger than a normal card)
   const nOther = (dealer2 || h.dealer.length ? 2 : 0) + h.dead.length, nGroups = (dealer2 || h.dealer.length ? 1 : 0) + (h.dead.length ? 1 : 0);
-  const oc = nOther ? `style="--oc: min(46px, calc((100cqw - 104px - ${nGroups * 26 + nOther * 4 + Math.max(0, h.dead.length / 2 - 1) * 4}px) / ${nOther}))"` : '';
+  const oc = nOther ? `style="--oc: min(var(--hw, 46px), calc((100cqw - 104px - ${nGroups * 26 + nOther * 4 + Math.max(0, h.dead.length / 2 - 1) * 4}px) / ${nOther}))"` : '';
   return `<div class="qtable ${cls}">
       <div class="qgroup qboard"><div class="k">Board</div><div class="cards">${bd([0, 1, 2])}${pair}${bd([3, 4])}</div></div>
       <div class="qrow2" ${oc}>
@@ -3344,7 +3385,7 @@ function renderDaily() {
     el.querySelectorAll('[data-da]').forEach(b => b.onclick = () => dailyPick(b.dataset.da));
     el.querySelectorAll('[data-dan]').forEach(b => b.onclick = () => handToAnalyzer(h, b.dataset.dan, { daily: true }));
     document.getElementById('dNext')?.addEventListener('click', dailyNext);
-    document.getElementById('dHome').onclick = () => { DL.view = 'home'; renderDaily(); };
+    document.getElementById('dHome').onclick = () => { DL.view = 'home'; renderDaily(); setTimeout(() => adMoment('daily-home'), 400); };
     return;
   }
   // home: the week, then the selected day
@@ -3905,7 +3946,7 @@ function casStats(g) {
 }
 function casRecHTML(g, noBank = false) { // noBank: the bankroll is already shown big above
   const rec = casStats(g), br = BR.get();
-  return `<div class="crec">${noBank ? '' : `<div><span>Bankroll</span><b>${casD(br.bal)}</b></div>`}<div><span>Highest bankroll</span><b>${casD(br.best)}</b></div><div><span>Casino trips</span><b>${rec.trips}</b></div><div><span>All casino trips</span><b class="${rec.total >= 0 ? 'pos' : 'neg'}">${casSD(rec.total)}</b></div></div>`;
+  return `<div class="crec ${noBank ? 'three' : ''}">${noBank ? '' : `<div><span>Bankroll</span><b>${casD(br.bal)}</b></div>`}<div><span>Highest bankroll</span><b>${casD(br.best)}</b></div><div><span>Casino trips</span><b>${rec.trips}</b></div><div><span>All casino trips</span><b class="${rec.total >= 0 ? 'pos' : 'neg'}">${casSD(rec.total)}</b></div></div>`;
 }
 function casStatsSave(g, st) { const all = store.get('uth.casinoStats', {}); all[g] = st; store.set('uth.casinoStats', all); }
 // trip setup: what you bring, what you can see, and whether the dealer makes mistakes
@@ -4353,11 +4394,11 @@ function renderCasinoTable(s, g, x) {
     <div class="crowc cboard">${h ? casCardsHTML(h.board, boardShow, { fresh: fBoard, dim, hl }) : casCardsHTML([0, 0, 0, 0, 0], boardShow)}</div>
     <div class="carc">Ante Pushes if Dealer has Less Than a Pair · ${s2} Pays on Straight or Better</div>
     ${h?.nb?.length ? `<div class="cnb"><span class="clbl2">Neighbors</span>${[0, 2].filter(i => i < h.nb.length).map(i => `<div class="crowc">${casCardsHTML(h.nb.slice(i, i + 2), [true, true], { dim: dim || !!hl })}</div>`).join('')}</div>` : (s.cfg?.nb ? `<div class="cnb"><span class="clbl2">Neighbors</span>${Array.from({ length: s.cfg.nb }, () => `<div class="crowc">${casCardsHTML([0, 0], [false, false])}</div>`).join('')}</div>` : '')}
-    <div class="clow">
-      <div class="cspots">${bonus}
-        <div class="cgrid">${sp('ante', 'Ante', b.ante || 0, R?.ante)}<span class="ceq2">=</span>${sp('blind', s2, b.ante || 0, R?.blind)}${sp('play', pl, playStake, R?.play, 'play')}</div>
-      </div>
-      <div class="cyou2"><div class="crowc">${cards(h?.hole ? [...h.hole].sort((p, q) => q - p) : null, youShow, fYou)}</div><div class="clbl2">You</div>${casStackHTML(s.bank - casOnTable(s, g), s)}</div>
+    <div class="clow2">
+      ${bonus}
+      <div class="cyc"><div class="crowc">${cards(h?.hole ? [...h.hole].sort((p, q) => q - p) : null, youShow, fYou)}</div><div class="clbl2">You</div></div>
+      <div class="cgrid c4">${sp('ante', 'Ante', b.ante || 0, R?.ante)}<span class="ceq2">=</span>${sp('blind', s2, b.ante || 0, R?.blind)}${sp('play', pl, playStake, R?.play, 'play')}</div>
+      <div class="cyou3">${casStackHTML(s.bank - casOnTable(s, g), s)}</div>
     </div>
     ${settled ? `<div class="cbanner ${R.net > 0 ? 'w' : R.net < 0 ? 'l' : ''}"><b>${c.folded ? 'Folded' : R.win ? 'You win' : R.lose ? 'Dealer wins' : 'Push'}</b><span>${casSD(R.net)}</span><small>${c.folded ? `Ante and ${s2} go to the dealer` : casLastText(c.h, R, c.folded)}</small>${R.error ? `<em class="cerr">Dealer mistake: ${R.error === 'over' ? `the dealer paid your ${s2} at the ${CAS_PAY_ROW[R.cat + 1]} rate` : R.error === 'miss' ? `the dealer missed their own ${CAS_PAY_ROW[E.pcatOf(E.eval7([...c.h.dc, ...c.h.board]))]}${R.q ? ` and only saw their ${['', 'pair', 'two pair', 'three of a kind'][R.dcat] || 'hand'}` : ' and thought they didn\'t qualify'}` : CAS_ERR[R.error]}!</em>` : ''}</div>` : ''}
   </div>`;
@@ -4380,8 +4421,7 @@ function renderCasinoTable(s, g, x) {
     const line = last ? [`Last hand ${casSD(last.res.net)} · ${last.folded ? 'folded' : casLastText(last.h, last.res, last.folded)}${last.res.error ? ' · dealer mistake' : ''}`, last.res.net > 0 ? 'pos' : last.res.net < 0 ? 'neg' : ''] : ['Pick a chip, then tap a circle to bet.'];
     x += ctl(line, `<button class="qact cgo cdealbtn" id="cDeal" ${ok ? '' : 'disabled'}>Deal<small>${b.ante ? `$${casUpfront(b, g)}` : 'place a bet'}</small></button>`,
       `<div class="crack">${casTable(s).chips.map(d => `<button class="rchip k${d} ${d === ch ? 'on' : ''}" id="crk-${d}" data-chip="${d}"><span>${d >= 1000 ? "$1K" : "$" + d}</span></button>`).join('')}
-        <button class="cclear" id="cClear" ${casUpfront(b, g) ? '' : 'disabled'}>Clear</button></div>
-      <div class="cfoot"><button class="cclear cout" id="cOut">${s.hands.length ? 'Cash out' : 'Leave the table'}</button></div>`);
+        <button class="cclear" id="cClear" ${casUpfront(b, g) ? '' : 'disabled'}>Clear</button></div>`);
   }
   return x;
 }
@@ -4390,7 +4430,8 @@ function renderCasinoPlay(s, g, el) {
   if (c?.over && !CA.seq) { casNext(); return; } // reloaded (or came back) mid-showdown: settle it straight away
   const onTable = casOnTable(s, g);
   let x = `<div class="ctop2"><span class="cclock"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${casClock(s.hands.length - (c ? 0 : 0))}</span>
-    <span class="cbank" id="cBank"><small>Chips</small><b>${casD(s.bank - onTable)}</b><small class="cin">${onTable ? `$${onTable} in play` : '&nbsp;'}</small></span></div>`;
+    ${!c && !s.timeUp ? `<button class="cclear cout" id="cOut">${s.hands.length ? 'Cash out' : 'Leave table'}</button>` : ''}
+    <span class="cbank" id="cBank"><b>${casD(s.bank - onTable)}</b><small class="cin">${onTable ? `$${onTable} in play` : '&nbsp;'}</small></span></div>`;
   x = renderCasinoTable(s, g, x);
   el.innerHTML = x;
   if (c) { if (c.fresh) { c.fresh = null; c.shownAt = Date.now(); casSave(s, g); } }
@@ -4400,7 +4441,7 @@ function renderCasinoPlay(s, g, el) {
   document.getElementById('cDeal')?.addEventListener('click', casDeal);
   document.getElementById('cClear')?.addEventListener('click', casClear);
   document.getElementById('cOut2')?.addEventListener('click', casCashOut);
-  document.getElementById('cOut')?.addEventListener('click', () => { const b = document.getElementById('cOut'); if (b.dataset.sure) casCashOut(); else { b.dataset.sure = 1; b.classList.add('sure'); b.textContent = 'Tap again to cash out'; } });
+  document.getElementById('cOut')?.addEventListener('click', () => { const b = document.getElementById('cOut'); if (b.dataset.sure) casCashOut(); else { b.dataset.sure = 1; b.classList.add('sure'); b.textContent = 'Tap to confirm'; } });
 }
 // The tally: every decision against the options you actually had; perfect play on the same cards and
 // bets (full raises, it never runs short), settled against the real dealer hand.
@@ -4486,20 +4527,29 @@ function renderCasino() {
   if (CA.setup) { renderCasinoSetup(el, g); return; }
   if (!s || (s.done && s.dismissed)) { // start screen
     const hist = store.get('uth.casinoTrips', []).filter(t => t.game === g);
+    const broke = BR.get().bal < Math.min(...CAS_TABLES.map(t => t.buyMin)); // can't afford any table: the main button refills instead
     x += `<div class="qhead">Casino simulator<small>${GAME_NAME[g]}</small></div>
-      <div class="dcard ctrip"><div class="cbank0"><span>Your bankroll</span><b>${casD(BR.get().bal)}</b>${BR.get().bal !== CASINO_BANK ? '<button class="linkbtn" id="cReset">Reset to $1,000</button>' : ''}</div>
+      <div class="dcard ctrip"><div class="cbank0"><span>Your bankroll</span><b>${casD(BR.get().bal)}</b>${BR.get().bal < CASINO_BANK && !broke ? `<button class="linkbtn" id="cReset">${adsActive() ? '▶ Watch a video to refill to $1,000' : 'Refill to $1,000'}</button>` : ''}</div>
       <div class="dtitle">A night at the tables</div>
-      <p class="cintro">Play it like a real night out: put your chips down, make your plays, and see the dealer's cards. About 30 hands an hour, for as many hours as you choose. No hints or grades along the way — when you cash out you'll see what perfect play would have won with the same cards and bets, and your biggest mistakes.</p>
-      <div class="qacts"><button class="qact dgo" id="cStart">Head to the casino ▸</button></div></div>`;
+      <p class="cintro">Play it like a real night out: put your chips down, make your plays, and see the dealer's cards. 30 hands represent an hour, for as many "hours" as you choose. No hints or grades along the way — when you cash out you'll see what perfect play would have won with the same cards and bets, and your biggest mistakes.</p>
+      <div class="qacts">${broke ? `<button class="qact dgo" id="cRefill">${adsActive() ? '▶ Watch a video to refill to $1,000' : 'Refill to $1,000'}</button>` : '<button class="qact dgo" id="cStart">Head to the casino ▸</button>'}</div></div>`;
     const rec = casStats(g);
     if (rec.trips || BR.get().bal !== CASINO_BANK) x += casRecHTML(g, true);
     const brNow = BR.get().bal;
-    x += `${brNow < 100 ? `<div class="cwarn">Your bankroll is below the smallest buy-in ($100). Reset it to keep playing.</div>` : ''}`;
+    x += `${broke ? `<div class="cwarn">Your bankroll is below the smallest buy-in ($100). Refill it to keep playing.</div>` : ''}`;
     if (hist.length) x += `<h3 class="lh">Past trips</h3><table class="dlist ctrips"><thead><tr><th>Date</th><th>Hands</th><th>You</th><th>Perfect play</th></tr></thead><tbody>${hist.slice(0, 8).map(t => `<tr><td>${new Date(t.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td><td>${t.hands}</td><td class="${t.net >= 0 ? 'pos' : 'neg'}">${casSD(t.net)}</td><td class="${t.perfect >= 0 ? 'pos' : 'neg'}">${casSD(t.perfect)}</td></tr>`).join('')}</tbody></table>`;
     x += `<div class="note">Pay tables come from your Settings (${g === 'uth' ? `Trips ${S.tables.uthTrips}` : `Bad Beat ${S.tables.badBeat} · Trips Plus ${S.tables.wptTrips} · Pocket Bonus ${S.tables.pocket}`}). Tables run from $5–$50 up to $100–$2,500; the bigger tables open up as your bankroll grows.</div>`;
     el.innerHTML = x;
-    document.getElementById('cStart').onclick = () => casNewTrip();
-    const rb = document.getElementById('cReset'); if (rb) rb.onclick = e => { const b = e.target; if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = 'Tap again to reset'; return; } const br = BR.get(); br.bal = CASINO_BANK; BR.set(br); renderCasino(); };
+    document.getElementById('cStart')?.addEventListener('click', () => casNewTrip());
+    for (const rb of [document.getElementById('cReset'), document.getElementById('cRefill')]) if (rb) rb.onclick = async e => {
+      const b = e.target, refill = () => { const br = BR.get(); br.bal = CASINO_BANK; BR.set(br); renderCasino(); };
+      if (BR.get().bal >= CASINO_BANK) return; // only offered below $1,000
+      if (adsActive()) { // topping up costs one video (free with ads removed or during ad-free time; free if no video loads)
+        b.disabled = true; const ok = await watchRewarded(); b.disabled = false;
+        if (ok === false) return; refill(); dToast(`Bankroll refilled to ${casD(CASINO_BANK)}`); return;
+      }
+      if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = 'Tap again to refill'; return; } refill();
+    };
     return;
   }
   if (s.done) { // the tally
@@ -5252,27 +5302,96 @@ function renderGuide() {
 const APP = {
   native: !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()),
   testing: true,
-  bannerId: 'ca-app-pub-3940256099942544/9214589741', // TEST adaptive banner
+  bannerId: 'ca-app-pub-9270769703022419/6143418628', // Hold'em Trainer banner (real unit; testing: true below still asks AdMob for test ads)
+  interstitialId: 'ca-app-pub-9270769703022419/2965544768', // Hold'em Trainer interstitial
+  rewardedId: 'ca-app-pub-9270769703022419/9304381545',     // Hold'em Trainer rewarded
   productId: 'remove_ads',
   adsRemoved: (() => { try { return localStorage.getItem('uth.adsRemoved') === '1'; } catch (_) { return false; } })(),
   price: null, busy: false,
 };
 const AdMob = () => window.Capacitor?.Plugins?.AdMob;
 function setAdHeight(px) { document.documentElement.style.setProperty('--ad-h', px + 'px'); }
+// ── Ad rules ──
+// Banner at the bottom. Full-screen (interstitial) ads only at a natural break — opening Practice, the
+// Daily day picker, the casino before a trip — never during a hand, a daily or a trip; never in the first
+// 60 s after launch or the first hour after install; at least 3 minutes apart and at most 4 an hour.
+// Rewarded videos are always the player's choice: "no ads for 30 minutes" (Settings → Ads, or offered
+// after a full-screen ad), and refilling the casino bankroll. Nothing at all once ads are bought away,
+// and no banner or full-screen ads while ad-free time is running. The website has no ads.
+const AD_RULES = { launchQuiet: 60e3, installQuiet: 60 * 60e3, gap: 180e3, perHour: 4, freeMins: 30, freeCapMins: 180, offerGap: 30 * 60e3 };
+const AD = { launchAt: Date.now(), shown: [], intReady: false, rwReady: false, rwWait: null, bannerH: 0, bannerOn: false, offerAt: 0, freeTimer: null };
+try { if (!localStorage.getItem('uth.installAt')) localStorage.setItem('uth.installAt', String(Date.now())); } catch (_) {}
+const adFreeUntil = () => +store.get('uth.adFreeUntil', 0) || 0;
+const adsLive = () => APP.native && !APP.adsRemoved && !!AdMob();         // this player sees ads at all
+const adsActive = () => adsLive() && Date.now() >= adFreeUntil();          // …and right now (no ad-free time running)
+async function bannerOn() {
+  const ad = AdMob(); if (!ad || AD.bannerOn || !adsActive()) return;
+  try { await ad.showBanner({ adId: APP.bannerId, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0, isTesting: APP.testing }); AD.bannerOn = true; if (AD.bannerH) setAdHeight(AD.bannerH); } catch (e) { console.warn('banner', e); }
+}
+async function bannerOff() { try { await AdMob()?.removeBanner(); } catch (_) {} AD.bannerOn = false; setAdHeight(0); }
+function adFreeWatch() { // switch the banner back on when ad-free time runs out
+  clearTimeout(AD.freeTimer);
+  const left = adFreeUntil() - Date.now();
+  if (left > 0) AD.freeTimer = setTimeout(() => { bannerOn(); renderAdsOpt(); }, left + 500);
+}
+async function prepInterstitial() { AD.intReady = false; try { await AdMob()?.prepareInterstitial({ adId: APP.interstitialId, isTesting: APP.testing }); AD.intReady = true; } catch (_) {} }
+async function prepRewarded() { AD.rwReady = false; try { await AdMob()?.prepareRewardVideoAd({ adId: APP.rewardedId, isTesting: APP.testing }); AD.rwReady = true; } catch (_) {} }
 async function startAds() {
   const ad = AdMob(); if (!APP.native || APP.adsRemoved || !ad) return;
   try {
     await ad.initialize({ initializeForTesting: APP.testing });
     const consent = await ad.requestConsentInfo(); // EU/UK consent form when required
     if (consent.isConsentFormAvailable && consent.status === 'REQUIRED') await ad.showConsentForm();
-    ad.addListener('bannerAdSizeChanged', info => setAdHeight(APP.adsRemoved ? 0 : info.height || 0));
-    await ad.showBanner({ adId: APP.bannerId, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0, isTesting: APP.testing });
+    ad.addListener('bannerAdSizeChanged', info => { AD.bannerH = info.height || 0; setAdHeight(APP.adsRemoved || !AD.bannerOn ? 0 : AD.bannerH); });
+    ad.addListener('interstitialAdDismissed', () => { prepInterstitial(); setTimeout(offerAdFree, 600); });
+    ad.addListener('interstitialAdFailedToShow', () => prepInterstitial());
+    ad.addListener('onRewardedVideoAdReward', () => { if (AD.rwWait) AD.rwWait.got = true; });
+    const rwDone = () => { const w = AD.rwWait; AD.rwWait = null; prepRewarded(); w?.resolve(!!w.got); };
+    ad.addListener('onRewardedVideoAdDismissed', rwDone);
+    ad.addListener('onRewardedVideoAdFailedToShow', () => { const w = AD.rwWait; AD.rwWait = null; prepRewarded(); w?.resolve(null); });
+    prepInterstitial(); prepRewarded();
+    if (adsActive()) await bannerOn(); else adFreeWatch();
   } catch (e) { console.warn('ads unavailable', e); }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && adsActive() && !AD.bannerOn && APP.native && !APP.adsRemoved) bannerOn(); }); // ad-free time ran out while away
+// A full-screen ad at a natural break, if every rule allows it. `why` is only for the log.
+function adMoment(why) {
+  if (!adsActive() || !AD.intReady) return false;
+  const now = Date.now(), installAt = +(localStorage.getItem('uth.installAt') || now);
+  if (now - AD.launchAt < AD_RULES.launchQuiet || now - installAt < AD_RULES.installQuiet) return false;
+  AD.shown = AD.shown.filter(t => now - t < 3600e3);
+  if (AD.shown.length >= AD_RULES.perHour || (AD.shown.length && now - AD.shown[AD.shown.length - 1] < AD_RULES.gap)) return false;
+  if (document.querySelector('.cele') || document.body.classList.contains('nav-open') || document.body.classList.contains('set-open') || !document.getElementById('psetBg')?.hidden) return false;
+  AD.shown.push(now); AD.intReady = false;
+  AdMob().showInterstitial().catch(() => prepInterstitial());
+  return true;
+}
+// A rewarded video. Resolves true (watched to the end), false (closed early) or null (no video to show).
+function watchRewarded() {
+  const ad = AdMob(); if (!ad || !AD.rwReady) return Promise.resolve(null);
+  return new Promise(resolve => { AD.rwWait = { resolve, got: false }; AD.rwReady = false; ad.showRewardVideoAd().catch(() => { const w = AD.rwWait; AD.rwWait = null; prepRewarded(); w?.resolve(null); }); });
+}
+async function earnAdFree() { // watch a video: 30 minutes with no banner and no full-screen ads (adds up, to 3 hours)
+  const ok = await watchRewarded();
+  if (ok === null) { dToast('No video available right now — try again in a bit'); return; }
+  if (!ok) return;
+  const now = Date.now(), from = Math.max(now, adFreeUntil()), until = Math.min(from + AD_RULES.freeMins * 60e3, now + AD_RULES.freeCapMins * 60e3);
+  store.set('uth.adFreeUntil', until); await bannerOff(); adFreeWatch(); renderAdsOpt();
+  dToast(`No ads for ${Math.round((until - now) / 60e3)} minutes — enjoy!`);
+}
+function offerAdFree() { // after a full-screen ad, now and then: the opt-in video
+  if (!adsActive() || !AD.rwReady || Date.now() - AD.offerAt < AD_RULES.offerGap || document.querySelector('.adoffer')) return;
+  AD.offerAt = Date.now();
+  const el = document.createElement('div'); el.className = 'adoffer';
+  el.innerHTML = `<span>Rather skip the ads for a while?</span><button class="buy" id="aoGo">Watch a video — no ads for ${AD_RULES.freeMins} min</button><button class="linkbtn" id="aoNo">No thanks</button>`;
+  document.body.appendChild(el); requestAnimationFrame(() => el.classList.add('show'));
+  const close = () => { el.classList.remove('show'); setTimeout(() => el.remove(), 250); };
+  el.querySelector('#aoNo').onclick = close; el.querySelector('#aoGo').onclick = () => { close(); earnAdFree(); };
+  setTimeout(close, 12000);
 }
 async function adsOff() {
   APP.adsRemoved = true; try { localStorage.setItem('uth.adsRemoved', '1'); } catch (_) {}
-  try { await AdMob()?.removeBanner(); } catch (_) {}
-  setAdHeight(0); renderAdsOpt();
+  await bannerOff(); renderAdsOpt();
 }
 function startStore() {
   if (!APP.native || !window.CdvPurchase) return;
@@ -5287,10 +5406,14 @@ function startStore() {
 }
 function renderAdsOpt() {
   const el = document.getElementById('adsOpt'); if (!el) return;
-  if (APP.adsRemoved) { el.innerHTML = `<div class="ptdesc">Ads removed — thanks for supporting the app!</div>`; return; }
-  el.innerHTML = `<div class="ptdesc">A small banner at the bottom keeps the app free. One purchase removes it for good.</div>
-    <button class="buy" id="buyBtn" ${APP.busy ? 'disabled' : ''}>Remove ads${APP.price ? ' — ' + APP.price : ''}</button>
-    <button class="linkbtn" id="restoreBtn" style="margin-left:12px">Restore purchase</button>`;
+  const row = (title, desc, ctl) => `<div class="srow"><div class="srt"><b>${title}</b>${desc ? `<small>${desc}</small>` : ''}</div>${ctl ? `<div class="sctl">${ctl}</div>` : ''}</div>`;
+  if (APP.adsRemoved) { el.innerHTML = row('Ads removed', 'Thanks for supporting the app!'); return; }
+  const left = Math.ceil((adFreeUntil() - Date.now()) / 60e3);
+  el.innerHTML = row('Remove ads', 'Ads keep the app free. One purchase removes them for good.', `<button class="buy" id="buyBtn" ${APP.busy ? 'disabled' : ''}>${APP.price || 'Buy'}</button>`)
+    + row('Take a break', left > 0 ? `No ads for another <b>${left} min</b>` : `Watch a short video for ${AD_RULES.freeMins} minutes without ads`,
+      left < AD_RULES.freeCapMins - AD_RULES.freeMins ? `<button class="resetbtn" id="freeBtn">${left > 0 ? `+${AD_RULES.freeMins} min` : 'Watch'}</button>` : '')
+    + row('Already bought it?', 'Restore your purchase on this device', '<button class="resetbtn" id="restoreBtn">Restore</button>');
+  document.getElementById('freeBtn')?.addEventListener('click', earnAdFree);
   document.getElementById('buyBtn').onclick = async () => {
     const st = window.CdvPurchase?.store, offer = st?.get(APP.productId)?.getOffer();
     if (!offer) { alert('The store isn\'t available right now — try again in a moment.'); return; }
@@ -5304,6 +5427,7 @@ if (APP.native) { window.Capacitor?.Plugins?.SystemBars?.setStyle?.({ style: 'DA
 let mode = store.get('uth.mode', 'analyze');
 if (mode === 'leaks' && store.get('uth.handsLogged', 0) < 100) mode = 'analyze';
 function setMode(m) {
+  const from = mode;
   mode = m; store.set('uth.mode', m);
   document.querySelectorAll('.navitem[data-m]').forEach(x => x.classList.toggle('on', x.dataset.m === m));
   if (m !== 'analyze') ANALYZE_FROM = null; renderBackBar?.();
@@ -5320,6 +5444,9 @@ function setMode(m) {
   if (m === 'leaks') renderLeaks();
   if (m === 'casino') renderCasino();
   if (m === 'daily') dailyOpen(DL.date || todayYmd());
+  // a natural break for a full-screen ad (the rules in adMoment decide): opening Practice, the Daily's day
+  // picker, or the casino when no trip is under way
+  if (from !== m && (m === 'quiz' || m === 'daily' && DL.view !== 'play' || m === 'casino' && !casActive() && !casGet(S.game)?.cur)) setTimeout(() => adMoment(m), 400);
   if (m === 'guide') { renderGuide(); if (DEMO.step === 0) demoPlay(true); } else clearTimeout(DEMO.timer);
   if (m === 'quiz') { if (!QZ.cur || QZ.cur.key !== quizKey()) { QZ.next = null; quizNew(); } else renderQuiz(); }
 }
@@ -5413,7 +5540,7 @@ document.getElementById('navBtn').onclick = () => openNav(true);
 document.getElementById('navClose').onclick = () => openNav(false);
 document.getElementById('navBg').onclick = () => openNav(false);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('nav-open')) openNav(false); });
-const openSettings = open => { document.body.classList.toggle('set-open', open); if (open) { renderEdgeCard(); renderHistInfo(); renderQuizBests(); } };
+const openSettings = open => { document.body.classList.toggle('set-open', open); if (open) { renderEdgeCard(); renderHistInfo(); renderQuizBests(); renderAdsOpt(); } };
 // Settings opens from the menu and slides in over it: "‹ Menu" goes back, ✕ / the backdrop close both.
 document.getElementById('navSettings').onclick = () => openSettings(true);
 
