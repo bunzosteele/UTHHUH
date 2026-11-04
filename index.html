@@ -37,8 +37,8 @@
     position: sticky; top: 0; z-index: 35; background: #0e2d22; border-bottom: 1px solid transparent; transition: border-color .2s, box-shadow .2s; }
   body.scrolled header { border-bottom-color: var(--line); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
   .brand { flex: 1; min-width: 0; }
-  .pnrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .dailydue { margin-top: 4px; border: 1px solid var(--gold); background: rgba(230,192,106,.12); color: var(--gold); border-radius: 99px; padding: 1px 9px; font: 700 10.5px var(--sans); cursor: pointer; white-space: nowrap; animation: duepulse 2.4s ease-in-out infinite; }
+  .pnrow { display: flex; align-items: center; gap: 5px; flex-wrap: nowrap; height: 20px; margin-top: 3px; } .pnrow .pagename { margin-top: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dailydue { flex: none; border: 1px solid var(--gold); background: rgba(230,192,106,.12); color: var(--gold); border-radius: 99px; padding: 1px 7px; font: 700 10.5px var(--sans); cursor: pointer; white-space: nowrap; animation: duepulse 2.4s ease-in-out infinite; }
   @keyframes duepulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(230,192,106,.0); } 50% { box-shadow: 0 0 0 4px rgba(230,192,106,.18); } }
   .navitem.due > svg { color: var(--gold); stroke: var(--gold); animation: jiggle 2.6s ease-in-out infinite; transform-origin: 50% 60%; }
   @keyframes jiggle { 0%, 70%, 100% { transform: rotate(0); } 74% { transform: rotate(-12deg); } 78% { transform: rotate(10deg); } 82% { transform: rotate(-8deg); } 86% { transform: rotate(6deg); } 90% { transform: rotate(-3deg); } }
@@ -195,7 +195,7 @@
   .rgrid { container-type: inline-size; }
   .rc { font-size: clamp(9px, 2.55cqw, 17px); padding-bottom: 22%; }
   .rc .bdg { position: absolute; right: -0.2em; bottom: -0.2em; z-index: 2; font: 700 clamp(8px, 2.3cqw, 16px)/1 var(--sans); color: #fff; padding: 0.12em 0.2em; min-width: 1.24em; text-align: center; box-sizing: border-box; border-radius: 0.3em; box-shadow: 0 0 0 1.5px #0a1611; }
-  .legend .lg-b { position: relative; width: 18px !important; height: 18px !important; }
+  .legend .lg-b { position: relative; width: 18px !important; height: 18px !important; margin-right: 11px !important; }
   .legend .lg-b b { position: absolute; right: -4px; bottom: -4px; font: 700 11px/1 var(--mono); color: #fff; padding: 1px 2px; border-radius: 3px; }
   .cinfo { margin-top: 12px; border: 1px solid var(--gold-dim); border-radius: 10px; padding: 10px 12px; background: rgba(230,192,106,0.05); }
   .cinfo-h { display: flex; gap: 8px; align-items: baseline; font-size: 14px; color: var(--dim); }
@@ -220,11 +220,12 @@
 
   /* Settings */
   /* Phone status bar / gesture bar (the Android app draws edge to edge): keep content clear of them */
-  :root { --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); }
+  :root { --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)); } /* Capacitor's SystemBars sets --safe-area-inset-* where the WebView has no env() insets */
   body { padding-bottom: calc(var(--ad-h, 0px) + var(--sab)); } /* the header pads for the status bar itself */
   /* an opaque strip behind the ad banner and the gesture bar, so nothing shows through underneath */
   body::after { content: ''; position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--ad-h, 0px) + var(--sab)); background: #06140f; z-index: 60; pointer-events: none; }
   .drawer, .navdrawer { padding-bottom: calc(30px + var(--ad-h, 0px) + var(--sab)) !important; }
+  .dbgins { flex-basis: 100%; text-align: center; font-size: 11px; } .dbgins:empty { display: none; }
   footer.setfoot { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); justify-content: center; }
   .navdisc { margin: auto 6px 0; padding-top: 18px; font-size: 11px; line-height: 1.45; color: var(--faint); }
   #adsOpt .ptdesc { margin-bottom: 8px; } #adsOpt button.buy { background: var(--gold); color: #1c1606; border: 0; border-radius: 9px; padding: 9px 14px; font: 700 14px var(--sans); cursor: pointer; }
@@ -270,6 +271,7 @@
   table.sbest { border-collapse: collapse; font-size: 13px; } .sbest th { font: 600 10.5px var(--sans); text-transform: uppercase; letter-spacing: .06em; color: var(--faint); padding: 0 0 4px 14px; text-align: right; }
   .sbest td { color: var(--dim); padding: 2px 0; text-align: right; } .sbest td:first-child { text-align: left; } .sbest td + td { padding-left: 14px; } .sbest b { color: var(--ink); font: 600 14px var(--mono); }
   .scard #codeMsg:empty { display: none; } .scard table.sbest td, .scard table.sbest th { border: 0; background: none; } .scard table.sbest td { font: 500 13px var(--sans); }
+  .sads { display: grid; gap: 10px; padding: 14px; } .sads .srt small { font-size: 13.5px; } .sads .buy, .sads .resetbtn { width: 100%; padding: 11px 14px; font-size: 14.5px; } .sads .linkbtn { justify-self: center; font-size: 12.5px; color: var(--dim); } .sapause { color: var(--good); } .sapause b { color: var(--good) !important; }
   .srow.scode { display: block; } .scard .codebox input { padding: 9px 11px; }
   .schev { width: 9px; height: 9px; border-right: 2px solid var(--faint); border-bottom: 2px solid var(--faint); transform: rotate(45deg); margin: 0 4px 4px 0; transition: transform .18s; flex: none; } .setsec[open] .schev { transform: rotate(225deg); margin: 4px 4px 0 0; }
   .ptblk { border-top: 1px solid var(--line); padding-top: 12px; }
@@ -425,6 +427,13 @@
   .ctray { position: absolute; top: 10px; right: 14px; display: flex; gap: 2px; opacity: .55; } .ctray span { width: 7px; height: 22px; border-radius: 3px; background: linear-gradient(#c43b3b, #8f2525); } .ctray span:nth-child(2) { background: linear-gradient(#2f8f5b, #1d6640); } .ctray span:nth-child(3) { background: linear-gradient(#333, #111); } .ctray span:nth-child(4) { background: linear-gradient(#c43b3b, #8f2525); }
   .carc { font-family: var(--serif); font-size: 12px; line-height: 1.3; color: #efe4c4; opacity: .7; text-align: center; margin: 2px 0; }
   .clow2 { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: center; justify-items: center; gap: 2px 16px; width: 100%; }
+  @media (max-width: 860px) { .cctl .crow2 .qact { padding-top: 8px; padding-bottom: 8px; } .crack .rchip { width: 48px; height: 48px; } .crack .rchip span { width: 30px; height: 30px; font-size: 11px; } .casino .carc { font-size: 11.5px; line-height: 1.2; } .casino .ctable { padding-bottom: 12px; } }
+  .carc.two i { display: none; } .carc.two span { display: block; }
+  .cdeal2 { display: flex; align-items: center; gap: 10px; } .ctable .cdeal2 .pc { width: 38px; height: 53px; font-size: 16px; } .cdsp { visibility: hidden; }
+  .clow3 { display: grid; grid-template-columns: auto 14px auto 1fr; grid-template-rows: auto auto auto; align-items: center; justify-items: center; gap: 0; width: 100%; max-width: 440px; padding-left: 4px; }
+  .clow3 .ceq2 { grid-area: 2 / 2; align-self: start; } .clow3 .c-tr { grid-area: 1 / 1; } .clow3 .c-po { grid-area: 1 / 3; } .clow3 .c-an { grid-area: 2 / 1; } .clow3 .c-bl { grid-area: 2 / 3; } .clow3 .c-pl { grid-area: 3 / 1; }
+  .clow3 .cyc { grid-area: 1 / 4 / 3 / 5; } .clow3 .cyou3 { grid-area: 3 / 2 / 4 / 5; justify-self: end; align-self: center; margin-right: 8%; }
+  .clow3 .cring2 { width: 46px; height: 46px; padding-bottom: 5px; } .clow3 .cspotb { padding: 0 4px; }
   .cgrid.c4 { grid-template-columns: auto 14px auto auto; gap: 2px 0; } .cgrid.c4 .cspotb.play { margin-left: 8px; }
   .clow2 > * { min-width: 0; } .cyc { display: grid; justify-items: center; gap: 4px; } .cyou3 { align-self: start; } .cyou3 .cmine { margin-top: 4px; }
   .clow { display: flex; align-items: center; justify-content: center; gap: 18px; width: 100%; margin-top: 4px; }
@@ -458,7 +467,7 @@
   @keyframes cpop { from { transform: translate(-50%, -50%) scale(.6); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
   .cctl { margin-top: 8px; }
   .cctl .clast { min-height: 19px; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; line-height: 19px; }
-  .crow2 { grid-template-columns: 1fr 1fr; } .crow2 .qact { min-height: 56px; } .crow2 .cwide { grid-column: 1 / -1; }
+  .crow2 { grid-template-columns: 1fr 1fr; } .crow2 .qact { min-height: 48px; } .crow2 .cwide { grid-column: 1 / -1; }
   .cbusy .qact { opacity: .35; } .cctl .clast.cendl { font: 600 17px var(--serif); color: var(--ink); }
   .qact.cout.sure { border-color: var(--bad); color: var(--bad); }
   .cctl .crack { margin: 10px 0 2px; }
@@ -637,6 +646,14 @@
   .pset-bg[hidden] { display: none; }
   .pset { background: var(--felt-2); border: 1px solid var(--line); border-radius: 16px; width: min(440px, 100%); max-height: 90vh; overflow-y: auto; padding: 0 16px 16px; }
   .pset .dhead { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; background: none; border: 0; position: static; margin: 0; } .pset .dhead b { font: 700 18px var(--sans); }
+  .gsw .pset { max-width: 420px; } .gswp { margin: 0 0 12px; color: var(--dim); font-size: 14px; line-height: 1.55; }
+  .gswtrip { background: rgba(255,122,110,.08); border: 1px solid rgba(255,122,110,.35); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; color: var(--dim); line-height: 1.5; margin-bottom: 12px; } .gswtrip b { color: var(--ink); }
+  .welg { display: grid; gap: 10px; } .welg button { display: flex; align-items: center; gap: 14px; text-align: left; padding: 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--felt); color: var(--ink); cursor: pointer; }
+  .welg button:hover { border-color: var(--gold); } .welg svg { width: 84px; height: auto; flex: none; } .welg span { display: grid; gap: 3px; } .welg b { font-size: 15.5px; } .welg small { color: var(--dim); font-size: 12.5px; }
+  .welrules { margin-top: 14px; font-size: 14px; } .welfoot { color: var(--faint); font-size: 12.5px; }
+  .gswbtns { display: grid; gap: 8px; } .gswbtns .qact { min-height: 48px; }
+  .gsw .qact.cgo { background: var(--gold); border-color: var(--gold); color: #13261e; }
+  .gswfoot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 14px; } .gswfoot .linkbtn { font-size: 13.5px; }
   .pset .dhead button { background: none; border: 0; color: var(--dim); font-size: 18px; cursor: pointer; }
   .qbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
   .qopts { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
@@ -755,16 +772,17 @@
   .qnext button { padding: 10px 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--felt-2); color: var(--ink); font-weight: 600; font-size: 15px; cursor: pointer; }
   .qnext button.primary { background: var(--gold); color: #1c1606; border-color: var(--gold); }
 
-  @media (max-width: 380px) { header h1 { font-size: 17px !important; } header { gap: 5px !important; } .burger { width: 32px !important; height: 32px !important; } #gameSeg .gbadge { width: clamp(58px, calc((100vw - 232px) / 2), 74px) !important; } }
-  @media (max-width: 340px) { header h1 { font-size: 13.5px !important; } #gameSeg .gbadge { width: 48px !important; } .burger { width: 30px !important; height: 30px !important; } .wrap { --wp: 8px; padding-left: 8px !important; padding-right: 8px !important; } }
+  @media (max-width: 380px) { header h1 { font-size: 17px !important; } .pagename { letter-spacing: .06em !important; } header { gap: 5px !important; } .burger { width: 32px !important; height: 32px !important; } #gameSeg .gbadge { width: clamp(58px, calc((100vw - 232px) / 2), 74px) !important; } }
+  @media (max-width: 350px) { .pagename { font-size: 9px !important; letter-spacing: .04em !important; } }
+  @media (max-width: 340px) { header h1 { font-size: 13.5px !important; } #gameSeg .gbadge { width: 43px !important; } header { gap: 4px !important; } .burger { width: 30px !important; height: 30px !important; } .wrap { --wp: 8px !important; padding-left: 8px !important; padding-right: 8px !important; } }
   /* ── Mobile: one column; results become a bottom sheet ── */
   @media (max-width: 860px) {
     .wrap { --wp: 12px; padding: 0 var(--wp) 96px; }
     body:is(.quiz-mode, .daily-mode, .casino-mode, .guide-mode, .leaks-mode, .ach-mode) .wrap { padding-bottom: 16px; } /* only Analyze has the results bar at the bottom */
     h1 { font-size: 26px; }
     header { margin-bottom: 12px; display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; }
-    .burger { width: 36px; height: 36px; } .pagename { font-size: 10px; margin-top: 3px; }
-    header h1 { font-size: 20px; }
+    .burger { width: 36px; height: 36px; } .pagename { font-size: 10px; letter-spacing: .1em; }
+    header h1 { font-size: min(20px, calc((100vw - 236px) / 8.4)); }
     #gameSeg { justify-self: end; gap: 1px; } #gameSeg .gbadge { width: clamp(72px, calc((100vw - 262px) / 2), 100px); } #gameSeg button { padding: 3px; }
     header { gap: 10px 6px; }
     header h1 { white-space: nowrap; }
@@ -837,7 +855,7 @@
 <div class="wrap">
   <header>
     <button class="burger" id="navBtn" aria-label="Menu" title="Menu" aria-controls="navDrawer" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-    <div class="brand"><h1>Hold'em <span>Trainer</span></h1><div class="pnrow"><div class="pagename" id="pageName"></div><button class="dailydue" id="dailyDue" style="display:none">Today's daily ▸</button></div></div>
+    <div class="brand"><h1>Hold'em <span>Trainer</span></h1><div class="pnrow"><div class="pagename" id="pageName"></div><button class="dailydue" id="dailyDue" style="display:none" aria-label="Play today's daily challenge">Daily ▸</button></div></div>
     <div class="seg" id="gameSeg">
       <button data-g="uth" aria-label="Ultimate Texas Hold'em" title="Ultimate Texas Hold'em"><svg class="gbadge" viewBox="0 0 112 30" aria-hidden="true"><defs><clipPath id="cpU"><rect width="112" height="30" rx="7"/></clipPath></defs><g clip-path="url(#cpU)"><rect width="34" height="30" fill="#3b6fb6"/><rect x="34" width="78" height="15" fill="#efe9da"/><rect x="34" y="15" width="78" height="15" fill="#bf4a42"/></g><text x="56" y="20.5" text-anchor="middle" font-family="IBM Plex Sans, system-ui, sans-serif" font-weight="700" font-size="14" letter-spacing=".5" fill="#fff" stroke="#14261d" stroke-width="3" paint-order="stroke">ULTIMATE</text></svg></button>
       <button data-g="wpt" aria-label="WPT Heads-Up Hold'em" title="WPT Heads-Up Hold'em"><svg class="gbadge" viewBox="0 0 112 30" aria-hidden="true"><ellipse cx="56" cy="15" rx="55" ry="14" fill="#1d5c41"/><ellipse cx="56" cy="15" rx="51" ry="11.5" fill="none" stroke="#efe4c4" stroke-width="3" stroke-dasharray="9 7"/><ellipse cx="56" cy="15" rx="44" ry="8.5" fill="#174a35"/><text x="56" y="20" text-anchor="middle" font-family="IBM Plex Sans, system-ui, sans-serif" font-weight="700" font-size="13" letter-spacing=".5" fill="#efe4c4" stroke="#0e2a1f" stroke-width="2.5" paint-order="stroke">HEADS-UP</text></svg></button>
@@ -909,7 +927,7 @@
 <aside class="drawer" id="setDrawer" aria-label="Settings">
   <div class="dhead"><b>Settings</b><button id="setClose" aria-label="Close settings">✕</button></div>
   <div class="opts" id="opts"></div>
-  <footer class="setfoot"><span id="kvStatus">Saved on this device: –</span><span>· build 2026-10-30 17:42</span></footer>
+  <footer class="setfoot"><span id="kvStatus">Saved on this device: –</span><span>· build 2026-11-04 14:34</span><span id="dbgInsets" class="dbgins"></span></footer>
 </aside>
 <div class="pset-bg" id="psetBg" hidden><div class="pset" role="dialog" aria-modal="true" aria-label="Practice and Analyze settings">
   <div class="dhead"><b>Practice &amp; Analyze</b><button id="psetClose" aria-label="Close">✕</button></div>
@@ -1395,6 +1413,11 @@ async function cacheGet(key) {
   const pack = await prePack(keyVariant(key)); return pack?.[key] ?? null;
 }
 async function cachePut(key, data) { const ok = await IDB.put(key, data); if (ok) updateStoreStatus(); return !!ok; }
+function renderInsets() { // test builds: what the page thinks the banner and system bars take up (for checking on a phone)
+  const el = document.getElementById('dbgInsets'); if (!el || !APP.testing || !APP.native) return;
+  const cs = getComputedStyle(document.documentElement), px = v => { const d = document.createElement('div'); d.style.height = v; document.body.appendChild(d); const h = d.offsetHeight; d.remove(); return h; };
+  el.textContent = ` · ad ${px('var(--ad-h, 0px)')} · top ${px('var(--sat)')} · bottom ${px('var(--sab)')} · reported ${AD.bannerH}`;
+}
 async function updateStoreStatus() { const n = await IDB.count(); const el = document.getElementById('kvStatus'); if (el) el.textContent = `Saved on this device: ${n ?? 0} result${n === 1 ? '' : 's'}`; }
 // Console: importFromKV() copies charts seeded to the old shared cache onto this device (needs config.json).
 async function importFromKV({ kinds = ['dealer', 'flop', 'flop+dealer', 'dead1', 'dead2'], variants = Object.keys(VARIANTS) } = {}) {
@@ -1713,14 +1736,16 @@ function renderOpts() {
   h += grp('Sound &amp; feel', `<label class="srow"><div class="srt"><b>Sound effects</b><small>Cards, chips and wins</small></div>${sw('soundIn', S.sound)}</label>`
     + (FX.canBuzz() ? `<label class="srow"><div class="srt"><b>Vibrate on taps</b><small>A light buzz on each button</small></div>${sw('hapticsIn', S.haptics)}</label>` : ''));
   if (APP.native) h += grp('Ads', `<div id="adsOpt"></div>`);
+  if (APP.native) h += grp('Hold\'em Trainer', row('Rate the app', 'Tell other players what you think on Google Play', '<button class="resetbtn" id="rateBtn">Rate</button>'));
   h += grp('Your data', row('Hand history', '<span id="histInfo"></span>', '<button class="resetbtn danger" id="histWipeBtn">Delete</button>'));
   h += grp('Codes', `<div class="srow scode"><div class="codebox"><input id="codeIn" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Enter a code"><button class="resetbtn" id="codeBtn">Apply</button></div><div class="ptdesc" id="codeMsg"></div></div>`);
   const el = document.getElementById('opts');
   el.innerHTML = h;
   renderAdsOpt();
   const ptSec = document.getElementById('ptSec'); ptSec.ontoggle = () => { window.PT_OPEN = ptSec.open; };
-  el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); });
+  el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { track('paytable_change', { bet: b.dataset.pt, table: b.dataset.v }); S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); });
   renderHistInfo();
+  document.getElementById('rateBtn')?.addEventListener('click', rateInStore);
   const ci = document.getElementById('codeIn'), go = () => applyCode(ci.value);
   document.getElementById('codeBtn').onclick = go; ci.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); go(); } };
   document.getElementById('histWipeBtn').onclick = async () => {
@@ -1990,8 +2015,9 @@ const totalOf = a => typeof a === 'number' ? a : a.total;
 function summarize(acts) { // acts: {bet4: total|{total}, check: …}
   const keys = Object.keys(acts).filter(allowedAction);
   const best = keys.reduce((a, k) => !a || totalOf(acts[k]) > totalOf(acts[a]) ? k : a, null);
-  const mb = maxBetKey(acts), passive = acts.check !== undefined ? 'check' : 'fold';
-  return { best, ev: totalOf(acts[best]), margin: totalOf(acts[mb]) - totalOf(acts[passive]), mb, passive };
+  // a result from another street can still be on screen for a moment while the new one is worked out
+  const mb = maxBetKey(acts) || Object.keys(acts).filter(k => /^bet\d$/.test(k)).sort((a, b) => +b.slice(3) - +a.slice(3))[0], passive = acts.check !== undefined ? 'check' : 'fold';
+  return { best, ev: totalOf(acts[best]), margin: mb && acts[passive] !== undefined ? totalOf(acts[mb]) - totalOf(acts[passive]) : 0, mb, passive };
 }
 function handClass(hole) {
   const [a, b] = hole.map(c => c >> 2).sort((x, y) => y - x), R = E.RANKS;
@@ -2570,6 +2596,7 @@ async function buildChart() {
         if (stale()) return; CH.data = d; CH.done = done; CH.total = total;
         if (performance.now() - last > 250 || done === total) { renderChart(); last = performance.now(); } } });
       if (stale()) return;
+      track('chart_computed', { ...chartInfo(), ms: Math.round(performance.now() - CH.startedAt), gated });
       if (kn.street === 'preflop' && (gated || performance.now() - CH.startedAt > 3000)) cachePut(kvKey, CH.data);
     }
     if (needBase) { CH.base = await computeChart(baseKn, variant, { stale }); if (stale()) return; }
@@ -2707,13 +2734,13 @@ function renderChart() {
     h += `<div class="note">${chartSel ? '' : 'Tap a hand for the details of every suit combo. '}${CH.cached ? 'Saved result.' : ''}</div>`;
   }
   el.innerHTML = h;
-  el.querySelectorAll('.rc[data-k]:not(.wait)').forEach(d => d.onclick = () => {
+  el.querySelectorAll('.rc[data-k]:not(.wait)').forEach(d => d.onclick = () => { track('chart_cell', { street: S.street, cls: d.dataset.k });
     chartSel = chartSel === d.dataset.k ? null : d.dataset.k; renderChart();
     if (chartSel) document.getElementById('cinfo')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   });
   el.querySelectorAll('[data-h]').forEach(b => b.onclick = () => openCombo(b.dataset.h.split(',').map(Number)));
   el.querySelector('#cinfoClose')?.addEventListener('click', () => { chartSel = null; renderChart(); });
-  el.querySelector('#chartGoBtn')?.addEventListener('click', () => { chartGo.add(CH.key); buildChart(); });
+  el.querySelector('#chartGoBtn')?.addEventListener('click', () => { track('chart_long_start', chartInfo()); chartGo.add(CH.key); buildChart(); });
 }
 // Details under the chart: one row per group of combos that play the same way.
 function chartInfoHtml(cls, list, street, betLbl, pasLbl) {
@@ -2985,6 +3012,7 @@ function quizReveal(q) {
   let newBest = false;
   if (perfect) { st.perfect++; st.streak++; newBest = st.streak > st.best; st.best = Math.max(st.best, st.streak); } else st.streak = 0;
   saveQuiz(); q.revealAt = performance.now();
+  track('practice_hand', { game: q.game, tough: q.tough, perfect, loss: lost, decisions: q.picks.length, streak: st.streak });
   logDecisions(q.grade.rows, { mode: q.tough ? 'tough' : 'quiz', game: q.game, h: q.h });
   renderQuiz();
   const kind = perfect ? 'perfect' : lost < 0.25 ? 'leak' : 'costly';
@@ -3095,6 +3123,7 @@ function renderQuiz() {
   document.getElementById('qNext')?.addEventListener('click', quizNew);
 }
 document.querySelectorAll('#qToughSeg button').forEach(b => b.onclick = () => {
+  track('practice_mode', { tough: b.dataset.t === '1' });
   const t = b.dataset.t === '1'; if (t === QZ.tough) return;
   QZ.tough = t; saveQuiz(); QZ.next = null;
   if (!QZ.cur?.picks.length || QZ.cur?.done) quizNew(); else renderQuiz(); // a hand in progress finishes in the mode it was dealt in
@@ -3294,7 +3323,7 @@ function dailyPick(a) {
 }
 function dailyNext() {
   const k = dKey(S.game, DL.date), p = dProg(k); if (!p || !p.over) return;
-  if (p.i >= 9) { p.done = true; p.playedOn = todayYmd(); DL.view = 'home'; dSave(k, p); renderDaily(); dailyCelebrate(p); renderDailyDue(); updateLeaks({ fix: true }).then(() => { leakNewsSoon(3500); achSync(); }); return; }
+  if (p.i >= 9) { track('daily_complete', { game: S.game, date: DL.date, lost: dTotal(p), late: DL.date !== todayYmd() }); p.done = true; p.playedOn = todayYmd(); DL.view = 'home'; dSave(k, p); renderDaily(); dailyCelebrate(p); renderDailyDue(); updateLeaks({ fix: true }).then(() => { leakNewsSoon(3500); achSync(); }); return; }
   p.i++; p.stage = 'preflop'; p.picks = []; p.over = false; p.dealtAt = 0; dSave(k, p); DL.actAt = Date.now(); DL.slow = false; renderDaily();
 }
 function dailyCelebrate(p) {
@@ -3347,7 +3376,7 @@ function dailyFeltHTML(h, p, stake, game, dealFrom) {
     <div class="ctname">Hand ${p.i + 1} of 10</div>
     <div class="cdeal"><div class="clbl2">Dealer</div><div class="crowc">${casCardsHTML(h.dealer.length ? [h.dealer[0], 0] : [0, 0], [!!h.dealer.length, false])}</div></div>
     <div class="crowc cboard">${casCardsHTML(h.board, show, { fresh })}</div>
-    <div class="carc">Ante Pushes if Dealer has Less Than a Pair · ${s2} Pays on Straight or Better</div>
+    <div class="carc"><span>Ante Pushes if Dealer has Less Than a Pair</span><i> · </i><span>${s2} Pays on Straight or Better</span></div>
     ${dead.length ? `<div class="cnb"><span class="clbl2">${dead.length > 2 ? 'Other players' : 'Neighbor'}</span>${[0, 2, 4].filter(i => i < dead.length).map(i => `<div class="crowc">${casCardsHTML(dead.slice(i, i + 2).sort((a, b) => b - a), [true, true])}</div>`).join('')}</div>` : ''}
     <div class="clow">
       <div class="cspots"><div class="cgrid">${sp('ante', 'Ante', stake)}<span class="ceq2">=</span>${sp('blind', s2, stake)}${sp('play', pl, playStake, 'play')}</div></div>
@@ -3383,6 +3412,8 @@ function renderDaily() {
         <div class="qres ${tone}">${dHandRows(h, dGradeHand(h, r.picks, game), stake)}</div>`;
     }
     el.innerHTML = `<div class="dplay">${x}</div>`; // one column, the table's width
+    const top = fitFelt(el, '.qacts', { scroll: true });
+    if (DL.fitFor !== k + p.i && top > scrollY) { DL.fitFor = k + p.i; window.scrollTo({ top, behavior: 'smooth' }); } // a new hand: bring the table and its buttons into view
     el.querySelectorAll('[data-da]').forEach(b => b.onclick = () => dailyPick(b.dataset.da));
     el.querySelectorAll('[data-dan]').forEach(b => b.onclick = () => handToAnalyzer(h, b.dataset.dan, { daily: true }));
     document.getElementById('dNext')?.addEventListener('click', dailyNext);
@@ -3460,7 +3491,7 @@ function specToAnalyzer(sp, st, from = null) {
   S.hole = sp.hole.slice(); S.board = [...sp.board, null, null, null, null, null].slice(0, 5); S.dealer = [sp.dealer[0] ?? null]; S.dead = sp.dead.slice();
   S.active = 'board'; setMode('analyze'); setStreet(st); setTab('hand');
   ANALYZE_FROM = from; renderBackBar();
-  if (from) achBump('analyzed');
+  if (from) { achBump('analyzed'); track('analyze_hand', { from, game: S.game, street: st, tough: from === 'quiz' ? !!QZ.tough : undefined }); }
   if (isMobile()) openSheet(true);
 }
 let LEAK_RECS = [];
@@ -3646,11 +3677,12 @@ function showLeakSpotted(list) {
   document.body.appendChild(el); requestAnimationFrame(() => el.classList.add('show'));
   const close = () => { if (!el.isConnected) return; el.classList.remove('show'); setTimeout(() => el.remove(), 250); };
   el.close = close; el.onclick = e => { if (e.target === el) close(); };
-  el.querySelector('#spotGo').onclick = () => { close(); if (one.game !== S.game) setGame(one.game); setMode('leaks'); };
+  el.querySelector('#spotGo').onclick = () => { close(); askGame(one.game, () => setMode('leaks')); };
   el.querySelector('#spotLater').onclick = close;
   FX.play('leak'); FX.buzz('leak');
 }
 function celebrateFix({ game, c }) {
+  askReviewSoon('leak_fixed');
   document.querySelector('.cele')?.remove();
   const el = document.createElement('div'); el.className = 'cele t3 unlock'; el.setAttribute('role', 'dialog');
   el.innerHTML = `<div class="cele-card"><div class="unlock-ic">${ICON_LEAK}</div><div class="cele-title">Leak fixed</div>
@@ -3931,6 +3963,8 @@ const BR = { get: () => ({ bal: CASINO_BANK, best: CASINO_BANK, ...store.get('ut
 const casUnlocked = t => BR.get().best >= t.unlock;
 const casBroke = s => s.bank < 3 * casTable(s).min;
 const casActive = (g = S.game) => { const s = casGet(g); return !!s && !s.done; };
+const casWorth = () => BR.get().bal + ['uth', 'wpt'].reduce((t, g) => { const s = casGet(g); return t + (s && !s.done ? s.bank : 0); }, 0); // bankroll plus the chips of any trip in progress (bets on the table included)
+const casDur = n => { const m = n * 2, h = Math.floor(m / 60), r = m % 60; return h ? `${h} hr${h > 1 ? 's' : ''}${r ? ` ${r} min` : ''}` : `${r} min`; }; // 2 minutes a hand
 function casClock(i) { const m = (20 * 60 + i * 2) % (24 * 60), h = Math.floor(m / 60), mm = m % 60; return `${h % 12 || 12}:${String(mm).padStart(2, '0')} ${h >= 12 ? 'pm' : 'am'}`; } // from 8:00 pm, 2 minutes a hand
 const casHours = s => s?.cfg?.hours || 1;
 const casHands = s => casHours(s) * CASINO_HANDS;
@@ -3967,6 +4001,7 @@ function casNewTrip(cfg) {
   const bets = { ante: 0, trips: 0, pocket: 0 }; // every trip starts with an empty table
   CA.setup = false;
   const br = BR.get(); br.bal -= cfg.bring; BR.set(br); // the buy-in leaves your bankroll
+  track('casino_trip_start', { game: g, table: cfg.table, hours: cfg.hours, bring: cfg.bring, bankroll: br.bal + cfg.bring, neighbors: cfg.nb, dealer_flash: cfg.dflash, flop_flash: cfg.fflash, mistakes: !!cfg.errors });
   casSave({ bank: cfg.bring, buyIn: cfg.bring, table: cfg.table, cfg, bets, hands: [], cur: null, done: false, started: Date.now(), opts: { ...gameOpts(), pocketT: g === 'uth' ? UTH_POCKET[S.tables.uthPocket] : E.GAMES.wpt.pocket[S.tables.pocket] }, maxRaise: g === 'uth' ? 4 : maxPreflopRaise() }, g);
   CA.acts.clear(); CA.tally = null; renderCasino(); window.scrollTo(0, 0); // from wherever the setup was scrolled to
 }
@@ -4335,9 +4370,41 @@ function casNext() {
 }
 function casCashOut() {
   const g = S.game, s = casGet(g); if (!s || s.done || s.cur) return;
-  const br = BR.get(); br.bal += s.bank; s.brBefore = br.best; s.brAfter = br.bal; br.best = Math.max(br.best, br.bal); BR.set(br); // the chips go back into your bankroll
+  track('casino_trip_end', { game: g, reason: s.timeUp === 'broke' ? 'broke' : s.timeUp ? 'time_up' : 'cashed_out', hands: s.hands.length, hours: casHours(s), net: s.bank - casBuyIn(s) });
+  const br = BR.get(), bal0 = br.bal + casBuyIn(s); br.bal += s.bank; s.brBefore = br.best; s.brAfter = br.bal; br.best = Math.max(br.best, br.bal); BR.set(br); // the chips go back into your bankroll
+  if (bal0 < 2500 && br.bal >= 2500) askReviewSoon('bankroll');
   s.done = true; s.cashedOut = !s.timeUp && s.hands.length < casHands(s); casSave(s, g); renderCasino(); casFinish(g);
 }
+// When a felt and the buttons under it don't fit on screen (above the banner ad on phones), shrink the felt (to 72% at
+// most). The size only shrinks while the screen size stays the same, so the table doesn't jump between
+// hands. With `scroll`, the page may scroll until the felt's top meets the header (the daily, which has
+// its date and story above the table); returns that scroll position.
+const FIT = { key: '', z: 1 };
+function cssPx(v) { const d = document.createElement('div'); d.style.cssText = `position:absolute;visibility:hidden;height:${v}`; document.body.appendChild(d); const h = d.offsetHeight; d.remove(); return h; }
+function fitFelt(root, ctlSel, { scroll = false } = {}) {
+  const felt = root.querySelector('.ctable'), ctls = [...root.querySelectorAll(ctlSel)].filter(e => e.offsetParent), ctl = ctls[ctls.length - 1];
+  if (!felt || !ctl) return 0;
+  felt.style.zoom = '';
+  let top = 0;
+  if (scroll) top = Math.max(0, Math.round(felt.getBoundingClientRect().top + scrollY - document.querySelector('header').getBoundingClientRect().height - 8));
+  const adH = cssPx('var(--ad-h, 0px)'), key = [innerWidth, innerHeight, adH, mode].join('|');
+  if (FIT.key !== key) { FIT.key = key; FIT.z = 1; }
+  const avail = innerHeight - adH - cssPx('var(--sab)') - 8;
+  const over = ctl.getBoundingClientRect().bottom + scrollY - top - avail, fh = felt.offsetHeight;
+  FIT.z = Math.min(FIT.z, over > 0 ? Math.max(0.72, (fh - over) / fh) : 1);
+  if (FIT.z < 0.995) felt.style.zoom = FIT.z.toFixed(3);
+  return top;
+}
+let fitTimer = 0;
+addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(() => { if (mode === 'casino') renderCasino(); else if (mode === 'daily') renderDaily(); }, 200); });
+// The two table rules on the felt: one line with a dot between them, or two lines (no dot) when they don't fit.
+function fitArcs() {
+  document.querySelectorAll('.carc:not([data-fit])').forEach(el => {
+    if (!el.offsetParent) return; el.dataset.fit = 1;
+    if (el.offsetHeight > parseFloat(getComputedStyle(el).lineHeight) * 1.5) el.classList.add('two');
+  });
+}
+new MutationObserver(fitArcs).observe(document.body, { childList: true, subtree: true });
 function casCardsHTML(cards, show, { fresh = false, delay0 = 0, dim = false, hl = null, turn = false } = {}) {
   return cards.map((c, i) => {
     if (!show[i]) return '<div class="pc back"></div>';
@@ -4385,20 +4452,18 @@ function renderCasinoTable(s, g, x) {
   const cards = (arr, show, f, d0 = 0) => arr ? casCardsHTML(arr, show, { fresh: f, delay0: d0, dim, hl, turn: arr === h?.dc }) : casCardsHTML([0, 0], [false, false]);
   const rv = (k, v) => R ? v : null;
   const sp = (k, label, stake, v, shape) => casSpotHTML(k, label, stake, { res: rv(k, v), settled, shape });
-  const bonus = g === 'uth'
-    ? `<div class="crow3 two">${sp('trips', 'Trips', b.trips || 0, R?.trips)}${sp('pocket', casPocketName(g, s.opts), b.pocket || 0, R?.pocket)}</div>`
-    : `<div class="crow3 two">${sp('trips', 'Trips Plus', b.trips || 0, R?.trips)}${sp('pocket', 'Pocket Bonus', b.pocket || 0, R?.pocket)}</div>`;
   x += `<div class="ctable felt-${casTable(s).felt} ${c && !over ? 'live' : ''}">
     <div class="ctname">${casTable(s).name}</div>
     <div class="ctray" id="cTray"><span></span><span></span><span></span><span></span></div>
-    <div class="cdeal"><div class="clbl2">Dealer</div><div class="crowc">${cards(h?.dc, dealerShow, fDealer, delayD)}</div></div>
+    <div class="cdeal cdeal2"><span class="clbl2">Dealer</span><div class="crowc">${cards(h?.dc, dealerShow, fDealer, delayD)}</div><span class="clbl2 cdsp" aria-hidden="true">Dealer</span></div>
     <div class="crowc cboard">${h ? casCardsHTML(h.board, boardShow, { fresh: fBoard, dim, hl }) : casCardsHTML([0, 0, 0, 0, 0], boardShow)}</div>
-    <div class="carc">Ante Pushes if Dealer has Less Than a Pair · ${s2} Pays on Straight or Better</div>
+    <div class="carc"><span>Ante Pushes if Dealer has Less Than a Pair</span><i> · </i><span>${s2} Pays on Straight or Better</span></div>
     ${h?.nb?.length ? `<div class="cnb"><span class="clbl2">Neighbors</span>${[0, 2].filter(i => i < h.nb.length).map(i => `<div class="crowc">${casCardsHTML(h.nb.slice(i, i + 2), [true, true], { dim: dim || !!hl })}</div>`).join('')}</div>` : (s.cfg?.nb ? `<div class="cnb"><span class="clbl2">Neighbors</span>${Array.from({ length: s.cfg.nb }, () => `<div class="crowc">${casCardsHTML([0, 0], [false, false])}</div>`).join('')}</div>` : '')}
-    <div class="clow2">
-      ${bonus}
+    <div class="clow3">
+      ${sp('trips', g === 'uth' ? 'Trips' : 'Trips Plus', b.trips || 0, R?.trips, 'c-tr')}${sp('pocket', g === 'uth' ? casPocketName(g, s.opts) : 'Pocket Bonus', b.pocket || 0, R?.pocket, 'c-po')}
+      ${sp('ante', 'Ante', b.ante || 0, R?.ante, 'c-an')}<span class="ceq2">=</span>${sp('blind', s2, b.ante || 0, R?.blind, 'c-bl')}
+      ${sp('play', pl, playStake, R?.play, 'play c-pl')}
       <div class="cyc"><div class="crowc">${cards(h?.hole ? [...h.hole].sort((p, q) => q - p) : null, youShow, fYou)}</div><div class="clbl2">You</div></div>
-      <div class="cgrid c4">${sp('ante', 'Ante', b.ante || 0, R?.ante)}<span class="ceq2">=</span>${sp('blind', s2, b.ante || 0, R?.blind)}${sp('play', pl, playStake, R?.play, 'play')}</div>
       <div class="cyou3">${casStackHTML(s.bank - casOnTable(s, g), s)}</div>
     </div>
     ${settled ? `<div class="cbanner ${R.net > 0 ? 'w' : R.net < 0 ? 'l' : ''}"><b>${c.folded ? 'Folded' : R.win ? 'You win' : R.lose ? 'Dealer wins' : 'Push'}</b><span>${casSD(R.net)}</span><small>${c.folded ? `Ante and ${s2} go to the dealer` : casLastText(c.h, R, c.folded)}</small>${R.error ? `<em class="cerr">Dealer mistake: ${R.error === 'over' ? `the dealer paid your ${s2} at the ${CAS_PAY_ROW[R.cat + 1]} rate` : R.error === 'miss' ? `the dealer missed their own ${CAS_PAY_ROW[E.pcatOf(E.eval7([...c.h.dc, ...c.h.board]))]}${R.q ? ` and only saw their ${['', 'pair', 'two pair', 'three of a kind'][R.dcat] || 'hand'}` : ' and thought they didn\'t qualify'}` : CAS_ERR[R.error]}!</em>` : ''}</div>` : ''}
@@ -4435,6 +4500,7 @@ function renderCasinoPlay(s, g, el) {
     <span class="cbank" id="cBank"><b>${casD(s.bank - onTable)}</b><small class="cin">${onTable ? `$${onTable} in play` : '&nbsp;'}</small></span></div>`;
   x = renderCasinoTable(s, g, x);
   el.innerHTML = x;
+  fitFelt(el, '.cctl > *');
   if (c) { if (c.fresh) { c.fresh = null; c.shownAt = Date.now(); casSave(s, g); } }
   el.querySelectorAll('[data-ca]').forEach(b => b.onclick = () => casPick(b.dataset.ca));
   el.querySelectorAll('[data-chip]').forEach(b => b.onclick = () => { store.set('uth.casChip', +b.dataset.chip); FX.buzz('tap'); renderCasino(); });
@@ -4545,18 +4611,22 @@ function renderCasino() {
     for (const rb of [document.getElementById('cReset'), document.getElementById('cRefill')]) if (rb) rb.onclick = async e => {
       const b = e.target, refill = () => { const br = BR.get(); br.bal = CASINO_BANK; BR.set(br); renderCasino(); };
       if (BR.get().bal >= CASINO_BANK) return; // only offered below $1,000
+      const bal0 = BR.get().bal, kind = b.id === 'cRefill' ? 'broke' : 'topup';
       if (adsActive()) { // topping up costs one video (free with ads removed or during ad-free time; free if no video loads)
         b.disabled = true; const ok = await watchRewarded(); b.disabled = false;
-        if (ok === false) return; refill(); dToast(`Bankroll refilled to ${casD(CASINO_BANK)}`); return;
+        if (ok === false) { track('bankroll_refill', { via: 'video_closed', kind, bal_before: bal0, done: false }); return; }
+        track('bankroll_refill', { via: ok ? 'video' : 'no_video', kind, bal_before: bal0, done: true });
+        refill(); dToast(`Bankroll refilled to ${casD(CASINO_BANK)}`); return;
       }
-      if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = 'Tap again to refill'; return; } refill();
+      if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = 'Tap again to refill'; return; }
+      track('bankroll_refill', { via: 'free', kind, bal_before: bal0, done: true }); refill();
     };
     return;
   }
   if (s.done) { // the tally
     const sm = s.summary;
     if (!sm && CA.tally !== s.started) setTimeout(() => casFinish(g));
-    x += `<div class="qhead">Trip over<small>${GAME_NAME[g]} · 8:00–${casClock(s.hands.length)}${s.cashedOut ? ' · cashed out early' : s.timeUp === 'broke' ? ' · out of chips' : ''}</small></div>`;
+    x += `<div class="qhead">Trip over<small>${{ uth: 'Ultimate', wpt: 'Heads-Up' }[g]} · ${casDur(s.hands.length)}${s.timeUp === 'broke' ? ' · out of chips' : ''}</small></div>`;
     if (!sm) { x += `<div class="empty"><div class="big">Tallying up…</div><span id="casProg">Checking every decision</span></div>`; el.innerHTML = x; return; }
     const ok = sm.nOk === sm.nDec, word = sm.perAnte < 1e-6 ? 'Flawless' : sm.perAnte < 0.02 ? 'Sharp' : sm.perAnte < 0.06 ? 'Solid' : sm.perAnte < 0.15 ? 'Leaky' : 'Costly';
     const diff = sm.net - sm.perfect;
@@ -4568,7 +4638,7 @@ function renderCasino() {
       <div class="cverdict"><b class="${ok ? 'pos' : sm.perAnte < 0.06 ? '' : 'neg'}">${word}</b> · ${sm.nOk} of ${sm.nDec} decisions right</div>
       ${sm.split && (sm.split.tripsW || sm.split.pocketW) ? `<div class="csplit"><span>Main game <b class="${sm.split.main >= 0 ? 'pos' : 'neg'}">${casSD(sm.split.main)}</b></span>${sm.split.tripsW ? `<span>${g === 'uth' ? 'Trips' : 'Trips Plus'} <b class="${sm.split.trips >= 0 ? 'pos' : 'neg'}">${casSD(sm.split.trips)}</b> <small>of $${sm.split.tripsW} bet</small></span>` : ''}${sm.split.pocketW ? `<span>${casPocketName(g, s.opts)} <b class="${sm.split.pocket >= 0 ? 'pos' : 'neg'}">${casSD(sm.split.pocket)}</b> <small>of $${sm.split.pocketW} bet</small></span>` : ''}</div>` : ''}
       ${(() => { const ev = `<b class="neg">${dollars(sm.evLost)}</b>`, has = sm.evLost > 0.005; // the average cost of your mistakes, in every version of the note
-        return `<div class="cnote">${Math.abs(diff) < 0.5 ? `You matched perfect play to the dollar${has ? `, but on average your mistakes cost you ${ev} on a trip like this` : ''}.` : diff > 0 ? `You finished ${casD(diff)} ahead of perfect play — the cards were kind to your mistakes tonight${has ? `, but on average your mistakes cost you ${ev} on a trip like this` : ''}.` : `Your decisions cost you ${casD(-diff)} tonight${has ? ` (${ev} on average — the rest was how the cards fell)` : ''}.`}</div></div>`; })()}`;
+        return `<div class="cnote">${Math.abs(diff) < 0.5 ? `You matched perfect play to the dollar${has ? `, but on average your mistakes cost you ${ev} on a trip like this` : ''}.` : diff > 0 ? `You finished ${casD(diff)} ahead of perfect play — the cards were kind to your mistakes tonight${has ? `, but on average your mistakes cost you ${ev} on a trip like this` : ''}.` : `Your decisions cost you ${casD(-diff)} tonight${has ? ` (${ev} on average)` : ''}.`}</div></div>`; })()}`;
     if (sm.flagged.length) {
       x += `<h3 class="lh">Biggest mistake${sm.flagged.length === 1 ? '' : 's'}</h3>`;
       for (const f of sm.flagged) {
@@ -4683,7 +4753,7 @@ function achSet(id, v, { silent = false } = {}) {
   const st = AS.get(), old = st.p[id] || 0; if (v <= old) return;
   const l0 = achLevel(a, old), l1 = achLevel(a, v);
   st.p[id] = v; AS.set(st);
-  if (l1 > l0 && !silent && !st.quiet) { for (let l = l0 + 1; l <= l1; l++) achQueue.push({ a, l }); achShowSoon(); }
+  if (l1 > l0 && !silent && !st.quiet) { for (let l = l0 + 1; l <= l1; l++) { achQueue.push({ a, l }); track('achievement_unlock', { id, level: l }); } achShowSoon(); }
   if (mode === 'ach') renderAch();
   renderAchNav?.();
 }
@@ -4812,7 +4882,7 @@ function renderDailyDue() {
   const due = !dProg(dKey(S.game, todayYmd()))?.done;
   const b = document.getElementById('dailyDue'); if (b) b.style.display = due && mode !== 'daily' ? '' : 'none';
   document.querySelector('.navitem[data-m="daily"]')?.classList.toggle('due', due);
-  const cs = document.getElementById('casSub'); if (cs) cs.textContent = `Build your bankroll from ${casD(BR.get().bal)}`;
+  const cs = document.getElementById('casSub'); if (cs) cs.textContent = `Build your bankroll from ${casD(Math.max(CASINO_BANK, casWorth()))}`;
 }
 function renderAchNav() {
   const el = document.getElementById('achSub'); if (!el) return;
@@ -4860,7 +4930,7 @@ function renderAch() {
 // hands, no extra information, with chosen mistakes planted). A friend code removes ads for free.
 // Friend codes are stored as hashes so they don't sit in the page as plain text.
 const codeHash = s => { let h = 2166136261; for (const ch of s) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; } return h.toString(36); };
-const FRIEND_CODES = new Set([codeHash('BUNZFRIEND')]);
+const FRIEND_CODES = new Set([codeHash('FRIEND')]); // toggles ads off/on on this device
 const TEST_CODES = {
   'TEST-RESET': { hands: 0, note: 'Hand history cleared — the leak finder is locked again.' },
   'TEST-99': { hands: 99, note: '99 clean hands — your next hand unlocks the leak finder.' },
@@ -4928,9 +4998,23 @@ async function applyTestCode(code, say) {
   say(`${cfg.note} (${GAME_NAME[game]})`);
 }
 async function applyCode(raw) {
-  const code = raw.trim().toUpperCase(), say = t => { const el = document.getElementById('codeMsg'); if (el) el.textContent = t; };
+  const code = raw.trim().toUpperCase(), say0 = t => { const el = document.getElementById('codeMsg'); if (el) el.textContent = t; };
   if (!code) return;
-  if (FRIEND_CODES.has(codeHash(code))) { await adsOff(); say(APP.native ? 'Ads removed — enjoy!' : 'Code accepted — ads will be off in the app on this device.'); return; }
+  // analytics: which code (numbers dropped: TEST-BANKROLL3000 → TEST-BANKROLL, value 3000), and whether it worked. What
+  // someone typed is only sent when it was a valid code.
+  let told = false;
+  const say = msg => { say0(msg); if (told) return; told = true; const ok = !/isn't valid|No achievement|went wrong/.test(msg), num = code.replace(/\s+/g, '').match(/(\d+)$/);
+    track('code_used', { code: ok ? code.replace(/\s+/g, '').replace(/-?\d+$/, '') : 'invalid', value: ok && num ? +num[1] : undefined, ok, ads_off: APP.adsRemoved }); };
+  if (FRIEND_CODES.has(codeHash(code))) {
+    if (APP.adsRemoved) { APP.adsRemoved = false; try { localStorage.removeItem('uth.adsRemoved'); } catch (_) {} trackUser('ads_removed', 0); if (APP.native) startAds(); renderAdsOpt(); say('Ads are back on. Enter FRIEND again to turn them off.'); return; }
+    await adsOff('friend'); say(APP.native ? 'Ads off on this device — enter FRIEND again to turn them back on.' : 'Code accepted — ads will be off in the app on this device.'); return;
+  }
+  if (code === 'TEST-FRESH') { // everything back to a first launch: settings, stats, trips, achievements, saved results, hand history
+    if (!confirm('Reset the app to a fresh install?\n\nThis deletes all settings, stats, casino trips, achievements, saved calculations and hand history on this device, then restarts the app. (A Remove ads purchase comes back from Google Play.)')) return;
+    say('Resetting…'); try { localStorage.clear(); sessionStorage.clear(); } catch (_) {}
+    await Promise.all([IDB.clear(), LOG.clear()].map(p => Promise.resolve(p).catch(() => {})));
+    location.reload(); return;
+  }
   if (code === 'TEST-ADS') { APP.adsRemoved = false; try { localStorage.removeItem('uth.adsRemoved'); } catch (_) {} if (APP.native) startAds(); renderAdsOpt(); say('Ads are back on (testing).'); return; }
   // achievements: TEST-ACH-RESET, TEST-ACH-ALL, TEST-ACH-<ID>-<N> (sets progress, e.g. TEST-ACH-STREAK-24); TEST-BANKROLL<N>
   const c0 = code.replace(/\s+/g, '');
@@ -5038,6 +5122,7 @@ const MILESTONES = { 3: [1, 'Hat trick', 'Three perfect hands in a row'], 5: [2,
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const milestoneFor = n => MILESTONES[n] || (n > 100 && n % 25 === 0 ? [5, `${n} in a row`, 'Off the charts'] : null);
 function celebrateStreak(n, newBest) {
+  if (n >= 100 && n % 100 === 0) askReviewSoon('streak');
   const m = milestoneFor(n);
   if (!m) return;
   const [tier, title, sub] = m, best = newBest && n > 3 ? ' · new best streak' : '';
@@ -5292,7 +5377,7 @@ function renderGuide() {
   el.innerHTML = `<div class="gcol">${h}</div>`; // one centered column
   el.querySelectorAll('[data-bet]').forEach(b => b.onclick = () => { guideBet = b.dataset.bet; renderGuide(); });
   drawDemo();
-  el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); renderGuide(); });
+  el.querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { track('paytable_change', { bet: b.dataset.pt, table: b.dataset.v }); S.tables[b.dataset.pt] = b.dataset.v; saveSettings(); renderOpts(); onRulesChanged(); renderGuide(); });
 }
 
 // ── Android app: banner ad + one-time "Remove ads" purchase ──────────────────
@@ -5311,6 +5396,56 @@ const APP = {
   price: null, busy: false,
 };
 const AdMob = () => window.Capacitor?.Plugins?.AdMob;
+// ── Analytics (Google Analytics for Firebase, Android app only) ─────────────
+// track(name, params): one event; values are numbers or short strings (booleans become 1/0). Nothing is
+// sent from the website. Every event is also kept in TRACK_LOG (last 200) so tests can check them.
+const TRACK_LOG = []; window.TRACK_LOG = TRACK_LOG;
+const FA = () => APP.native ? window.Capacitor?.Plugins?.FirebaseAnalytics : null;
+function track(name, params = {}) {
+  const clean = {};
+  for (const [k, v] of Object.entries(params)) { if (v === undefined || v === null) continue; clean[k] = typeof v === 'boolean' ? (v ? 1 : 0) : typeof v === 'number' ? Math.round(v * 1000) / 1000 : String(v).slice(0, 100); }
+  TRACK_LOG.push({ name, ...clean }); if (TRACK_LOG.length > 200) TRACK_LOG.shift();
+  try { FA()?.logEvent({ name, params: clean }).catch(() => {}); } catch (_) {}
+}
+function trackScreen(name) { try { FA()?.setCurrentScreen({ screenName: name }).catch(() => {}); } catch (_) {} }
+function trackUser(key, value) { try { FA()?.setUserProperty({ key, value: String(value) }).catch(() => {}); } catch (_) {} }
+function trackConsent(granted) { // analytics storage follows the consent people give in Google's form (EU/UK)
+  const fa = FA(); if (!fa?.setConsent) return;
+  for (const type of ['ANALYTICS_STORAGE']) fa.setConsent({ type, status: granted ? 'GRANTED' : 'DENIED' }).catch(() => {});
+}
+const chartInfo = () => ({ street: S.street, game: S.game, dealer: S.dealer.some(c => c !== null), flop: S.street === 'preflop' && S.board.some(c => c !== null), others: S.dead.length / 2 });
+// ── Rating prompt (Google Play in-app review) ───────────────────────────────
+// Asked at good moments only: a leak fixed, the bankroll passing $2,500, a 100-hand Practice streak. It waits
+// until every celebration, achievement and pop-up has finished, never comes within 5 minutes of the last
+// ask, and stops for good once someone rates from Settings. Google decides whether the card actually shows
+// (it has its own limit, and never shows it to someone who already reviewed); no question comes before it.
+const REVIEW_GAP = 5 * 60e3;
+const reviewBusy = () => !!document.querySelector('.cele, .cele-toast, .ach-pop, .gsw, .adoffer, .lkspot') || achQueue.length > 0 || !!achTimer
+  || store.get('uth.leakNews', []).length > 0 || ['nav-open', 'set-open', 'sheet-open'].some(c => document.body.classList.contains(c)) || !document.getElementById('psetBg')?.hidden
+  || (mode === 'quiz' && QZ.cur && !QZ.cur.done) || (mode === 'daily' && DL.view === 'play') || (mode === 'casino' && !!casGet()?.cur);
+let reviewTimer = null;
+function askReviewSoon(why) {
+  if (store.get('uth.rated', false) || Date.now() - store.get('uth.reviewAt', 0) < REVIEW_GAP || reviewTimer) return;
+  let quiet = 0, tries = 0;
+  const tick = () => {
+    if (++tries > 600) { reviewTimer = null; return; } // gave up after ~10 minutes of activity
+    quiet = reviewBusy() ? 0 : quiet + 1;
+    if (quiet < 3) { reviewTimer = setTimeout(tick, 1000); return; } // 3 quiet seconds in a row
+    reviewTimer = null;
+    if (store.get('uth.rated', false) || Date.now() - store.get('uth.reviewAt', 0) < REVIEW_GAP) return;
+    store.set('uth.reviewAt', Date.now());
+    const rv = window.Capacitor?.Plugins?.AppReview;
+    track('review_prompt', { why, native: !!(APP.native && rv) });
+    if (APP.native && rv) rv.requestReview().catch(() => {});
+  };
+  reviewTimer = setTimeout(tick, 1500);
+}
+function rateInStore() { // Settings → Rate: opens the Play listing; no automatic asks after this
+  store.set('uth.rated', true); track('review_store_open', {});
+  const rv = window.Capacitor?.Plugins?.AppReview;
+  if (APP.native && rv) rv.openAppStore().catch(() => window.open('https://play.google.com/store/apps/details?id=com.bunz.holdemtrainer', '_blank'));
+  else window.open('https://play.google.com/store/apps/details?id=com.bunz.holdemtrainer', '_blank');
+}
 function setAdHeight(px) { document.documentElement.style.setProperty('--ad-h', px + 'px'); }
 // ── Ad rules ──
 // Banner at the bottom. Full-screen (interstitial) ads only at a natural break — opening Practice, the
@@ -5327,7 +5462,7 @@ const adsLive = () => APP.native && !APP.adsRemoved && !!AdMob();         // thi
 const adsActive = () => adsLive() && Date.now() >= adFreeUntil();          // …and right now (no ad-free time running)
 async function bannerOn() {
   const ad = AdMob(); if (!ad || AD.bannerOn || !adsActive()) return;
-  try { await ad.showBanner({ adId: APP.bannerId, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0, isTesting: APP.testing }); AD.bannerOn = true; if (AD.bannerH) setAdHeight(AD.bannerH); } catch (e) { console.warn('banner', e); }
+  try { await ad.showBanner({ adId: APP.bannerId, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0, isTesting: APP.testing }); AD.bannerOn = true; setAdHeight(AD.bannerH || 62); } catch (e) { console.warn('banner', e); } // 62: a typical phone banner, until the plugin reports the real height
 }
 async function bannerOff() { try { await AdMob()?.removeBanner(); } catch (_) {} AD.bannerOn = false; setAdHeight(0); }
 function adFreeWatch() { // switch the banner back on when ad-free time runs out
@@ -5343,6 +5478,7 @@ async function startAds() {
     await ad.initialize({ initializeForTesting: APP.testing });
     const consent = await ad.requestConsentInfo(); // EU/UK consent form when required
     if (consent.isConsentFormAvailable && consent.status === 'REQUIRED') await ad.showConsentForm();
+    try { const c2 = await ad.requestConsentInfo(); trackConsent(c2.status === 'OBTAINED' || c2.status === 'NOT_REQUIRED'); } catch (_) {}
     ad.addListener('bannerAdSizeChanged', info => { AD.bannerH = info.height || 0; setAdHeight(APP.adsRemoved || !AD.bannerOn ? 0 : AD.bannerH); });
     ad.addListener('interstitialAdDismissed', () => { prepInterstitial(); setTimeout(offerAdFree, 600); });
     ad.addListener('interstitialAdFailedToShow', () => prepInterstitial());
@@ -5365,6 +5501,7 @@ function adMoment(why) {
   if (document.querySelector('.cele') || document.body.classList.contains('nav-open') || document.body.classList.contains('set-open') || !document.getElementById('psetBg')?.hidden) return false;
   AD.shown.push(now); AD.intReady = false;
   AdMob().showInterstitial().catch(() => prepInterstitial());
+  track('interstitial_shown', { why });
   return true;
 }
 // A rewarded video. Resolves true (watched to the end), false (closed early) or null (no video to show).
@@ -5374,6 +5511,7 @@ function watchRewarded() {
 }
 async function earnAdFree() { // watch a video: 30 minutes with no banner and no full-screen ads (adds up, to 3 hours)
   const ok = await watchRewarded();
+  track('ad_free_video', { result: ok === null ? 'none' : ok ? 'watched' : 'closed' });
   if (ok === null) { dToast('No video available right now — try again in a bit'); return; }
   if (!ok) return;
   const now = Date.now(), from = Math.max(now, adFreeUntil()), until = Math.min(from + AD_RULES.freeMins * 60e3, now + AD_RULES.freeCapMins * 60e3);
@@ -5390,7 +5528,9 @@ function offerAdFree() { // after a full-screen ad, now and then: the opt-in vid
   el.querySelector('#aoNo').onclick = close; el.querySelector('#aoGo').onclick = () => { close(); earnAdFree(); };
   setTimeout(close, 12000);
 }
-async function adsOff() {
+async function adsOff(via = 'purchase') {
+  if (!APP.adsRemoved) track('remove_ads_active', { via });
+  trackUser('ads_removed', 1);
   APP.adsRemoved = true; try { localStorage.setItem('uth.adsRemoved', '1'); } catch (_) {}
   await bannerOff(); renderAdsOpt();
 }
@@ -5410,14 +5550,16 @@ function renderAdsOpt() {
   const row = (title, desc, ctl) => `<div class="srow"><div class="srt"><b>${title}</b>${desc ? `<small>${desc}</small>` : ''}</div>${ctl ? `<div class="sctl">${ctl}</div>` : ''}</div>`;
   if (APP.adsRemoved) { el.innerHTML = row('Ads removed', 'Thanks for supporting the app!'); return; }
   const left = Math.ceil((adFreeUntil() - Date.now()) / 60e3);
-  el.innerHTML = row('Remove ads', 'Ads keep the app free. One purchase removes them for good.', `<button class="buy" id="buyBtn" ${APP.busy ? 'disabled' : ''}>${APP.price || 'Buy'}</button>`)
-    + row('Take a break', left > 0 ? `No ads for another <b>${left} min</b>` : `Watch a short video for ${AD_RULES.freeMins} minutes without ads`,
-      left < AD_RULES.freeCapMins - AD_RULES.freeMins ? `<button class="resetbtn" id="freeBtn">${left > 0 ? `+${AD_RULES.freeMins} min` : 'Watch'}</button>` : '')
-    + row('Already bought it?', 'Restore your purchase on this device', '<button class="resetbtn" id="restoreBtn">Restore</button>');
+  const canWatch = left < AD_RULES.freeCapMins - AD_RULES.freeMins;
+  el.innerHTML = `<div class="sads"><div class="srt"><small>Ads keep the app free. One purchase removes them for good, or watch a short video to pause them for ${AD_RULES.freeMins} minutes${left > 0 ? `. <span class="sapause">Ads paused for another <b>${left} min</b>.</span>` : '.'}</small></div>
+    <button class="buy" id="buyBtn" ${APP.busy ? 'disabled' : ''}>Remove ads${APP.price ? ' — ' + APP.price : ''}</button>
+    ${canWatch ? `<button class="resetbtn" id="freeBtn">▶ Watch a short video to pause ads${left > 0 ? ` +${AD_RULES.freeMins} min` : ''}</button>` : ''}
+    <button class="linkbtn" id="restoreBtn">Already bought it? Restore purchase</button></div>`;
   document.getElementById('freeBtn')?.addEventListener('click', earnAdFree);
   document.getElementById('buyBtn').onclick = async () => {
     const st = window.CdvPurchase?.store, offer = st?.get(APP.productId)?.getOffer();
     if (!offer) { alert('The store isn\'t available right now — try again in a moment.'); return; }
+    track('remove_ads_tap', { price: APP.price || '' });
     APP.busy = true; renderAdsOpt();
     try { await offer.order(); } finally { APP.busy = false; renderAdsOpt(); }
   };
@@ -5425,14 +5567,15 @@ function renderAdsOpt() {
 }
 if (APP.native) { window.Capacitor?.Plugins?.SystemBars?.setStyle?.({ style: 'DARK' }).catch?.(() => {}); startStore(); startAds(); } // light status-bar icons on the dark app
 
-let mode = store.get('uth.mode', 'analyze');
+const FIRST_RUN = store.get('uth.mode', null) === null && !store.get('uth.welcomed', false);
+let mode = store.get('uth.mode', 'quiz'); // new players start in Practice (after the welcome card)
 if (mode === 'leaks' && store.get('uth.handsLogged', 0) < 100) mode = 'analyze';
 function setMode(m) {
   const from = mode;
-  mode = m; store.set('uth.mode', m);
+  mode = m; store.set('uth.mode', m); if (m !== from) trackScreen(m);
   document.querySelectorAll('.navitem[data-m]').forEach(x => x.classList.toggle('on', x.dataset.m === m));
   if (m !== 'analyze') ANALYZE_FROM = null; renderBackBar?.();
-  document.getElementById('pageName').textContent = { analyze: 'Analyze', quiz: 'Practice', daily: 'Daily challenge', guide: 'How to Play', leaks: 'Leak finder', casino: 'Casino simulator', ach: 'Achievements' }[m];
+  document.getElementById('pageName').textContent = { analyze: 'Analyze', quiz: 'Practice', daily: 'Daily challenge', guide: 'How to Play', leaks: 'Leaks', casino: 'Casino', ach: 'Achievements' }[m];
   openNav(false);
   document.body.classList.toggle('quiz-mode', m === 'quiz');
   document.body.classList.toggle('guide-mode', m === 'guide');
@@ -5468,7 +5611,7 @@ function setTab(t) {
   renderMbar();
 }
 function setGame(g) {
-  S.game = g; saveSettings();
+  S.game = g; saveSettings(); trackUser('game', g);
   document.querySelectorAll('#gameSeg button').forEach(x => x.classList.toggle('on', x.dataset.g === g));
   renderOpts(); onRulesChanged();
   if (mode === 'quiz' && (!QZ.cur?.picks.length || QZ.cur?.done)) { QZ.next = null; quizNew(); }
@@ -5512,9 +5655,61 @@ function openSheet(open) { document.getElementById('pane').classList.toggle('ope
   };
   pane.addEventListener('touchend', end); pane.addEventListener('touchcancel', end);
 })();
-document.querySelectorAll('#gameSeg button').forEach(b => b.onclick = () => setGame(b.dataset.g));
+document.querySelectorAll('#gameSeg button').forEach(b => b.onclick = () => askGame(b.dataset.g));
+// Switching games: a short note on how the other game differs, and a confirmation that any casino trip in
+// progress ends (the chips go back to your bankroll; a hand that's being played is forfeited). The note can
+// be turned off; the confirmation for a trip in progress can't.
+function casEndTrip(g, why = 'switch') {
+  const s = casGet(g); if (!s || s.done) return;
+  track('casino_trip_end', { game: g, reason: why, hands: s.hands.length, hours: casHours(s), net: s.bank - casBuyIn(s), mid_hand: !!s.cur });
+  if (s.cur) { s.bank -= casOnTable(s, g); s.cur = null; } // the bets on the table stay there
+  const br = BR.get(); br.bal += s.bank; s.brBefore = br.best; s.brAfter = br.bal; br.best = Math.max(br.best, br.bal); BR.set(br);
+  s.done = true; s.cashedOut = !s.timeUp && s.hands.length < casHands(s); casSave(s, g); casFinish(g);
+}
+const GNAME = { uth: 'Ultimate', wpt: 'Heads-Up' };
+const GDIFF = {
+  wpt: 'Heads-Up plays a lot like Ultimate: an Ante, a matching bet beside it (the Odds bet instead of the Blind) and one raise per hand. The differences: your biggest raise is 3× the ante instead of 4×, and the Odds bet also pays a Bad Beat bonus when you lose with a straight or better.',
+  uth: 'Ultimate plays a lot like Heads-Up: an Ante, a matching bet beside it (the Blind instead of the Odds bet) and one raise per hand. The differences: you can raise up to 4× the ante before the flop instead of 3×, and the Blind has no Bad Beat payout.',
+};
+// First launch: pick your game, then Practice (or How to Play first).
+function showWelcome() {
+  store.set('uth.welcomed', true);
+  const badge = g => document.querySelector(`#gameSeg button[data-g="${g}"] svg`)?.outerHTML || '';
+  const bg = document.createElement('div'); bg.className = 'pset-bg gsw wel';
+  bg.innerHTML = `<div class="pset" role="dialog" aria-modal="true" aria-label="Welcome">
+    <div class="dhead"><b>Welcome to Hold'em Trainer</b></div>
+    <p class="gswp">Learn the exact best play for every hand, then test yourself at the tables. Which game do you play?</p>
+    <div class="welg"><button data-g="uth">${badge('uth')}<span><b>Ultimate Texas Hold'em</b><small>Ante, Blind and Play, raise up to 4×</small></span></button>
+      <button data-g="wpt">${badge('wpt')}<span><b>WPT Heads-Up Hold'em</b><small>Ante, Odds and Raise, with a Bad Beat bonus</small></span></button></div>
+    <label class="chk welrules"><input type="checkbox" data-rules> I'm new to it — show me how to play first</label>
+    <p class="gswfoot welfoot">You can switch games any time with the badges at the top.</p>
+  </div>`;
+  document.body.appendChild(bg);
+  bg.querySelectorAll('[data-g]').forEach(b => b.onclick = () => { const rules = bg.querySelector('[data-rules]').checked; bg.remove(); track('welcome_choice', { game: b.dataset.g, show_rules: rules }); if (b.dataset.g !== S.game) setGame(b.dataset.g); setMode(rules ? 'guide' : 'quiz'); });
+}
+function askGame(g, then) {
+  const done = () => { setGame(g); then?.(); };
+  if (g === S.game) { then?.(); return; }
+  const cs = casGet(S.game), trip = cs && !cs.done;
+  if (!trip && store.get('uth.gswQuiet', false)) { track('game_switch', { from: S.game, to: g, ended_trip: false, via: 'quiet' }); done(); return; }
+  const bg = document.createElement('div'); bg.className = 'pset-bg gsw';
+  const onT = trip ? casOnTable(cs, S.game) : 0;
+  bg.innerHTML = `<div class="pset" role="dialog" aria-modal="true" aria-label="Switch games">
+    <div class="dhead"><b>Switch to ${GNAME[g]}?</b><button data-x aria-label="Close">✕</button></div>
+    <p class="gswp">${GDIFF[g]}</p>
+    ${trip ? `<div class="gswtrip"><b>Your ${GNAME[S.game]} casino trip will end.</b> Your ${casD(cs.bank - (cs.cur ? onT : 0))} in chips go back to your bankroll${cs.cur ? ` — the hand being played is forfeited (${casD(onT)} on the table)` : ''}.</div>` : ''}
+    <div class="gswbtns"><button class="qact cgo" data-ok>${trip ? 'End trip and switch' : `Switch to ${GNAME[g]}`}</button><button class="qact" data-x>Stay on ${GNAME[S.game]}</button></div>
+    <div class="gswfoot"><button class="linkbtn" data-guide>How to play ${GNAME[g]} ▸</button>${trip ? '' : `<label class="chk"><input type="checkbox" data-quiet> Don't show this again</label>`}</div>
+  </div>`;
+  document.body.appendChild(bg);
+  const close = () => bg.remove(), quiet = () => { if (bg.querySelector('[data-quiet]')?.checked) store.set('uth.gswQuiet', true); };
+  const go = () => { track('game_switch', { from: S.game, to: g, ended_trip: !!trip, via: 'confirm' }); quiet(); if (trip) casEndTrip(S.game, 'switch'); close(); done(); };
+  bg.onclick = e => { if (e.target === bg || e.target.closest('[data-x]')) close(); };
+  bg.querySelector('[data-ok]').onclick = go;
+  bg.querySelector('[data-guide]').onclick = () => { track('game_switch', { from: S.game, to: g, ended_trip: !!trip, via: 'how_to_play' }); quiet(); if (trip) casEndTrip(S.game, 'switch'); close(); setGame(g); setMode('guide'); };
+}
 document.querySelectorAll('#streetSeg button').forEach(b => b.onclick = () => setStreet(b.dataset.s));
-document.querySelectorAll('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.t));
+document.querySelectorAll('#tabSeg button').forEach(b => b.onclick = () => { if (b.dataset.t === 'chart' && S.tab !== 'chart') track('range_chart_view', chartInfo()); setTab(b.dataset.t); });
 document.getElementById('dailyDue').onclick = () => { ANALYZE_FROM = null; DL.date = todayYmd(); setMode('daily'); };
 document.querySelectorAll('.navitem[data-m]').forEach(b => b.onclick = () => {
   if (b.dataset.m === 'leaks' && !leakReady()) { const left = LEAK_HANDS - store.get('uth.handsLogged', 0); dToast(`${left} more hand${left === 1 ? '' : 's'} to unlock the leak finder`); return; }
@@ -5541,7 +5736,7 @@ document.getElementById('navBtn').onclick = () => openNav(true);
 document.getElementById('navClose').onclick = () => openNav(false);
 document.getElementById('navBg').onclick = () => openNav(false);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('nav-open')) openNav(false); });
-const openSettings = open => { document.body.classList.toggle('set-open', open); if (open) { renderEdgeCard(); renderHistInfo(); renderQuizBests(); renderAdsOpt(); } };
+const openSettings = open => { document.body.classList.toggle('set-open', open); if (open) { renderInsets(); renderEdgeCard(); renderHistInfo(); renderQuizBests(); renderAdsOpt(); } };
 // Settings opens from the menu and slides in over it: "‹ Menu" goes back, ✕ / the backdrop close both.
 document.getElementById('navSettings').onclick = () => openSettings(true);
 
@@ -5565,6 +5760,7 @@ document.getElementById('clearAll').onclick = () => { S.hole = [null, null]; S.b
   CH = null; buildChart();
   achSync(); renderAchNav();
   setMode(mode);
+  if (FIRST_RUN) showWelcome();
   setTimeout(() => qbFill(2), 8000); // a couple of Practice hands ready for your current settings
   // get today's daily hands ready in the background (lowest priority), so the Daily tab opens instantly
   setTimeout(() => { if (!store.get('uth.dset.' + dKey(S.game, todayYmd()), null)) dailySet(S.game, todayYmd(), null, -1).catch(() => {}); }, 4000);
